@@ -81,6 +81,29 @@
         /* Sections */
         section { padding: 8rem 0; }
         .section-title { text-align: center; font-size: 3rem; margin-bottom: 4rem; color: #D4AF37; }
+
+        /* Video Section (now standalone before stats) */
+        .video-section {
+            padding: 8rem 0 4rem;
+            text-align: center;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            max-width: 1000px;
+            margin: 0 auto;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+        }
+        .video-container video {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: center; }
         .stat-item { 
             background: rgba(17, 34, 64, 0.6); 
@@ -132,13 +155,13 @@
             <nav>
                 <a href="/" class="logo">Mogul Strategies</a>
                 <div class="nav-links">
-                    <a href="/about.html">About</a>
-                    <a href="/strategies.html">Strategies</a>
-                    <a href="/funds.html">Our Funds</a>
-                    <a href="/insights.html">Insights</a>
-                    <a href="/contact.html">Contact</a>
+                    <a href="about.html">About</a>
+                    <a href="strategies.html">Strategies</a>
+                    <a href="funds.html">Our Funds</a>
+                    <a href="insights.html">Insights</a>
+                    <a href="contact.html">Contact</a>
                 </div>
-                <a href="https://mogulstrategies.invportal.com/" class="cta-button">Investors Portal</a>
+                <a href="login.html" class="cta-button">Investors Portal</a>
             </nav>
         </div>
     </header>
@@ -148,12 +171,27 @@
             <h1>Redefining Wealth Acceleration</h1>
             <p>Diversified portfolios blending proven strategies with innovative edges — including Bitcoin integration for enhanced risk mitigation. Exclusive opportunities for accredited and institutional investors.</p>
             <div class="hero-buttons">
-                <a href="/funds.html" class="cta-button">Explore Our Funds</a>
-                <a href="https://mogulstrategies.invportal.com/" class="cta-button cta-outline">Access Portal</a>
+                <a href="funds.html" class="cta-button">Explore Our Funds</a>
+                <a href="login.html" class="cta-button cta-outline">Access Portal</a>
             </div>
         </div>
     </section>
 
+    <!-- Video Section moved ABOVE "Why Mogul Strategies?" -->
+    <section class="video-section">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 2rem; color: #D4AF37;">Discover Mogul Strategies</h2>
+            <div class="video-container">
+                <video autoplay muted loop playsinline>
+                    <source src="https://player.vimeo.com/external/345998832.hd.mp4?s=7e6d5a3b0f0c6d5a3b0f0c6d5a3b0f0c&profile_id=175" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <p style="margin-top: 1.5rem; font-size: 1.2rem; color: #CCCCCC;">A glimpse into the world of sophisticated, diversified investing with Mogul Strategies.</p>
+        </div>
+    </section>
+
+    <!-- Why Mogul Strategies Section (now below the video) -->
     <section id="stats">
         <div class="container">
             <h2 class="section-title">Why Mogul Strategies?</h2>
@@ -183,7 +221,7 @@
             <h2 class="section-title">Our Funds</h2>
             <div class="funds-grid">
                 <div class="fund-card">
-                    <img src="https://png.pngtree.com/background/20230527/original/pngtree-stock-chart-shows-many-gold-lines-against-a-dark-background-picture-image_2761134.jpg" alt="Mogul Equities - Abstract Gold Stock Chart">
+                    <img src="https://media.istockphoto.com/id/1846625096/photo/gold-candlestick-financial-stock-investment-exchange-business-market-money-finance-indicator.jpg?s=612x612&w=0&k=20&c=uTuuwjh4MD50bR_pWl1hpq9kJaqkIA8apSTB5VvlLRM=" alt="Mogul Equities - Gold Candlestick Chart">
                     <div class="fund-card-content">
                         <h3>Mogul Equities</h3>
                         <p>Securities and collateralized strategies for steady growth.</p>
@@ -191,7 +229,7 @@
                     </div>
                 </div>
                 <div class="fund-card">
-                    <img src="https://t3.ftcdn.net/jpg/02/06/66/26/360_F_206662634_16JnrFAXoGVlBok3CEMX3oJdM7aqg5LX.jpg" alt="Mogul Digital Fund - Blockchain Visualization">
+                    <img src="https://thumbs.dreamstime.com/z/cryptocurrency-revolution-visualization-digital-realm-graphic-art-futuristic-environment-abstract-concept-explore-vibrant-351927303.jpg" alt="Mogul Digital Fund - Futuristic Blockchain Visualization">
                     <div class="fund-card-content">
                         <h3>Mogul Digital Fund</h3>
                         <p>Blockchain and deep digital assets with Bitcoin integration.</p>
@@ -199,7 +237,7 @@
                     </div>
                 </div>
                 <div class="fund-card">
-                    <img src="https://uniqueproperties.ae/en/uploads/frontend/articles/611758/conversions/prime-locations-to-buy-luxury-mansions-in-dubai-resize.webp" alt="Mogul Real Estate - Luxury Gulf Properties">
+                    <img src="https://assets.bwbx.io/images/users/iqjWHBFdfxIU/iaDP_g8sTr8A/v2/1200x805.jpg" alt="Mogul Real Estate - Luxury Dubai Villa">
                     <div class="fund-card-content">
                         <h3>Mogul Real Estate</h3>
                         <p>Income-producing properties in premium Gulf regions.</p>
@@ -207,7 +245,7 @@
                     </div>
                 </div>
                 <div class="fund-card">
-                    <img src="https://thumbs.dreamstime.com/b/digital-technology-background-blue-glowing-ai-letters-dark-network-representing-data-connection-artificial-394691387.jpg" alt="Mogul Technologies - Futuristic AI">
+                    <img src="https://png.pngtree.com/background/20250107/original/pngtree-cutting-edge-quantum-computing-futuristic-blue-circuit-board-texture-background-illustrating-picture-image_15235743.jpg" alt="Mogul Technologies - Futuristic AI Circuit">
                     <div class="fund-card-content">
                         <h3>Mogul Technologies</h3>
                         <p>High-tech and AI-driven innovations.</p>
@@ -215,7 +253,7 @@
                     </div>
                 </div>
                 <div class="fund-card">
-                    <img src="https://media.gettyimages.com/id/1028404620/photo/people-working-behind-the-scenes-on-a-film-set.jpg?s=612x612&w=gi&k=20&c=rYfN4cvQmLvVq4tqEaME7Jy8OlYZpapMMqh3syCLRCk=" alt="Creative Arts Fund - Film Production Set">
+                    <img src="https://static.boredpanda.com/blog/wp-content/uploads/2019/07/behind-the-scenes-of-hollywood-movies-1-5d1b13d220dfa__700.jpg" alt="Creative Arts Fund - Hollywood Film Set Behind the Scenes">
                     <div class="fund-card-content">
                         <h3>Creative Arts Fund</h3>
                         <p>Investments in entertainment, motion picture production, and cultural opportunities.</p>
@@ -223,7 +261,7 @@
                     </div>
                 </div>
                 <div class="fund-card">
-                    <img src="https://resource-recycling.com/wp-content/uploads/2025/12/WM-Recycling-Facility_Courtesy_WM_web.jpg" alt="Mogul Recycling Fund - Modern Recycling Facility">
+                    <img src="https://thumbs.dreamstime.com/b/clean-modern-recycling-center-automated-machinery-organized-waste-sorting-high-tech-industrial-recycling-center-420985238.jpg" alt="Mogul Recycling Fund - Modern Recycling Facility">
                     <div class="fund-card-content">
                         <h3>Mogul Recycling Fund</h3>
                         <p>Sustainable investments in waste management, recycling technologies, and eco-friendly infrastructure.</p>
@@ -237,7 +275,7 @@
     <footer>
         <div class="container">
             <p>&copy; 2025 Mogul Strategies Inc. For Accredited Investors Only.</p>
-            <p>Call us: <a href="tel:+18007760990">(800) 776-0990</a> | <a href="https://mogulstrategies.invportal.com/">Investors Portal</a></p>
+            <p>Call us: <a href="tel:+18007760990">(800) 776-0990</a> | <a href="login.html">Investors Portal</a></p>
             <p><small>Investments involve risk. Past performance is not indicative of future results.</small></p>
         </div>
     </footer>
