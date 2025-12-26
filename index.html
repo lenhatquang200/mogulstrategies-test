@@ -185,12 +185,9 @@
         <div class="container">
             <h2 style="font-size: 2.5rem; margin-bottom: 2rem; color: #D4AF37;">Discover Mogul Strategies</h2>
             <div class="video-container">
-                <iframe 
-                    src="https://drive.google.com/file/d/117wMHEQTEIa1gcbiyJu3po9nXkyWICwH/preview" 
-                    frameborder="0" 
-                    allow="autoplay" 
-                    allowfullscreen>
-                </iframe>
+                <video id="videoPlayer" autoplay muted playsinline>
+                    <!-- Video sources will be loaded dynamically -->
+                </video>
             </div>
             <p style="margin-top: 1.5rem; font-size: 1.2rem; color: #CCCCCC;">A glimpse into the world of sophisticated, diversified investing with Mogul Strategies.</p>
         </div>
@@ -284,6 +281,80 @@
             <p><small>Investments involve risk. Past performance is not indicative of future results.</small></p>
         </div>
     </footer>
+
+    <script>
+        // Danh sách 3 video Google Drive
+        const videoPlaylist = [
+            '117wMHEQTEIa1gcbiyJu3po9nXkyWICwH', // Video 1
+            '1zVH9LXRe2-5nVuCkMfPcUQLwaImqKQhz', // Video 2
+            '1E3QhY8HcdOXDCHAd_j7RX66h2ft8QRk5'  // Video 3
+        ];
+
+        const videoPlayer = document.getElementById('videoPlayer');
+        let currentVideoIndex = 0;
+
+        // Chuyển Google Drive file ID thành direct video URL
+        function getVideoUrl(fileId) {
+            return `https://drive.google.com/uc?export=view&id=${fileId}`;
+        }
+
+        // Load video theo index
+        function loadVideo(index) {
+            if (videoPlaylist.length === 0) return;
+            
+            currentVideoIndex = index % videoPlaylist.length;
+            const videoId = videoPlaylist[currentVideoIndex];
+            const videoUrl = getVideoUrl(videoId);
+            
+            videoPlayer.src = videoUrl;
+            videoPlayer.load();
+        }
+
+        // Khi video kết thúc → phát video tiếp theo (looped)
+        videoPlayer.addEventListener('ended', () => {
+            loadVideo(currentVideoIndex + 1);
+            videoPlayer.play().catch(err => {
+                console.log('Autoplay prevented:', err);
+            });
+        });
+
+        // Khi video sẵn sàng → tự động phát
+        videoPlayer.addEventListener('loadeddata', () => {
+            videoPlayer.play().catch(err => {
+                console.log('Autoplay prevented:', err);
+            });
+        });
+
+        // Xử lý lỗi: nếu direct link không hoạt động, fallback sang iframe
+        videoPlayer.addEventListener('error', (e) => {
+            console.log('Video error, trying iframe fallback');
+            const videoContainer = document.querySelector('.video-container');
+            let iframeIndex = 0;
+            
+            function rotateIframe() {
+                iframeIndex = (iframeIndex + 1) % videoPlaylist.length;
+                const videoId = videoPlaylist[iframeIndex];
+                videoContainer.innerHTML = `
+                    <iframe 
+                        src="https://drive.google.com/file/d/${videoId}/preview" 
+                        frameborder="0" 
+                        allow="autoplay" 
+                        allowfullscreen>
+                    </iframe>
+                `;
+            }
+            
+            // Load first iframe
+            iframeIndex = 0;
+            rotateIframe();
+            
+            // Rotate every 30 seconds (adjust based on your video length)
+            setInterval(rotateIframe, 30000);
+        });
+
+        // Khởi tạo: load video đầu tiên
+        loadVideo(0);
+    </script>
 
 </body>
 </html>
