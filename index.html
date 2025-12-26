@@ -185,7 +185,7 @@
         <div class="container">
             <h2 style="font-size: 2.5rem; margin-bottom: 2rem; color: #D4AF37;">Discover Mogul Strategies</h2>
             <div class="video-container">
-                <video id="videoPlayer" autoplay muted playsinline>
+                <video id="videoPlayer" autoplay muted playsinline loop>
                     <!-- Video sources will be loaded dynamically -->
                 </video>
             </div>
@@ -292,10 +292,29 @@
 
         const videoPlayer = document.getElementById('videoPlayer');
         let currentVideoIndex = 0;
+        let isPlaying = false;
+
+        // Đảm bảo video luôn muted để autoplay hoạt động
+        videoPlayer.muted = true;
 
         // Chuyển Google Drive file ID thành direct video URL
         function getVideoUrl(fileId) {
             return `https://drive.google.com/uc?export=view&id=${fileId}`;
+        }
+
+        // Hàm tự động phát video
+        function autoPlayVideo() {
+            if (videoPlayer.readyState >= 2) { // HAVE_CURRENT_DATA
+                videoPlayer.play().then(() => {
+                    isPlaying = true;
+                }).catch(err => {
+                    console.log('Autoplay attempt:', err);
+                    // Retry after a short delay
+                    setTimeout(() => {
+                        videoPlayer.play().catch(() => {});
+                    }, 500);
+                });
+            }
         }
 
         // Load video theo index
@@ -306,6 +325,8 @@
             const videoId = videoPlaylist[currentVideoIndex];
             const videoUrl = getVideoUrl(videoId);
             
+            // Reset playing state khi chuyển video
+            isPlaying = false;
             videoPlayer.src = videoUrl;
             videoPlayer.load();
         }
@@ -313,16 +334,35 @@
         // Khi video kết thúc → phát video tiếp theo (looped)
         videoPlayer.addEventListener('ended', () => {
             loadVideo(currentVideoIndex + 1);
-            videoPlayer.play().catch(err => {
-                console.log('Autoplay prevented:', err);
-            });
         });
 
         // Khi video sẵn sàng → tự động phát
         videoPlayer.addEventListener('loadeddata', () => {
-            videoPlayer.play().catch(err => {
-                console.log('Autoplay prevented:', err);
-            });
+            autoPlayVideo();
+        });
+
+        // Khi video có đủ dữ liệu để phát → tự động phát
+        videoPlayer.addEventListener('canplay', () => {
+            if (!isPlaying) {
+                autoPlayVideo();
+            }
+        });
+
+        // Khi video có đủ dữ liệu để phát liên tục → tự động phát
+        videoPlayer.addEventListener('canplaythrough', () => {
+            if (!isPlaying) {
+                autoPlayVideo();
+            }
+        });
+
+        // Theo dõi khi video bắt đầu phát
+        videoPlayer.addEventListener('play', () => {
+            isPlaying = true;
+        });
+
+        // Theo dõi khi video bị pause
+        videoPlayer.addEventListener('pause', () => {
+            isPlaying = false;
         });
 
         // Xử lý lỗi: nếu direct link không hoạt động, fallback sang iframe
@@ -352,8 +392,44 @@
             setInterval(rotateIframe, 30000);
         });
 
+        // Intersection Observer: tự động phát khi scroll tới phần video
+        const videoSection = document.querySelector('.video-section');
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.3 // Phát khi 30% video section hiển thị
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Khi scroll tới phần video → tự động phát
+                    if (videoPlayer.readyState >= 2) {
+                        autoPlayVideo();
+                    }
+                } else {
+                    // Khi scroll ra khỏi phần video → có thể pause (tùy chọn)
+                    // videoPlayer.pause();
+                }
+            });
+        }, observerOptions);
+
+        // Quan sát phần video section
+        if (videoSection) {
+            observer.observe(videoSection);
+        }
+
         // Khởi tạo: load video đầu tiên
         loadVideo(0);
+        
+        // Đảm bảo video tự động phát sau khi load xong
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                if (videoPlayer.readyState >= 2) {
+                    autoPlayVideo();
+                }
+            }, 1000);
+        });
     </script>
 
 </body>
