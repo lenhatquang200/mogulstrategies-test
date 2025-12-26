@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webinars & Events | Mogul Strategies Investors Portal</title>
+    <!-- FullCalendar CSS & JS -->
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/main.min.js'></script>
+    <!-- iCal export library -->
+    <script src='https://cdn.jsdelivr.net/npm/ical-generator@5.0.1/dist/ical-generator.min.js'></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            line-height: 1.6; 
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        a { color: #D4AF37; text-decoration: none; transition: color 0.3s; }
+        a:hover { color: #FFFFFF; }
+
+        header { 
+            position: fixed; top: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 1000; 
+        }
+        .header-container { max-width: 1600px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .header-left { display: flex; align-items: center; gap: 1.5rem; }
+        .logo { font-size: 2rem; color: #D4AF37; font-weight: bold; }
+        .hamburger { display: none; font-size: 1.8rem; background: none; border: none; color: #D4AF37; cursor: pointer; }
+
+        .sidebar-toggle {
+            background: rgba(17, 34, 64, 0.8);
+            border: none;
+            color: #D4AF37;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        .sidebar-toggle:hover { background: rgba(212, 175, 55, 0.3); }
+
+        .user-menu { display: flex; align-items: center; gap: 1rem; position: relative; }
+        .user-menu button { background: transparent; border: none; color: #E0E0E0; cursor: pointer; font-size: 1rem; }
+        .dropdown { display: none; position: absolute; right: 0; top: 100%; background: rgba(17, 34, 64, 0.9); border-radius: 8px; padding: 1rem; min-width: 200px; }
+        .dropdown a, .dropdown button { display: block; padding: 0.5rem 0; width: 100%; text-align: left; }
+        .user-menu:hover .dropdown { display: block; }
+        .logout { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; padding: 0.6rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .logout:hover { background: #D4AF37; color: #0A1A2F; }
+
+        .sidebar {
+            position: fixed; top: 80px; left: 0; bottom: 0; width: 280px; background: rgba(17, 34, 64, 0.8); backdrop-filter: blur(10px); padding: 1.5rem 0; overflow-y: auto; z-index: 900;
+            transition: transform 0.3s ease;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .sidebar.collapsed { transform: translateX(-100%); }
+
+        .nav-menu { list-style: none; }
+        .nav-menu li { margin-bottom: 0.2rem; }
+        .nav-menu a {
+            display: block; padding: 0.9rem 2rem; color: #E0E0E0; font-weight: 500; font-size: 0.95rem; transition: all 0.3s;
+        }
+        .nav-menu a:hover, .nav-menu a.active { background: rgba(212, 175, 55, 0.2); color: #D4AF37; border-left: 4px solid #D4AF37; }
+
+        main { margin-left: 280px; padding-top: 100px; padding: 2rem; transition: margin-left 0.3s ease; }
+        main.expanded { margin-left: 0; }
+
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        .top-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem; }
+        .top-card { background: #112240; border-radius: 16px; padding: 2rem; animation: pulse-glow 5s ease-in-out infinite; }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .calendar-controls { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+        .filter-group, .export-group {
+            display: flex;
+            gap: 0.8rem;
+            align-items: center;
+        }
+        .filter-group label, .export-group label { font-weight: 500; }
+        .filter-group select, .export-btn {
+            padding: 0.6rem 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+            cursor: pointer;
+        }
+        .export-btn { background: #D4AF37; color: #0A1A2F; font-weight: bold; }
+        .export-btn:hover { background: #FFFFFF; }
+
+        .calendar-container {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        #calendar { height: 700px; }
+
+        /* FullCalendar Custom Styling */
+        .fc { color: #E0E0E0; }
+        .fc-button { background: #D4AF37; border: none; color: #0A1A2F; }
+        .fc-button:hover { background: #FFFFFF; }
+        .fc-event { background: #D4AF37; border: none; color: #0A1A2F; font-weight: bold; }
+        .fc-event:hover { opacity: 0.8; cursor: pointer; }
+
+        /* Enhanced RSVP Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 90%;
+            animation: pulse-glow 5s ease-in-out infinite;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 1rem; right: 1.5rem;
+            font-size: 2rem;
+            color: #AAAAAA;
+            cursor: pointer;
+        }
+        .modal h3 { font-size: 2rem; color: #D4AF37; margin-bottom: 1rem; }
+        .modal p { margin-bottom: 1rem; }
+        .modal-actions { margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+        .rsvp-btn {
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .rsvp-btn:hover { background: #FFFFFF; }
+
+        footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9rem; color: #AAAAAA; }
+
+        @media (max-width: 1024px) {
+            .hamburger { display: block; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; }
+        }
+        @media (max-width: 768px) {
+            .top-row { grid-template-columns: 1fr; }
+            #calendar { height: 600px; }
+            .calendar-header { flex-direction: column; align-items: stretch; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <header>
+        <div class="header-container">
+            <div class="header-left">
+                <button class="hamburger" aria-label="Menu">☰</button>
+                <div class="logo">Mogul Strategies</div>
+                <button class="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
+            </div>
+            <div class="user-menu">
+                <span>Welcome, John Doe</span>
+                <button class="user-menu-btn">▼</button>
+                <div class="dropdown">
+                    <a href="#">Account Settings</a>
+                    <button class="logout">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <li><a href="#">KYC & Accreditation</a></li>
+            <li><a href="#">Active Offerings</a></li>
+            <li><a href="#">Subscription Center</a></li>
+            <li><a href="#">My Investments</a></li>
+            <li><a href="#">Portfolio Summary</a></li>
+            <li><a href="#">Performance Analytics</a></li>
+            <li><a href="#">Documents & Reports</a></li>
+            <li><a href="#">Distributions & Tax</a></li>
+            <li><a href="#">Capital Calls</a></li>
+            <li><a href="#">Notifications</a></li>
+            <li><a href="#">Secure Messaging</a></li>
+            <li><a href="#" class="active">Webinars & Events</a></li>
+            <li><a href="#">Resource Library</a></li>
+            <li><a href="#">Support & FAQ</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <!-- Page Title -->
+        <h1 class="page-title">Webinars & Events</h1>
+
+        <!-- Top Row: Account Info + Secure Messaging -->
+        <section class="top-row">
+            <div class="top-card account-info-card">
+                <h3>Account Information</h3>
+                <ul>
+                    <li><strong>Name:</strong> John Doe</li>
+                    <li><strong>Email:</strong> john.doe@example.com</li>
+                    <li><strong>Investor Type:</strong> Accredited Individual</li>
+                    <li><strong>Account ID:</strong> MS-INV-4872</li>
+                    <li><strong>Joined:</strong> March 15, 2023</li>
+                    <li><strong>Last Login:</strong> December 24, 2025</li>
+                </ul>
+            </div>
+
+            <div class="top-card messaging-card">
+                <h3>Secure Messaging</h3>
+                <p>Communicate directly with your relationship manager.</p>
+                <a href="#" style="display:block; margin:1rem 0; font-weight:bold;">Open Inbox (2 unread)</a>
+                <textarea placeholder="Type your message..." style="width:100%; height:100px; padding:1rem; background:#0A1A2F; border:1px solid #D4AF37; border-radius:8px; color:#E0E0E0;"></textarea>
+                <button style="margin-top:1rem; background:#D4AF37; color:#0A1A2F; padding:0.8rem 1.5rem; border:none; border-radius:8px; cursor:pointer;">Send Message</button>
+            </div>
+        </section>
+
+        <!-- Calendar with Filtering & iCal Export -->
+        <section class="calendar-container">
+            <div class="calendar-header">
+                <h2>Upcoming Events Calendar</h2>
+                <div class="calendar-controls">
+                    <div class="filter-group">
+                        <label for="eventFilter">Filter by Type:</label>
+                        <select id="eventFilter">
+                            <option value="all">All Events</option>
+                            <option value="webinar">Webinars</option>
+                            <option value="in-person">In-Person</option>
+                        </select>
+                    </div>
+                    <div class="export-group">
+                        <button class="export-btn" id="exportIcal">Export to iCal</button>
+                    </div>
+                </div>
+            </div>
+            <div id="calendar"></div>
+        </section>
+    </main>
+
+    <!-- Enhanced RSVP Modal -->
+    <div class="modal" id="eventModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">×</span>
+            <h3 id="modalTitle"></h3>
+            <p><strong>Date & Time:</strong> <span id="modalDate"></span></p>
+            <p><strong>Type:</strong> <span id="modalType"></span></p>
+            <p><strong>Location:</strong> <span id="modalLocation"></span></p>
+            <p id="modalDescription"></p>
+            <div class="modal-actions" id="modalActions"></div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | For Accredited Investors Only</p>
+        <p><small>Investments involve risk. Past performance is not indicative of future results.</small></p>
+    </footer>
+
+    <script>
+        // Toggle functionality
+        const hamburger = document.querySelector('.hamburger');
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+
+        hamburger.addEventListener('click', toggleSidebar);
+        sidebarToggle.addEventListener('click', toggleSidebar);
+
+        // FullCalendar with Filtering, Enhanced Modal & iCal Export
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var modal = document.getElementById('eventModal');
+            var closeModal = document.getElementById('closeModal');
+            var exportBtn = document.getElementById('exportIcal');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: [
+                    // 12 Sample Events (mix of webinar & in-person)
+                    { title: '2026 Market Outlook with Daniel Fainman', start: '2026-01-08T14:00:00', end: '2026-01-08T15:30:00', extendedProps: { type: 'webinar', location: 'Virtual (Zoom)', description: 'Annual outlook on alternative investments.', rsvpLink: 'https://zoom.us/webinar/register/example', rsvpText: 'RSVP Now' } },
+                    { title: 'Investor Roundtable – Digital Assets', start: '2026-02-12T12:00:00', end: '2026-02-12T13:30:00', extendedProps: { type: 'webinar', location: 'Virtual', description: 'Deep dive into blockchain strategy.', rsvpLink: '#', rsvpText: 'Register' } },
+                    { title: 'Annual Investor Dinner', start: '2026-03-20T18:30:00', extendedProps: { type: 'in-person', location: 'The Plaza Hotel, New York, NY', description: 'Exclusive networking dinner.', rsvpLink: '#', rsvpText: 'RSVP Required' } },
+                    { title: 'Mid-Year Portfolio Review', start: '2026-06-18T15:00:00', end: '2026-06-18T16:30:00', extendedProps: { type: 'webinar', location: 'Virtual', description: 'H1 performance and forward guidance.', rsvpLink: '#', rsvpText: 'Join Live' } },
+                    { title: 'Real Estate Market Update', start: '2026-04-15T13:00:00', end: '2026-04-15T14:00:00', extendedProps: { type: 'webinar', location: 'Virtual', description: 'Gulf region real estate trends.', rsvpLink: '#', rsvpText: 'RSVP' } },
+                    { title: 'Creative Arts Fund Showcase', start: '2026-05-10T19:00:00', extendedProps: { type: 'in-person', location: 'Los Angeles, CA', description: 'Film production preview event.', rsvpLink: '#', rsvpText: 'RSVP' } },
+                    { title: 'Sustainable Investing Forum', start: '2026-07-22T11:00:00', end: '2026-07-22T12:30:00', extendedProps: { type: 'webinar', location: 'Virtual', description: 'Recycling and circular economy focus.', rsvpLink: '#', rsvpText: 'Register' } },
+                    { title: 'Q3 2026 Investor Call', start: '2026-09-25T16:00:00', end: '2026-09-25T17:00:00', extendedProps: { type: 'webinar', location: 'Virtual', description: 'Quarterly update and Q&A.', rsvpLink: '#', rsvpText: 'Join' } },
+                    { title: 'Technology Deep Dive', start: '2026-08-14T14:00:00', end: '2026-08-14T15:30:00', extendedProps: { type: 'webinar', location: 'Virtual', description: 'AI and quantum computing opportunities.', rsvpLink: '#', rsvpText: 'RSVP' } },
+                    { title: 'Holiday Investor Reception', start: '2026-12-12T18:00:00', extendedProps: { type: 'in-person', location: 'Manhattan, NY', description: 'Year-end celebration and networking.', rsvpLink: '#', rsvpText: 'RSVP Required' } },
+                    { title: 'Bitcoin Strategy Session', start: '2026-10-08T13:00:00', end: '2026-10-08T14:00:00', extendedProps: { type: 'webinar', location: 'Virtual', description: 'Portfolio hedging with Bitcoin.', rsvpLink: '#', rsvpText: 'Register' } },
+                    { title: 'Year-End Tax Planning Webinar', start: '2026-11-18T15:00:00', end: '2026-11-18T16:30:00', extendedProps: { type: 'webinar', location: 'Virtual', description: 'Tax considerations for alternative investments.', rsvpLink: '#', rsvpText: 'RSVP' } }
+                ],
+                eventClick: function(info) {
+                    document.getElementById('modalTitle').textContent = info.event.title;
+                    document.getElementById('modalDate').textContent = info.event.start.toLocaleString();
+                    document.getElementById('modalType').textContent = info.event.extendedProps.type.charAt(0).toUpperCase() + info.event.extendedProps.type.slice(1);
+                    document.getElementById('modalLocation').textContent = info.event.extendedProps.location;
+                    document.getElementById('modalDescription').textContent = info.event.extendedProps.description;
+
+                    const actions = document.getElementById('modalActions');
+                    actions.innerHTML = '';
+                    const btn = document.createElement('a');
+                    btn.href = info.event.extendedProps.rsvpLink || '#';
+                    btn.target = info.event.extendedProps.rsvpLink && info.event.extendedProps.rsvpLink !== '#' ? '_blank' : '';
+                    btn.className = 'rsvp-btn';
+                    btn.textContent = info.event.extendedProps.rsvpText || 'RSVP';
+                    actions.appendChild(btn);
+
+                    modal.style.display = 'flex';
+                }
+            });
+
+            // Event Type Filtering
+            document.getElementById('eventFilter').addEventListener('change', function() {
+                const filterValue = this.value;
+                calendar.getEvents().forEach(event => {
+                    const eventType = event.extendedProps.type;
+                    event.setProp('display', filterValue === 'all' || filterValue === eventType ? 'auto' : 'none');
+                });
+            });
+
+            // iCal Export
+            document.getElementById('exportIcal').addEventListener('click', function() {
+                const cal = ical({name: 'Mogul Strategies Events'});
+                calendar.getEvents().forEach(event => {
+                    cal.createEvent({
+                        start: event.start,
+                        end: event.end || event.start,
+                        summary: event.title,
+                        description: event.extendedProps.description || '',
+                        location: event.extendedProps.location || '',
+                        url: event.extendedProps.rsvpLink || ''
+                    });
+                });
+                const blob = new Blob([cal.toString()], {type: 'text/calendar'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'mogul-strategies-events.ics';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            });
+
+            // Close Modal
+            closeModal.onclick = () => modal.style.display = 'none';
+            window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+
+            calendar.render();
+        });
+    </script>
+
+</body>
+</html>

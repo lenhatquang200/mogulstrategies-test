@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offerings & Syndications | Mogul Strategies Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            min-height: 100vh;
+            display: flex;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: rgba(17, 34, 64, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .admin-logo { 
+            font-size: 2.2rem; 
+            color: #D4AF37; 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+        }
+        .admin-nav { list-style: none; }
+        .admin-nav li { margin-bottom: 0.5rem; }
+        .admin-nav a {
+            display: block;
+            padding: 1rem 2rem;
+            color: #E0E0E0;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            border-left: 4px solid #D4AF37;
+        }
+        .admin-nav i { margin-right: 1rem; width: 20px; text-align: center; }
+
+        /* Main Content */
+        main { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .search-input {
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+            width: 350px;
+        }
+        .tabs {
+            display: flex;
+            gap: 1rem;
+        }
+        .tab {
+            padding: 0.8rem 1.5rem;
+            background: #333;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab.active, .tab:hover {
+            background: #D4AF37;
+            color: #0A1A2F;
+        }
+        .add-btn {
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .add-btn:hover { background: #FFFFFF; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .stat-value { font-size: 2.8rem; color: #D4AF37; font-weight: bold; }
+        .stat-label { font-size: 1.1rem; margin-top: 0.5rem; }
+
+        .table-container {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td { padding: 1.2rem; text-align: left; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        th { background: rgba(212, 175, 55, 0.1); color: #D4AF37; }
+        tr:hover { background: rgba(212, 175, 55, 0.05); }
+
+        .status-badge {
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .status-open { background: rgba(0, 255, 0, 0.2); color: #0f0; }
+        .status-closed { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+        .status-draft { background: rgba(150, 150, 150, 0.2); color: #aaa; }
+
+        .progress-bar {
+            background: #333;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #D4AF37;
+            transition: width 0.5s ease;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.8rem;
+        }
+        .action-btn {
+            background: transparent;
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .action-btn:hover { background: #D4AF37; color: #0A1A2F; }
+        .action-btn.edit { border-color: #00ccff; color: #00ccff; }
+        .action-btn.edit:hover { background: #00ccff; color: #0A1A2F; }
+        .action-btn.publish { border-color: #0f0; color: #0f0; }
+        .action-btn.publish:hover { background: #0f0; color: #0A1A2F; }
+
+        footer { text-align: center; padding: 3rem 0; font-size: 0.9rem; color: #AAAAAA; margin-top: 6rem; }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .admin-sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; width: 100%; }
+        }
+        @media (max-width: 768px) {
+            .controls-bar { flex-direction: column; align-items: stretch; }
+            .search-input { width: 100%; }
+            .tabs { justify-content: center; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <a href="admin.html" class="admin-logo">Mogul Admin</a>
+        <ul class="admin-nav">
+            <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="adminusermanage.html"><i class="fas fa-users"></i> User Management</a></li>
+            <li><a href="adminkycmanage.html"><i class="fas fa-user-check"></i> KYC & Accreditation</a></li>
+            <li><a href="admininvestorcrm.html"><i class="fas fa-user-tie"></i> Investor Relations / CRM</a></li>
+            <li><a href="adminofferingssyndications.html" class="active"><i class="fas fa-handshake"></i> Offerings & Syndications</a></li>
+            <li><a href="admindocumentmanager.html"><i class="fas fa-file-alt"></i> Documents & Reports</a></li>
+            <li><a href="admincallsdistributions.html"><i class="fas fa-dollar-sign"></i> Distributions & Capital Calls</a></li>
+            <li><a href="adminnotificationsmanager.html"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="adminmessaging.html"><i class="fas fa-envelope"></i> Secure Messaging</a></li>
+            <li><a href="admineventswebinars.html"><i class="fas fa-calendar"></i> Events & Webinars</a></li>
+            <li><a href="adminresourcemanager.html"><i class="fas fa-book"></i> Resource Library</a></li>
+            <li><a href="adminreporting.html"><i class="fas fa-chart-bar"></i> Analytics & Reporting</a></li>
+            <li><a href="adminmoderation.html"><i class="fas fa-shield-alt"></i> Compliance & Moderation</a></li>
+            <li><a href="adminsettings.html"><i class="fas fa-cog"></i> System Settings</a></li>
+            <li><a href="../login.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <!-- Page Title -->
+        <h1 class="page-title">Offerings & Syndications</h1>
+
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+            <input type="text" class="search-input" placeholder="Search offerings or syndications...">
+            <div class="tabs">
+                <div class="tab active">All</div>
+                <div class="tab">Structured Funds</div>
+                <div class="tab">Single-Asset SPVs</div>
+                <div class="tab">Draft</div>
+            </div>
+            <button class="add-btn"><i class="fas fa-plus"></i> Create New</button>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">6</div>
+                <div class="stat-label">Active Structured Funds</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">4</div>
+                <div class="stat-label">Active Syndications (SPVs)</div>
+            </div>
+            <div class="stat-value">$182M</div>
+                <div class="stat-label">Total Raised (Active)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3</div>
+                <div class="stat-label">In Draft</div>
+            </div>
+        </div>
+
+        <!-- Offerings & Syndications Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Target Size</th>
+                        <th>Raised</th>
+                        <th>Progress</th>
+                        <th>Status</th>
+                        <th>Closing Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mogul Real Estate Fund – Tranche 3</td>
+                        <td>Structured Fund</td>
+                        <td>$50M</td>
+                        <td>$28M</td>
+                        <td><div class="progress-bar"><div class="progress-fill" style="width:56%;"></div></div> 56%</td>
+                        <td><span class="status-badge status-open">Open</span></td>
+                        <td>Jan 31, 2026</td>
+                        <td class="action-buttons">
+                            <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="action-btn"><i class="fas fa-eye"></i> Preview</button>
+                            <button class="action-btn"><i class="fas fa-chart-line"></i> Stats</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Dubai Luxury Waterfront Villa</td>
+                        <td>Single-Asset SPV</td>
+                        <td>$8.5M</td>
+                        <td>$5.2M</td>
+                        <td><div class="progress-bar"><div class="progress-fill" style="width:61%;"></div></div> 61%</td>
+                        <td><span class="status-badge status-open">Open</span></td>
+                        <td>Feb 15, 2026</td>
+                        <td class="action-buttons">
+                            <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="action-btn"><i class="fas fa-eye"></i> Preview</button>
+                            <button class="action-btn"><i class="fas fa-users"></i> Investors</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mogul Technologies Fund II</td>
+                        <td>Structured Fund</td>
+                        <td>$75M</td>
+                        <td>$42M</td>
+                        <td><div class="progress-bar"><div class="progress-fill" style="width:56%;"></div></div> 56%</td>
+                        <td><span class="status-badge status-open">Open</span></td>
+                        <td>Feb 28, 2026</td>
+                        <td class="action-buttons">
+                            <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="action-btn"><i class="fas fa-eye"></i> Preview</button>
+                            <button class="action-btn"><i class="fas fa-chart-line"></i> Stats</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Miami Beach Boutique Hotel</td>
+                        <td>Single-Asset SPV</td>
+                        <td>$12M</td>
+                        <td>$7.8M</td>
+                        <td><div class="progress-bar"><div class="progress-fill" style="width:65%;"></div></div> 65%</td>
+                        <td><span class="status-badge status-open">Open</span></td>
+                        <td>Mar 10, 2026</td>
+                        <td class="action-buttons">
+                            <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="action-btn"><i class="fas fa-eye"></i> Preview</button>
+                            <button class="action-btn"><i class="fas fa-users"></i> Investors</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>New Tech Campus Acquisition</td>
+                        <td>Single-Asset SPV</td>
+                        <td>$22M</td>
+                        <td>$0</td>
+                        <td><div class="progress-bar"><div class="progress-fill" style="width:0%;"></div></div> 0%</td>
+                        <td><span class="status-badge status-draft">Draft</span></td>
+                        <td>TBD</td>
+                        <td class="action-buttons">
+                            <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                            <button class="action-btn publish"><i class="fas fa-paper-plane"></i> Publish</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | Admin Portal</p>
+    </footer>
+
+    <script>
+        // Mobile sidebar toggle
+        const hamburger = document.createElement('button');
+        hamburger.innerHTML = '☰';
+        hamburger.style.position = 'fixed';
+        hamburger.style.top = '1rem';
+        hamburger.style.left = '1rem';
+        hamburger.style.zIndex = '1001';
+        hamburger.style.fontSize = '2rem';
+        hamburger.style.background = 'none';
+        hamburger.style.border = 'none';
+        hamburger.style.color = '#D4AF37';
+        hamburger.style.display = 'none';
+        document.body.appendChild(hamburger);
+
+        const sidebar = document.getElementById('adminSidebar');
+
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 1024) {
+                hamburger.style.display = 'block';
+            } else {
+                hamburger.style.display = 'none';
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // In production: filter table content based on tab
+            });
+        });
+    </script>
+
+</body>
+</html>

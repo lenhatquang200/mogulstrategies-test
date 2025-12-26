@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 3: Accreditation | Mogul Strategies Investors Portal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            line-height: 1.6; 
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        a { color: #D4AF37; text-decoration: none; transition: color 0.3s; }
+        a:hover { color: #FFFFFF; }
+
+        header { 
+            position: fixed; top: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 1000; 
+        }
+        .header-container { max-width: 1600px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .header-left { display: flex; align-items: center; gap: 1.5rem; }
+        .logo { font-size: 2rem; color: #D4AF37; font-weight: bold; }
+        .hamburger { display: none; font-size: 1.8rem; background: none; border: none; color: #D4AF37; cursor: pointer; }
+
+        .sidebar-toggle {
+            background: rgba(17, 34, 64, 0.8);
+            border: none;
+            color: #D4AF37;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        .sidebar-toggle:hover { background: rgba(212, 175, 55, 0.3); }
+
+        .user-menu { display: flex; align-items: center; gap: 1rem; position: relative; }
+        .user-menu button { background: transparent; border: none; color: #E0E0E0; cursor: pointer; font-size: 1rem; }
+        .dropdown { display: none; position: absolute; right: 0; top: 100%; background: rgba(17, 34, 64, 0.9); border-radius: 8px; padding: 1rem; min-width: 200px; }
+        .dropdown a, .dropdown button { display: block; padding: 0.5rem 0; width: 100%; text-align: left; }
+        .user-menu:hover .dropdown { display: block; }
+        .logout { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; padding: 0.6rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .logout:hover { background: #D4AF37; color: #0A1A2F; }
+
+        .sidebar {
+            position: fixed; top: 80px; left: 0; bottom: 0; width: 280px; background: rgba(17, 34, 64, 0.8); backdrop-filter: blur(10px); padding: 1.5rem 0; overflow-y: auto; z-index: 900;
+            transition: transform 0.3s ease;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .sidebar.collapsed { transform: translateX(-100%); }
+
+        .nav-menu { list-style: none; }
+        .nav-menu li { margin-bottom: 0.2rem; }
+        .nav-menu a {
+            display: block; padding: 0.9rem 2rem; color: #E0E0E0; font-weight: 500; font-size: 0.95rem; transition: all 0.3s;
+        }
+        .nav-menu a:hover, .nav-menu a.active { background: rgba(212, 175, 55, 0.2); color: #D4AF37; border-left: 4px solid #D4AF37; }
+
+        main { margin-left: 280px; padding-top: 100px; padding: 2rem; transition: margin-left 0.3s ease; }
+        main.expanded { margin-left: 0; }
+
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 1rem; }
+
+        .top-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem; }
+        .top-card { background: #112240; border-radius: 16px; padding: 2rem; animation: pulse-glow 5s ease-in-out infinite; }
+
+        /* Progress Bar */
+        .progress-container {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            margin-bottom: 4rem;
+            text-align: center;
+        }
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2rem 0;
+            position: relative;
+        }
+        .progress-line {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: #333;
+            z-index: 0;
+        }
+        .progress-fill {
+            position: absolute;
+            top: 20px;
+            left: 0;
+            height: 4px;
+            background: #D4AF37;
+            z-index: 1;
+            transition: width 0.5s ease;
+            width: 75%; /* Step 3 active */
+        }
+        .progress-step {
+            text-align: center;
+            flex: 1;
+            position: relative;
+            z-index: 2;
+        }
+        .progress-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #333;
+            color: #AAAAAA;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.8rem;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        .progress-step.completed .progress-circle, .progress-step.active .progress-circle {
+            background: #D4AF37;
+            color: #0A1A2F;
+        }
+        .progress-label { font-size: 1rem; }
+
+        .accreditation-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .entity-selector {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2.5rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        .entity-selector h3 { font-size: 2rem; color: #D4AF37; margin-bottom: 1.5rem; }
+        .entity-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .entity-option {
+            background: #0A1A2F;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .entity-option:hover { border-color: #D4AF37; }
+        .entity-option.selected { border-color: #D4AF37; background: rgba(212, 175, 55, 0.1); }
+        .entity-option input[type="radio"] { display: none; }
+        .entity-option label { cursor: pointer; display: block; }
+
+        .entity-form {
+            background: #112240;
+            border-radius: 16px;
+            padding: 3rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            display: none;
+        }
+        .entity-form.active { display: block; }
+        .entity-form h3 { font-size: 2rem; color: #D4AF37; text-align: center; margin-bottom: 2rem; }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+        }
+        .upload-area {
+            border: 2px dashed #D4AF37;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .upload-area:hover { background: rgba(212, 175, 55, 0.1); }
+
+        .submit-btn {
+            width: 100%;
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 1.3rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 2rem;
+            transition: background 0.3s;
+        }
+        .submit-btn:hover { background: #FFFFFF; }
+
+        footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9rem; color: #AAAAAA; }
+
+        @media (max-width: 1024px) {
+            .hamburger { display: block; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; }
+        }
+        @media (max-width: 768px) {
+            .top-row, .form-grid { grid-template-columns: 1fr; }
+            .entity-options { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <header>
+        <div class="header-container">
+            <div class="header-left">
+                <button class="hamburger" aria-label="Menu">☰</button>
+                <div class="logo">Mogul Strategies</div>
+                <button class="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
+            </div>
+            <div class="user-menu">
+                <span>Welcome, John Doe</span>
+                <button class="user-menu-btn">▼</button>
+                <div class="dropdown">
+                    <a href="#">Account Settings</a>
+                    <button class="logout">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <li><a href="#" class="active">KYC & Accreditation</a></li>
+            <li><a href="#">Active Offerings</a></li>
+            <li><a href="#">Syndications</a></li>
+            <li><a href="#">Subscription Center</a></li>
+            <li><a href="#">My Investments</a></li>
+            <li><a href="#">Portfolio Summary</a></li>
+            <li><a href="#">Performance Analytics</a></li>
+            <li><a href="#">Documents & Reports</a></li>
+            <li><a href="#">Distributions & Tax</a></li>
+            <li><a href="#">Capital Calls</a></li>
+            <li><a href="#">Notifications</a></li>
+            <li><a href="#">Secure Messaging</a></li>
+            <li><a href="#">Webinars & Events</a></li>
+            <li><a href="#">Resource Library</a></li>
+            <li><a href="#">Support & FAQ</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <!-- Page Title -->
+        <h1 class="page-title">Step 3: Accreditation</h1>
+
+        <!-- Top Row: Account Info + Secure Messaging -->
+        <section class="top-row">
+            <div class="top-card account-info-card">
+                <h3>Account Information</h3>
+                <ul>
+                    <li><strong>Name:</strong> John Doe</li>
+                    <li><strong>Email:</strong> john.doe@example.com</li>
+                    <li><strong>Investor Type:</strong> Accredited Individual</li>
+                    <li><strong>Account ID:</strong> MS-INV-4872</li>
+                    <li><strong>Joined:</strong> March 15, 2023</li>
+                    <li><strong>Last Login:</strong> December 24, 2025</li>
+                </ul>
+            </div>
+
+            <div class="top-card messaging-card">
+                <h3>Secure Messaging</h3>
+                <p>Communicate directly with your relationship manager.</p>
+                <a href="#" style="display:block; margin:1rem 0; font-weight:bold;">Open Inbox (2 unread)</a>
+                <textarea placeholder="Type your message..." style="width:100%; height:100px; padding:1rem; background:#0A1A2F; border:1px solid #D4AF37; border-radius:8px; color:#E0E0E0;"></textarea>
+                <button style="margin-top:1rem; background:#D4AF37; color:#0A1A2F; padding:0.8rem 1.5rem; border:none; border-radius:8px; cursor:pointer;">Send Message</button>
+            </div>
+        </section>
+
+        <!-- Progress Bar -->
+        <section class="progress-container">
+            <h2>KYC & Accreditation Progress</h2>
+            <div class="progress-bar">
+                <div class="progress-line"></div>
+                <div class="progress-fill" style="width: 75%;"></div>
+                <div class="progress-step completed">
+                    <div class="progress-circle">1</div>
+                    <div class="progress-label">Personal Information</div>
+                </div>
+                <div class="progress-step completed">
+                    <div class="progress-circle">2</div>
+                    <div class="progress-label">Identity Verification</div>
+                </div>
+                <div class="progress-step active">
+                    <div class="progress-circle">3</div>
+                    <div class="progress-label">Accreditation</div>
+                </div>
+                <div class="progress-step">
+                    <div class="progress-circle">4</div>
+                    <div class="progress-label">Review & Approval</div>
+                </div>
+            </div>
+            <p style="font-size: 1.2rem;">Step 3 of 4 – Please select your entity type and complete accreditation details.</p>
+        </section>
+
+        <!-- Accreditation Content -->
+        <section class="accreditation-container">
+            <!-- Entity Type Selector -->
+            <div class="entity-selector">
+                <h3>Select Investor Entity Type</h3>
+                <p>Please choose the type of entity you are representing. This determines the accreditation criteria.</p>
+                <div class="entity-options">
+                    <div class="entity-option" data-entity="individual">
+                        <input type="radio" name="entityType" id="individual" value="individual">
+                        <label for="individual">
+                            <strong>Individual</strong><br>
+                            Natural person investing personally
+                        </label>
+                    </div>
+                    <div class="entity-option" data-entity="corporation">
+                        <input type="radio" name="entityType" id="corporation" value="corporation">
+                        <label for="corporation">
+                            <strong>Corporation</strong><br>
+                            C-Corp or similar corporate entity
+                        </label>
+                    </div>
+                    <div class="entity-option" data-entity="partnership">
+                        <input type="radio" name="entityType" id="partnership" value="partnership">
+                        <label for="partnership">
+                            <strong>Limited Partnership / Fund</strong><br>
+                            LP, GP, or investment fund
+                        </label>
+                    </div>
+                    <div class="entity-option" data-entity="trust">
+                        <input type="radio" name="entityType" id="trust" value="trust">
+                        <label for="trust">
+                            <strong>Trust</strong><br>
+                            Revocable or irrevocable trust
+                        </label>
+                    </div>
+                    <div class="entity-option" data-entity="nonprofit">
+                        <input type="radio" name="entityType" id="nonprofit" value="nonprofit">
+                        <label for="nonprofit">
+                            <strong>Non-Profit / Foundation</strong><br>
+                            501(c)(3) or similar
+                        </label>
+                    </div>
+                    <div class="entity-option" data-entity="other">
+                        <input type="radio" name="entityType" id="other" value="other">
+                        <label for="other">
+                            <strong>Other Entity</strong><br>
+                            LLC, family office, etc.
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Individual Form -->
+            <div class="entity-form active" id="form-individual">
+                <h3>Individual Accreditation</h3>
+                <p>Select the criteria that applies to you (SEC Rule 501):</p>
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label>
+                                <input type="radio" name="individualCriteria" value="income">
+                                Annual income exceeding $200,000 (or $300,000 joint with spouse) in each of the two most recent years, with expectation of same in current year
+                            </label>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>
+                                <input type="radio" name="individualCriteria" value="networth">
+                                Net worth exceeding $1,000,000 (excluding primary residence), individually or jointly with spouse
+                            </label>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>
+                                <input type="radio" name="individualCriteria" value="professional">
+                                Holder of Series 7, 65, or 82 license in good standing
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Upload Supporting Documentation</label>
+                        <div class="upload-area">
+                            <p>Drag & drop or click to upload (tax returns, financial statements, license, etc.)</p>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit for Review</button>
+                </form>
+            </div>
+
+            <!-- Corporation / Other Entity Form -->
+            <div class="entity-form" id="form-entity">
+                <h3>Entity Accreditation</h3>
+                <p>Entity must have total assets in excess of $5,000,000 and not formed for the specific purpose of acquiring the securities offered.</p>
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="entityName">Entity Legal Name *</label>
+                            <input type="text" id="entityName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="entityType">Entity Type *</label>
+                            <select id="entityType" required>
+                                <option>Corporation</option>
+                                <option>LLC</option>
+                                <option>Partnership</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="formationDate">Date of Formation *</label>
+                            <input type="date" id="formationDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jurisdiction">Jurisdiction of Formation *</label>
+                            <input type="text" id="jurisdiction" required>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="totalAssets">Total Assets (as of most recent statement) *</label>
+                            <input type="text" id="totalAssets" placeholder="$5,000,000+" required>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Upload Supporting Documentation</label>
+                        <div class="upload-area">
+                            <p>Balance sheet, audited financials, or bank statement showing assets > $5M</p>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit for Review</button>
+                </form>
+            </div>
+
+            <!-- Trust Form -->
+            <div class="entity-form" id="form-trust">
+                <h3>Trust Accreditation</h3>
+                <p>Trust must have total assets in excess of $5,000,000 and not formed for the specific purpose of acquiring the securities.</p>
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="trustName">Trust Name *</label>
+                            <input type="text" id="trustName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="trustDate">Date of Trust *</label>
+                            <input type="date" id="trustDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="trusteeName">Trustee Name *</label>
+                            <input type="text" id="trusteeName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="trustAssets">Total Trust Assets *</label>
+                            <input type="text" id="trustAssets" placeholder="$5,000,000+" required>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Upload Supporting Documentation</label>
+                        <div class="upload-area">
+                            <p>Trust agreement, recent statement of assets</p>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit for Review</button>
+                </form>
+            </div>
+
+            <!-- Non-Profit Form -->
+            <div class="entity-form" id="form-nonprofit">
+                <h3>Non-Profit / Foundation Accreditation</h3>
+                <p>Organization must be tax-exempt under Section 501(c)(3) with total assets exceeding $5,000,000.</p>
+                <form>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="orgName">Organization Name *</label>
+                            <input type="text" id="orgName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="ein">EIN / Tax ID *</label>
+                            <input type="text" id="ein" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="orgAssets">Total Assets *</label>
+                            <input type="text" id="orgAssets" placeholder="$5,000,000+" required>
+                        </div>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Upload Supporting Documentation</label>
+                        <div class="upload-area">
+                            <p>IRS determination letter, recent financial statement</p>
+                        </div>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit for Review</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | For Accredited Investors Only</p>
+        <p><small>Investments involve risk. Past performance is not indicative of future results.</small></p>
+    </footer>
+
+    <script>
+        // Toggle functionality
+        const hamburger = document.querySelector('.hamburger');
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+
+        hamburger.addEventListener('click', toggleSidebar);
+        sidebarToggle.addEventListener('click', toggleSidebar);
+
+        // Entity Type Toggle
+        document.querySelectorAll('.entity-option').forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove selected from all
+                document.querySelectorAll('.entity-option').forEach(o => o.classList.remove('selected'));
+                // Add selected to clicked
+                option.classList.add('selected');
+                // Hide all forms
+                document.querySelectorAll('.entity-form').forEach(f => f.classList.remove('active'));
+                // Show corresponding form
+                const entity = option.getAttribute('data-entity');
+                document.getElementById('form-' + entity).classList.add('active');
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Relations / CRM | Mogul Strategies Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            min-height: 100vh;
+            display: flex;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: rgba(17, 34, 64, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .admin-logo { 
+            font-size: 2.2rem; 
+            color: #D4AF37; 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            font-weight: bold;
+            text-decoration: none;
+            display: block;
+        }
+        .admin-nav { list-style: none; }
+        .admin-nav li { margin-bottom: 0.5rem; }
+        .admin-nav a {
+            display: block;
+            padding: 1rem 2rem;
+            color: #E0E0E0;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            border-left: 4px solid #D4AF37;
+        }
+        .admin-nav i { margin-right: 1rem; width: 20px; text-align: center; }
+
+        /* Main Content */
+        main { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .search-input {
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+            width: 400px;
+        }
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+        }
+        .filter-select {
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+        }
+        .add-note-btn {
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .add-note-btn:hover { background: #FFFFFF; }
+
+        .crm-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+        }
+        .investors-list {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            overflow-y: auto;
+            max-height: 80vh;
+        }
+        .investors-list h3 { font-size: 1.8rem; color: #D4AF37; margin-bottom: 1.5rem; }
+        .investor-item {
+            padding: 1.2rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .investor-item:hover, .investor-item.active { background: rgba(212, 175, 55, 0.1); }
+        .investor-item:last-child { border-bottom: none; }
+        .investor-name { font-weight: bold; margin-bottom: 0.4rem; }
+        .investor-meta { font-size: 0.9rem; color: #AAAAAA; }
+
+        .investor-detail {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2.5rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .investor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+        }
+        .investor-info h2 { font-size: 2.4rem; color: #D4AF37; }
+        .investor-status {
+            padding: 0.5rem 1.2rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .status-active { background: rgba(0, 255, 0, 0.2); color: #0f0; }
+        .status-prospect { background: rgba(0, 204, 255, 0.2); color: #00ccff; }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        .detail-item {
+            background: #0A1A2F;
+            border-radius: 12px;
+            padding: 1.2rem;
+        }
+        .detail-item strong { color: #D4AF37; display: block; margin-bottom: 0.5rem; }
+
+        .notes-section {
+            margin-top: 2rem;
+        }
+        .notes-section h3 { font-size: 1.6rem; color: #D4AF37; margin-bottom: 1rem; }
+        .note-item {
+            background: #0A1A2F;
+            border-radius: 8px;
+            padding: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        .note-meta { font-size: 0.9rem; color: #AAAAAA; margin-bottom: 0.5rem; }
+        .add-note {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .add-note textarea {
+            flex: 1;
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+        }
+        .add-note button {
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        footer { text-align: center; padding: 3rem 0; font-size: 0.9rem; color: #AAAAAA; margin-top: 6rem; }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .admin-sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; width: 100%; }
+            .crm-layout { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <!-- Admin Sidebar – Updated Order -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <a href="admin.html" class="admin-logo">Mogul Admin</a>
+        <ul class="admin-nav">
+            <li><a href="admin.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="adminusermanage.html"><i class="fas fa-users"></i> User Management</a></li>
+            <li><a href="admininvestorcrm.html" class="active"><i class="fas fa-user-tie"></i> Investor Relations / CRM</a></li>
+            <li><a href="adminkycmanage.html"><i class="fas fa-user-check"></i> KYC & Accreditation</a></li>
+            <li><a href="adminofferingssyndications.html"><i class="fas fa-handshake"></i> Offerings & Syndications</a></li>
+            <li><a href="admindocumentmanager.html"><i class="fas fa-file-alt"></i> Documents & Reports</a></li>
+            <li><a href="admincallsdistributions.html"><i class="fas fa-dollar-sign"></i> Distributions & Capital Calls</a></li>
+            <li><a href="adminnotificationsmanager.html"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="adminmessaging.html"><i class="fas fa-envelope"></i> Secure Messaging</a></li>
+            <li><a href="admineventswebinars.html"><i class="fas fa-calendar"></i> Events & Webinars</a></li>
+            <li><a href="adminresourcemanager.html"><i class="fas fa-book"></i> Resource Library</a></li>
+            <li><a href="adminreporting.html"><i class="fas fa-chart-bar"></i> Analytics & Reporting</a></li>
+            <li><a href="adminmoderation.html"><i class="fas fa-shield-alt"></i> Compliance & Moderation</a></li>
+            <li><a href="adminsettings.html"><i class="fas fa-cog"></i> System Settings</a></li>
+            <li><a href="../login.html"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <!-- Page Title -->
+        <h1 class="page-title">Investor Relations / CRM</h1>
+
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+            <input type="text" class="search-input" placeholder="Search investors by name, email, ID, or tag...">
+            <div class="filter-group">
+                <select class="filter-select">
+                    <option>All Investors</option>
+                    <option>Active</option>
+                    <option>Prospects</option>
+                    <option>High Priority</option>
+                    <option>Overdue Capital Call</option>
+                </select>
+                <select class="filter-select">
+                    <option>All Relationship Managers</option>
+                    <option>Daniel Fainman</option>
+                    <option>Sarah Chen</option>
+                    <option>Michael Roberts</option>
+                </select>
+            </div>
+            <button class="add-note-btn"><i class="fas fa-plus"></i> Add Global Note</button>
+        </div>
+
+        <!-- CRM Layout -->
+        <div class="crm-layout">
+            <!-- Investors List -->
+            <div class="investors-list">
+                <h3>Investors</h3>
+                <div class="investor-item active">
+                    <div class="investor-name">John Doe</div>
+                    <div class="investor-meta">MS-INV-4872 • Accredited Individual • RM: Daniel Fainman</div>
+                </div>
+                <div class="investor-item">
+                    <div class="investor-name">Acme Investments LLC</div>
+                    <div class="investor-meta">MS-INV-4901 • Entity • RM: Sarah Chen • High Priority</div>
+                </div>
+                <div class="investor-item">
+                    <div class="investor-name">Jane Smith</div>
+                    <div class="investor-meta">MS-INV-4865 • Accredited Individual • RM: Daniel Fainman</div>
+                </div>
+                <div class="investor-item">
+                    <div class="investor-name">Global Growth Trust</div>
+                    <div class="investor-meta">MS-INV-4895 • Trust • RM: Michael Roberts</div>
+                </div>
+                <div class="investor-item">
+                    <div class="investor-name">Robert Johnson</div>
+                    <div class="investor-meta">MS-INV-4850 • Accredited Individual • RM: Sarah Chen • Overdue Call</div>
+                </div>
+            </div>
+
+            <!-- Investor Detail View -->
+            <div class="investor-detail">
+                <div class="investor-header">
+                    <div class="investor-info">
+                        <h2>John Doe</h2>
+                        <p>Investor ID: MS-INV-4872 • <span class="investor-status status-active">Active Investor</span></p>
+                        <p>Email: john.doe@example.com • Phone: +1 (555) 123-4567</p>
+                        <p>Relationship Manager: Daniel Fainman</p>
+                    </div>
+                    <div>
+                        <button class="action-btn"><i class="fas fa-envelope"></i> Send Message</button>
+                        <button class="action-btn"><i class="fas fa-phone"></i> Call Log</button>
+                    </div>
+                </div>
+
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <strong>Total Committed</strong>
+                        <span>$1,240,000</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Called Capital</strong>
+                        <span>$965,000 (78%)</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Current Value</strong>
+                        <span>$1,586,400</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Net Return</strong>
+                        <span>+27.9%</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Joined</strong>
+                        <span>March 15, 2023</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Last Activity</strong>
+                        <span>Dec 24, 2025</span>
+                    </div>
+                </div>
+
+                <div class="notes-section">
+                    <h3>Relationship Notes & Activity</h3>
+                    <div class="note-item">
+                        <div class="note-meta">Dec 24, 2025 – Daniel Fainman</div>
+                        <p>Confirmed receipt of capital call wire. Investor very pleased with Q4 performance.</p>
+                    </div>
+                    <div class="note-item">
+                        <div class="note-meta">Nov 15, 2025 – Sarah Chen</div>
+                        <p>Discussed interest in upcoming syndication. Sent deck via secure message.</p>
+                    </div>
+                    <div class="note-item">
+                        <div class="note-meta">Oct 8, 2025 – Daniel Fainman</div>
+                        <p>Quarterly call completed. Investor considering additional commitment in 2026.</p>
+                    </div>
+
+                    <div class="add-note">
+                        <textarea placeholder="Add new note..."></textarea>
+                        <button>Add Note</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | Admin Portal</p>
+    </footer>
+
+    <script>
+        // Mobile sidebar toggle
+        const hamburger = document.createElement('button');
+        hamburger.innerHTML = '☰';
+        hamburger.style.position = 'fixed';
+        hamburger.style.top = '1rem';
+        hamburger.style.left = '1rem';
+        hamburger.style.zIndex = '1001';
+        hamburger.style.fontSize = '2rem';
+        hamburger.style.background = 'none';
+        hamburger.style.border = 'none';
+        hamburger.style.color = '#D4AF37';
+        hamburger.style.display = 'none';
+        document.body.appendChild(hamburger);
+
+        const sidebar = document.getElementById('adminSidebar');
+
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 1024) {
+                hamburger.style.display = 'block';
+            } else {
+                hamburger.style.display = 'none';
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Investor selection
+        document.querySelectorAll('.investor-item').forEach(item => {
+            item.addEventListener('click', () => {
+                document.querySelectorAll('.investor-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+    </script>
+
+</body>
+</html>
