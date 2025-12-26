@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Settings | Mogul Strategies Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            min-height: 100vh;
+            display: flex;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: rgba(17, 34, 64, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .admin-logo { 
+            font-size: 2.2rem; 
+            color: #D4AF37; 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            font-weight: bold;
+        }
+        .admin-nav { list-style: none; }
+        .admin-nav li { margin-bottom: 0.5rem; }
+        .admin-nav a {
+            display: block;
+            padding: 1rem 2rem;
+            color: #E0E0E0;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            border-left: 4px solid #D4AF37;
+        }
+        .admin-nav i { margin-right: 1rem; width: 20px; text-align: center; }
+
+        /* Main Content */
+        main { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2.5rem;
+        }
+        .settings-card {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2.5rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .settings-card h3 {
+            font-size: 2rem;
+            color: #D4AF37;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 0.8rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+        }
+        .form-group textarea { height: 120px; resize: vertical; }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #333;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background: #E0E0E0;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background: #D4AF37; }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        .toggle-label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .save-btn {
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+        .save-btn:hover { background: #FFFFFF; }
+
+        .system-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .status-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: #0A1A2F;
+            border-radius: 12px;
+        }
+        .status-value { font-size: 1.4rem; font-weight: bold; }
+        .status-online { color: #0f0; }
+        .status-offline { color: #ff6b6b; }
+
+        footer { text-align: center; padding: 3rem 0; font-size: 0.9rem; color: #AAAAAA; margin-top: 6rem; }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .admin-sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; width: 100%; }
+        }
+        @media (max-width: 768px) {
+            .settings-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-logo">Mogul Admin</div>
+        <ul class="admin-nav">
+            <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> User Management</a></li>
+            <li><a href="#"><i class="fas fa-user-check"></i> KYC & Accreditation</a></li>
+            <li><a href="#"><i class="fas fa-handshake"></i> Offerings & Syndications</a></li>
+            <li><a href="#"><i class="fas fa-file-alt"></i> Documents & Reports</a></li>
+            <li><a href="#"><i class="fas fa-dollar-sign"></i> Distributions & Capital Calls</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="#"><i class="fas fa-envelope"></i> Secure Messaging</a></li>
+            <li><a href="#"><i class="fas fa-calendar"></i> Events & Webinars</a></li>
+            <li><a href="#"><i class="fas fa-book"></i> Resource Library</a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics & Reporting</a></li>
+            <li><a href="#"><i class="fas fa-shield-alt"></i> Compliance & Moderation</a></li>
+            <li><a href="#" class="active"><i class="fas fa-cog"></i> System Settings</a></li>
+            <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <!-- Page Title -->
+        <h1 class="page-title">System Settings</h1>
+
+        <!-- Settings Grid -->
+        <div class="settings-grid">
+            <!-- General Settings -->
+            <div class="settings-card">
+                <h3>General Settings</h3>
+                <div class="form-group">
+                    <label for="platformName">Platform Name</label>
+                    <input type="text" id="platformName" value="Mogul Strategies Investors Portal">
+                </div>
+                <div class="form-group">
+                    <label for="supportEmail">Support Email</label>
+                    <input type="email" id="supportEmail" value="support@mogulstrategies.com">
+                </div>
+                <div class="form-group">
+                    <label for="maintenanceMessage">Maintenance Message</label>
+                    <textarea id="maintenanceMessage" placeholder="Optional message displayed during maintenance..."></textarea>
+                </div>
+                <button class="save-btn">Save General Settings</button>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="settings-card">
+                <h3>Security Settings</h3>
+                <div class="toggle-label">
+                    <span>Require 2FA for All Admins</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-label">
+                    <span>Enable IP Whitelisting</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-label">
+                    <span>Session Timeout (minutes)</span>
+                    <input type="number" value="30" style="width: 100px; display: inline-block; margin-left: auto;">
+                </div>
+                <div class="form-group">
+                    <label for="allowedIPs">Allowed Admin IPs (one per line)</label>
+                    <textarea id="allowedIPs" placeholder="10.0.0.50&#10;192.168.1.100"></textarea>
+                </div>
+                <button class="save-btn">Save Security Settings</button>
+            </div>
+
+            <!-- Email & Notification Settings -->
+            <div class="settings-card">
+                <h3>Email & Notification Settings</h3>
+                <div class="form-group">
+                    <label for="smtpServer">SMTP Server</label>
+                    <input type="text" id="smtpServer" value="smtp.mogulstrategies.com">
+                </div>
+                <div class="form-group">
+                    <label for="fromEmail">From Email Address</label>
+                    <input type="email" id="fromEmail" value="no-reply@mogulstrategies.com">
+                </div>
+                <div class="toggle-label">
+                    <span>Enable Email Notifications</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="toggle-label">
+                    <span>Enable SMS Alerts (Twilio)</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <button class="save-btn">Save Notification Settings</button>
+            </div>
+
+            <!-- System Status -->
+            <div class="settings-card">
+                <h3>System Status</h3>
+                <div class="system-status">
+                    <div class="status-item">
+                        <div class="status-value status-online">Online</div>
+                        <div class="stat-label">Portal Status</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value status-online">Healthy</div>
+                        <div class="stat-label">Database</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value status-online">Active</div>
+                        <div class="stat-label">Email Service</div>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-value status-online">Running</div>
+                        <div class="stat-label">Background Jobs</div>
+                    </div>
+                </div>
+                <div style="margin-top: 2rem; text-align: center;">
+                    <button class="save-btn">Trigger Maintenance Mode</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | Admin Portal</p>
+    </footer>
+
+    <script>
+        // Mobile sidebar toggle
+        const hamburger = document.createElement('button');
+        hamburger.innerHTML = '☰';
+        hamburger.style.position = 'fixed';
+        hamburger.style.top = '1rem';
+        hamburger.style.left = '1rem';
+        hamburger.style.zIndex = '1001';
+        hamburger.style.fontSize = '2rem';
+        hamburger.style.background = 'none';
+        hamburger.style.border = 'none';
+        hamburger.style.color = '#D4AF37';
+        hamburger.style.display = 'none';
+        document.body.appendChild(hamburger);
+
+        const sidebar = document.getElementById('adminSidebar');
+
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 1024) {
+                hamburger.style.display = 'block';
+            } else {
+                hamburger.style.display = 'none';
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+
+</body>
+</html>

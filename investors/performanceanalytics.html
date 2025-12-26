@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance Analytics | Mogul Strategies Investors Portal</title>
+    <!-- Chart.js + Matrix Plugin for Heatmap -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@^3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix@1"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            line-height: 1.6; 
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        a { color: #D4AF37; text-decoration: none; transition: color 0.3s; }
+        a:hover { color: #FFFFFF; }
+
+        header { 
+            position: fixed; top: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 1000; 
+        }
+        .header-container { max-width: 1600px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .header-left { display: flex; align-items: center; gap: 1.5rem; }
+        .logo { font-size: 2rem; color: #D4AF37; font-weight: bold; }
+        .hamburger { display: none; font-size: 1.8rem; background: none; border: none; color: #D4AF37; cursor: pointer; }
+
+        .sidebar-toggle {
+            background: rgba(17, 34, 64, 0.8);
+            border: none;
+            color: #D4AF37;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        .sidebar-toggle:hover { background: rgba(212, 175, 55, 0.3); }
+
+        .user-menu { display: flex; align-items: center; gap: 1rem; position: relative; }
+        .user-menu button { background: transparent; border: none; color: #E0E0E0; cursor: pointer; font-size: 1rem; }
+        .dropdown { display: none; position: absolute; right: 0; top: 100%; background: rgba(17, 34, 64, 0.9); border-radius: 8px; padding: 1rem; min-width: 200px; }
+        .dropdown a, .dropdown button { display: block; padding: 0.5rem 0; width: 100%; text-align: left; }
+        .user-menu:hover .dropdown { display: block; }
+        .logout { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; padding: 0.6rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .logout:hover { background: #D4AF37; color: #0A1A2F; }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed; top: 80px; left: 0; bottom: 0; width: 280px; background: rgba(17, 34, 64, 0.8); backdrop-filter: blur(10px); padding: 1.5rem 0; overflow-y: auto; z-index: 900;
+            transition: transform 0.3s ease;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .sidebar.collapsed { transform: translateX(-100%); }
+
+        .nav-menu { list-style: none; }
+        .nav-menu li { margin-bottom: 0.2rem; }
+        .nav-menu a {
+            display: block; padding: 0.9rem 2rem; color: #E0E0E0; font-weight: 500; font-size: 0.95rem; transition: all 0.3s;
+        }
+        .nav-menu a:hover, .nav-menu a.active { background: rgba(212, 175, 55, 0.2); color: #D4AF37; border-left: 4px solid #D4AF37; }
+
+        main { margin-left: 280px; padding-top: 100px; padding: 2rem; transition: margin-left 0.3s ease; }
+        main.expanded { margin-left: 0; }
+
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        /* Top Row: Account Info + Secure Messaging */
+        .top-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem; }
+        .top-card { background: #112240; border-radius: 16px; padding: 2rem; animation: pulse-glow 5s ease-in-out infinite; }
+
+        .section-title { font-size: 2.6rem; color: #D4AF37; text-align: center; margin: 3rem 0 2rem; }
+
+        /* Compact Key Metrics – One Row */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.2rem; margin-bottom: 4rem; }
+        .metric-card { background: #112240; padding: 1.4rem; border-radius: 16px; text-align: center; animation: pulse-glow 5s ease-in-out infinite; }
+        .metric-value { font-size: 2rem; color: #D4AF37; font-weight: 700; margin-bottom: 0.4rem; }
+        .metric-label { font-size: 0.95rem; opacity: 0.9; }
+
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem; margin-bottom: 4rem; }
+        .chart-card { background: #112240; border-radius: 16px; padding: 2rem; animation: pulse-glow 5s ease-in-out infinite; }
+        .chart-card h3 { margin-bottom: 1.5rem; text-align: center; }
+
+        .performance-table { width: 100%; border-collapse: collapse; background: #112240; border-radius: 16px; overflow: hidden; animation: pulse-glow 5s ease-in-out infinite; margin-bottom: 4rem; }
+        .performance-table th, .performance-table td { padding: 1.1rem; text-align: left; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        .performance-table th { background: rgba(212, 175, 55, 0.1); color: #D4AF37; font-size: 0.95rem; }
+        .performance-table tr:hover { background: rgba(212, 175, 55, 0.05); }
+
+        footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9rem; color: #AAAAAA; }
+
+        @media (max-width: 1024px) {
+            .hamburger { display: block; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; }
+        }
+        @media (max-width: 768px) {
+            .charts-grid, .top-row { grid-template-columns: 1fr; }
+            .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .metrics-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <header>
+        <div class="header-container">
+            <div class="header-left">
+                <button class="hamburger" aria-label="Menu">☰</button>
+                <div class="logo">Mogul Strategies</div>
+                <button class="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
+            </div>
+            <div class="user-menu">
+                <span>Welcome, John Doe</span>
+                <button class="user-menu-btn">▼</button>
+                <div class="dropdown">
+                    <a href="#">Account Settings</a>
+                    <button class="logout">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <li><a href="#">KYC & Accreditation</a></li>
+            <li><a href="#">Active Offerings</a></li>
+            <li><a href="#">Subscription Center</a></li>
+            <li><a href="#">My Investments</a></li>
+            <li><a href="#">Portfolio Summary</a></li>
+            <li><a href="#" class="active">Performance Analytics</a></li>
+            <li><a href="#">Documents & Reports</a></li>
+            <li><a href="#">Distributions & Tax</a></li>
+            <li><a href="#">Capital Calls</a></li>
+            <li><a href="#">Notifications</a></li>
+            <li><a href="#">Secure Messaging</a></li>
+            <li><a href="#">Webinars & Events</a></li>
+            <li><a href="#">Resource Library</a></li>
+            <li><a href="#">Support & FAQ</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <!-- Page Title -->
+        <h1 class="page-title">Performance Analytics</h1>
+
+        <!-- Top Row: Account Info + Secure Messaging -->
+        <section class="top-row">
+            <div class="top-card account-info-card">
+                <h3>Account Information</h3>
+                <ul>
+                    <li><strong>Name:</strong> John Doe</li>
+                    <li><strong>Email:</strong> john.doe@example.com</li>
+                    <li><strong>Investor Type:</strong> Accredited Individual</li>
+                    <li><strong>Account ID:</strong> MS-INV-4872</li>
+                    <li><strong>Joined:</strong> March 15, 2023</li>
+                    <li><strong>Last Login:</strong> December 24, 2025</li>
+                </ul>
+            </div>
+
+            <div class="top-card messaging-card">
+                <h3>Secure Messaging</h3>
+                <p>Communicate directly with your relationship manager.</p>
+                <a href="#" style="display:block; margin:1rem 0; font-weight:bold;">Open Inbox (2 unread)</a>
+                <textarea placeholder="Type your message..." style="width:100%; height:100px; padding:1rem; background:#0A1A2F; border:1px solid #D4AF37; border-radius:8px; color:#E0E0E0;"></textarea>
+                <button style="margin-top:1rem; background:#D4AF37; color:#0A1A2F; padding:0.8rem 1.5rem; border:none; border-radius:8px; cursor:pointer;">Send Message</button>
+            </div>
+        </section>
+
+        <!-- Key Performance Metrics – Compact -->
+        <section id="key-metrics">
+            <h2 class="section-title">Key Performance Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">+27.9%</div>
+                    <p class="metric-label">Total Return (Net)</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">18.4%</div>
+                    <p class="metric-label">Annualized Return</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">1.72</div>
+                    <p class="metric-label">Sharpe Ratio</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">9.2%</div>
+                    <p class="metric-label">Maximum Drawdown</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">0.28</div>
+                    <p class="metric-label">Sortino Ratio</p>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">1.15</div>
+                    <p class="metric-label">Calmar Ratio</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Performance Charts -->
+        <section id="detailed-charts">
+            <h2 class="section-title">Detailed Performance Charts</h2>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3>Cumulative Return vs. Benchmark</h3>
+                    <canvas id="cumulativeChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Rolling 12-Month Returns</h3>
+                    <canvas id="rollingChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Monthly Returns Heatmap</h3>
+                    <canvas id="heatmapChart"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3>Drawdown Analysis</h3>
+                    <canvas id="drawdownChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Fund-by-Fund Performance Table -->
+        <section id="fund-performance">
+            <h2 class="section-title">Fund-by-Fund Performance</h2>
+            <table class="performance-table">
+                <thead>
+                    <tr>
+                        <th>Fund Name</th>
+                        <th>YTD Return</th>
+                        <th>1-Year Return</th>
+                        <th>3-Year Annualized</th>
+                        <th>Since Inception</th>
+                        <th>Sharpe Ratio</th>
+                        <th>Max Drawdown</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mogul Equities</td>
+                        <td>+12.8%</td>
+                        <td>+15.3%</td>
+                        <td>+11.2%</td>
+                        <td>+14.7%</td>
+                        <td>1.45</td>
+                        <td>-8.1%</td>
+                    </tr>
+                    <tr>
+                        <td>Mogul Digital Fund</td>
+                        <td>+48.2%</td>
+                        <td>+62.4%</td>
+                        <td>+78.9%</td>
+                        <td>+92.3%</td>
+                        <td>2.18</td>
+                        <td>-22.4%</td>
+                    </tr>
+                    <tr>
+                        <td>Mogul Real Estate</td>
+                        <td>+9.4%</td>
+                        <td>+10.1%</td>
+                        <td>+8.8%</td>
+                        <td>+9.6%</td>
+                        <td>1.62</td>
+                        <td>-4.2%</td>
+                    </tr>
+                    <tr>
+                        <td>Mogul Technologies</td>
+                        <td>+31.7%</td>
+                        <td>+38.5%</td>
+                        <td>+42.1%</td>
+                        <td>+45.8%</td>
+                        <td>1.89</td>
+                        <td>-18.7%</td>
+                    </tr>
+                    <tr>
+                        <td>Creative Arts Fund</td>
+                        <td>+22.1%</td>
+                        <td>+25.6%</td>
+                        <td>+20.3%</td>
+                        <td>+23.9%</td>
+                        <td>1.71</td>
+                        <td>-12.5%</td>
+                    </tr>
+                    <tr>
+                        <td>Mogul Recycling Fund</td>
+                        <td>+15.6%</td>
+                        <td>+17.2%</td>
+                        <td>+14.8%</td>
+                        <td>+16.1%</td>
+                        <td>1.58</td>
+                        <td>-7.9%</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | For Accredited Investors Only</p>
+        <p><small>Investments involve risk. Past performance is not indicative of future results.</small></p>
+    </footer>
+
+    <script>
+        // Toggle functionality
+        const hamburger = document.querySelector('.hamburger');
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+
+        hamburger.addEventListener('click', toggleSidebar);
+        sidebarToggle.addEventListener('click', toggleSidebar);
+
+        // Cumulative Return vs Benchmark
+        const cumulativeCtx = document.getElementById('cumulativeChart').getContext('2d');
+        new Chart(cumulativeCtx, {
+            type: 'line',
+            data: {
+                labels: ['2022', '2023', '2024', '2025'],
+                datasets: [
+                    {
+                        label: 'Mogul Portfolio',
+                        data: [100, 128, 152, 186],
+                        borderColor: '#D4AF37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'S&P 500',
+                        data: [100, 124, 138, 158],
+                        borderColor: '#00ffcc',
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: { enabled: true },
+                    legend: { labels: { color: '#E0E0E0' } }
+                },
+                scales: { x: { ticks: { color: '#E0E0E0' } }, y: { ticks: { color: '#E0E0E0' } } }
+            }
+        });
+
+        // Rolling 12-Month Returns
+        const rollingCtx = document.getElementById('rollingChart').getContext('2d');
+        new Chart(rollingCtx, {
+            type: 'bar',
+            data: {
+                labels: ['2023', '2024', '2025'],
+                datasets: [{
+                    label: 'Rolling 12-Month Return',
+                    data: [22.4, 31.8, 27.9],
+                    backgroundColor: '#D4AF37'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: { enabled: true }
+                }
+            }
+        });
+
+        // Monthly Returns Heatmap
+        const heatmapCtx = document.getElementById('heatmapChart').getContext('2d');
+        new Chart(heatmapCtx, {
+            type: 'matrix',
+            data: {
+                datasets: [{
+                    label: 'Monthly Returns (%)',
+                    data: [
+                        {x: 'Jan', y: '2025', v: 3.2},
+                        {x: 'Feb', y: '2025', v: 5.1},
+                        {x: 'Mar', y: '2025', v: -1.8},
+                        {x: 'Apr', y: '2025', v: 4.7},
+                        {x: 'May', y: '2025', v: 6.3},
+                        {x: 'Jun', y: '2025', v: 2.9},
+                        {x: 'Jul', y: '2025', v: 8.1},
+                        {x: 'Aug', y: '2025', v: -2.4},
+                        {x: 'Sep', y: '2025', v: 7.5},
+                        {x: 'Oct', y: '2025', v: 4.2},
+                        {x: 'Nov', y: '2025', v: 3.8},
+                        {x: 'Dec', y: '2025', v: 5.6}
+                    ],
+                    backgroundColor(context) {
+                        const value = context.raw.v;
+                        const alpha = Math.abs(value) / 10;
+                        return value > 0 ? `rgba(212, 175, 55, ${alpha})` : `rgba(255, 107, 107, ${alpha})`;
+                    },
+                    borderColor: '#333',
+                    borderWidth: 1,
+                    width: ({chart}) => (chart.chartArea || {}).width / 12 - 1,
+                    height: ({chart}) => (chart.chartArea || {}).height / 1 - 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label(context) {
+                                return `Return: ${context.raw.v}%`;
+                            }
+                        }
+                    },
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { ticks: { color: '#E0E0E0' } },
+                    y: { ticks: { color: '#E0E0E0' } }
+                }
+            }
+        });
+
+        // Drawdown Analysis
+        const drawdownCtx = document.getElementById('drawdownChart').getContext('2d');
+        new Chart(drawdownCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+                datasets: [{
+                    label: 'Drawdown (%)',
+                    data: [0, -2.1, -4.3, -3.8, -1.2, 0, -1.5, -6.2, -9.2, -7.8, -5.4, -3.1],
+                    borderColor: '#ff6b6b',
+                    backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    tooltip: { enabled: true }
+                },
+                scales: { x: { ticks: { color: '#E0E0E0' } }, y: { ticks: { color: '#E0E0E0' } } }
+            }
+        });
+    </script>
+
+</body>
+</html>

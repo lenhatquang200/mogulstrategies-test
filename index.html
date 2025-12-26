@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mogul Strategies | Redefining Wealth for Accredited Investors</title>
+    <meta name="description" content="Mogul Strategies manages a diversified portfolio of innovative funds across equities, digital assets, real estate, technologies, creative arts, and sustainable recycling. Exclusive opportunities for accredited and institutional investors.">
+    <style>
+        /* Reset and Base Styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            line-height: 1.6; 
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            box-shadow: 0 0 10px white;
+            animation: shooting-star linear infinite;
+        }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        a { color: #D4AF37; text-decoration: none; transition: color 0.3s; }
+        a:hover { color: #FFFFFF; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+        /* Header/Navigation */
+        header { position: fixed; top: 0; width: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 1000; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #D4AF37; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { font-weight: 500; }
+        .cta-button { background: #D4AF37; color: #0A1A2F; padding: 0.8rem 1.8rem; border-radius: 4px; font-weight: bold; transition: background 0.3s; }
+        .cta-button:hover { background: #FFFFFF; color: #0A1A2F; }
+        .cta-outline { background: transparent; border: 2px solid #E5E4E2; color: #E5E4E2; }
+        .cta-outline:hover { background: #E5E4E2; color: #000000; }
+
+        /* Hero Section */
+        .hero { height: 100vh; min-height: 800px; background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://i.etsystatic.com/6245917/r/il/3a40dd/3700926151/il_fullxfull.3700926151_i3f8.jpg') center/cover no-repeat; display: flex; align-items: center; }
+        .hero-content { text-align: center; max-width: 900px; margin: 0 auto; }
+        .hero h1 { font-size: 4.5rem; color: #FFFFFF; margin-bottom: 1rem; }
+        .hero p { font-size: 1.5rem; margin-bottom: 2rem; color: #CCCCCC; }
+        .hero-buttons { display: flex; gap: 1.5rem; justify-content: center; }
+
+        /* Sections */
+        section { padding: 8rem 0; }
+        .section-title { text-align: center; font-size: 3rem; margin-bottom: 4rem; color: #D4AF37; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: center; }
+        .stat-item { 
+            background: rgba(17, 34, 64, 0.6); 
+            padding: 2rem; 
+            border-radius: 12px; 
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+        .stat-item h3 { font-size: 2.5rem; color: #D4AF37; }
+        .funds-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+        .fund-card { 
+            background: #112240; 
+            border-radius: 12px; 
+            overflow: hidden; 
+            transition: transform 0.4s ease;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .fund-card:hover { 
+            transform: translateY(-10px); 
+        }
+        .fund-card img { width: 100%; height: 250px; object-fit: cover; }
+        .fund-card-content { padding: 1.5rem; }
+        .fund-card h3 { color: #D4AF37; margin-bottom: 1rem; }
+
+        /* Footer */
+        footer { background: #000000; padding: 4rem 0 2rem; text-align: center; }
+        footer a { margin: 0 1rem; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .hero-buttons { flex-direction: column; }
+            .nav-links { display: none; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">Mogul Strategies</div>
+                <div class="nav-links">
+                    <a href="#about">About</a>
+                    <a href="#strategies">Strategies</a>
+                    <a href="#funds">Our Funds</a>
+                    <a href="#insights">Insights</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <a href="https://mogulstrategies.invportal.com/" class="cta-button">Investors Portal</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Redefining Wealth Acceleration</h1>
+            <p>Diversified portfolios blending proven strategies with innovative edges — including Bitcoin integration for enhanced risk mitigation. Exclusive opportunities for accredited and institutional investors.</p>
+            <div class="hero-buttons">
+                <a href="#funds" class="cta-button">Explore Our Funds</a>
+                <a href="https://mogulstrategies.invportal.com/" class="cta-button cta-outline">Access Portal</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="stats">
+        <div class="container">
+            <h2 class="section-title">Why Mogul Strategies?</h2>
+            <div class="stats">
+                <div class="stat-item">
+                    <h3>$45M</h3>
+                    <p>Assets Under Management</p>
+                </div>
+                <div class="stat-item">
+                    <h3>45+</h3>
+                    <p>Years Combined Experience</p>
+                </div>
+                <div class="stat-item">
+                    <h3>36</h3>
+                    <p>Qualified Experts</p>
+                </div>
+                <div class="stat-item">
+                    <h3>20+</h3>
+                    <p>New Clients Every Year</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="funds">
+        <div class="container">
+            <h2 class="section-title">Our Funds</h2>
+            <div class="funds-grid">
+                <div class="fund-card">
+                    <img src="https://png.pngtree.com/background/20230527/original/pngtree-stock-chart-shows-many-gold-lines-against-a-dark-background-picture-image_2761134.jpg" alt="Mogul Equities - Abstract Gold Stock Chart">
+                    <div class="fund-card-content">
+                        <h3>Mogul Equities</h3>
+                        <p>Securities and collateralized strategies for steady growth.</p>
+                        <a href="https://mogulequities.com">Learn More →</a>
+                    </div>
+                </div>
+                <div class="fund-card">
+                    <img src="https://t3.ftcdn.net/jpg/02/06/66/26/360_F_206662634_16JnrFAXoGVlBok3CEMX3oJdM7aqg5LX.jpg" alt="Mogul Digital Fund - Blockchain Visualization">
+                    <div class="fund-card-content">
+                        <h3>Mogul Digital Fund</h3>
+                        <p>Blockchain and deep digital assets with Bitcoin integration.</p>
+                        <a href="https://moguldigitalfund.com">Learn More →</a>
+                    </div>
+                </div>
+                <div class="fund-card">
+                    <img src="https://uniqueproperties.ae/en/uploads/frontend/articles/611758/conversions/prime-locations-to-buy-luxury-mansions-in-dubai-resize.webp" alt="Mogul Real Estate - Luxury Gulf Properties">
+                    <div class="fund-card-content">
+                        <h3>Mogul Real Estate</h3>
+                        <p>Income-producing properties in premium Gulf regions.</p>
+                        <a href="https://mogul.realestate">Learn More →</a>
+                    </div>
+                </div>
+                <div class="fund-card">
+                    <img src="https://thumbs.dreamstime.com/b/digital-technology-background-blue-glowing-ai-letters-dark-network-representing-data-connection-artificial-394691387.jpg" alt="Mogul Technologies - Futuristic AI">
+                    <div class="fund-card-content">
+                        <h3>Mogul Technologies</h3>
+                        <p>High-tech and AI-driven innovations.</p>
+                        <a href="https://mogultechnologies.io">Learn More →</a>
+                    </div>
+                </div>
+                <div class="fund-card">
+                    <img src="https://media.gettyimages.com/id/1028404620/photo/people-working-behind-the-scenes-on-a-film-set.jpg?s=612x612&w=gi&k=20&c=rYfN4cvQmLvVq4tqEaME7Jy8OlYZpapMMqh3syCLRCk=" alt="Creative Arts Fund - Film Production Set">
+                    <div class="fund-card-content">
+                        <h3>Creative Arts Fund</h3>
+                        <p>Investments in entertainment, motion picture production, and cultural opportunities.</p>
+                        <a href="https://creativeartsfund.com">Learn More →</a>
+                    </div>
+                </div>
+                <div class="fund-card">
+                    <img src="https://resource-recycling.com/wp-content/uploads/2025/12/WM-Recycling-Facility_Courtesy_WM_web.jpg" alt="Mogul Recycling Fund - Modern Recycling Facility">
+                    <div class="fund-card-content">
+                        <h3>Mogul Recycling Fund</h3>
+                        <p>Sustainable investments in waste management, recycling technologies, and eco-friendly infrastructure.</p>
+                        <a href="#">Learn More →</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Mogul Strategies Inc. For Accredited Investors Only.</p>
+            <p>Call us: <a href="tel:+18007760990">(800) 776-0990</a> | <a href="https://mogulstrategies.invportal.com/">Investors Portal</a></p>
+            <p><small>Investments involve risk. Past performance is not indicative of future results.</small></p>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investors Portal | Mogul Strategies</title>
+    <meta name="description" content="Secure registration and login for accredited investors to access fund documents, performance reports, and exclusive insights.">
+    <style>
+        /* Consistent premium cosmic theme */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            line-height: 1.6; 
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            box-shadow: 0 0 10px white;
+            animation: shooting-star linear infinite;
+        }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 50px rgba(255, 255, 255, 0.5); }
+            100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        a { color: #D4AF37; text-decoration: none; }
+        a:hover { color: #FFFFFF; }
+
+        .portal-container {
+            width: 100%;
+            max-width: 500px;
+            background: rgba(17, 34, 64, 0.7);
+            padding: 3rem;
+            border-radius: 20px;
+            animation: pulse-glow 6s ease-in-out infinite;
+            backdrop-filter: blur(10px);
+            text-align: center;
+        }
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #D4AF37;
+            margin-bottom: 1rem;
+        }
+        .tagline {
+            font-size: 1.2rem;
+            margin-bottom: 2.5rem;
+            color: #CCCCCC;
+        }
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #D4AF37;
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 1rem;
+            background: none;
+            border: none;
+            color: #AAAAAA;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .tab-btn.active {
+            color: #D4AF37;
+            border-bottom: 3px solid #D4AF37;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+            font-size: 1rem;
+        }
+        .submit-btn {
+            width: 100%;
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+        .submit-btn:hover {
+            background: #FFFFFF;
+        }
+        .disclaimer {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #AAAAAA;
+        }
+        .switch-link {
+            margin-top: 1.5rem;
+            display: block;
+            color: #D4AF37;
+            font-weight: 500;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <div class="portal-container">
+        <div class="logo">Mogul Strategies</div>
+        <p class="tagline">Secure Investors Portal</p>
+
+        <div class="tab-buttons">
+            <button class="tab-btn active" onclick="openTab(event, 'login')">Login</button>
+            <button class="tab-btn" onclick="openTab(event, 'register')">Register</button>
+        </div>
+
+        <!-- Login Tab -->
+        <div id="login" class="tab-content active">
+            <form action="#" method="POST">
+                <div class="form-group">
+                    <label for="login-email">Email Address</label>
+                    <input type="email" id="login-email" name="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" name="password" required placeholder="••••••••">
+                </div>
+                <button type="submit" class="submit-btn">Secure Login</button>
+            </form>
+            <a href="#" class="switch-link">Forgot password?</a>
+        </div>
+
+        <!-- Registration Tab -->
+        <div id="register" class="tab-content">
+            <form action="#" method="POST">
+                <div class="form-group">
+                    <label for="reg-name">Full Name</label>
+                    <input type="text" id="reg-name" name="name" required placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email Address</label>
+                    <input type="email" id="reg-email" name="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Password</label>
+                    <input type="password" id="reg-password" name="password" required placeholder="Create strong password">
+                </div>
+                <div class="form-group">
+                    <label for="reg-confirm">Confirm Password</label>
+                    <input type="password" id="reg-confirm" name="confirm" required placeholder="Confirm password">
+                </div>
+                <div class="form-group">
+                    <label for="reg-accredited">Accreditation Status *</label>
+                    <select id="reg-accredited" name="accredited" required>
+                        <option value="">Select your status...</option>
+                        <option value="individual">Accredited Individual Investor</option>
+                        <option value="family">Family Office</option>
+                        <option value="institution">Institutional Investor</option>
+                        <option value="advisor">Registered Investment Advisor</option>
+                    </select>
+                </div>
+                <button type="submit" class="submit-btn">Request Access</button>
+            </form>
+            <p class="disclaimer">
+                Registration is subject to verification of accredited investor status per SEC guidelines. 
+                You will receive an approval email upon successful verification.
+            </p>
+        </div>
+
+        <p class="disclaimer" style="margin-top: 3rem;">
+            For Accredited Investors Only<br>
+            Investments involve risk. Past performance is not indicative of future results.
+        </p>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            const tabs = document.getElementsByClassName("tab-content");
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            const buttons = document.getElementsByClassName("tab-btn");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+
+</body>
+</html>

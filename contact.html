@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Mogul Strategies</title>
+    <meta name="description" content="Get in touch with Mogul Strategies. Contact our team for inquiries about alternative investments, fund opportunities, or investor relations. Exclusive access for accredited investors.">
+    <style>
+        /* Consistent site-wide styles */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            line-height: 1.6; 
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            box-shadow: 0 0 10px white;
+            animation: shooting-star linear infinite;
+        }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        a { color: #D4AF37; text-decoration: none; transition: color 0.3s; }
+        a:hover { color: #FFFFFF; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+        header { position: fixed; top: 0; width: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 1000; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #D4AF37; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { font-weight: 500; }
+        .cta-button { background: #D4AF37; color: #0A1A2F; padding: 0.8rem 1.8rem; border-radius: 4px; font-weight: bold; transition: background 0.3s; }
+        .cta-button:hover { background: #FFFFFF; color: #0A1A2F; }
+
+        .hero { height: 80vh; min-height: 600px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://media.istockphoto.com/id/1344743482/photo/golden-bitcoin-and-various-metal-gears.jpg?s=612x612&w=0&k=20&c=gn1v9L6u8Kk9xzkY2x_7K3z2fE2rQJ4l8g5f7p8v9kM=') center/cover no-repeat; display: flex; align-items: center; }
+        .hero-content { text-align: center; max-width: 1000px; margin: 0 auto; }
+        .hero h1 { font-size: 4.5rem; color: #FFFFFF; margin-bottom: 1.5rem; }
+        .hero p { font-size: 1.6rem; max-width: 800px; margin: 0 auto 2rem; color: #CCCCCC; }
+
+        section { padding: 8rem 0; }
+        .section-title { text-align: center; font-size: 3rem; margin-bottom: 4rem; color: #D4AF37; }
+
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 4rem; align-items: start; }
+        .contact-info { 
+            background: #112240; 
+            padding: 3rem; 
+            border-radius: 16px; 
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .contact-info h3 { font-size: 2rem; color: #D4AF37; margin-bottom: 2rem; }
+        .contact-info ul { list-style: none; }
+        .contact-info li { margin-bottom: 1.5rem; font-size: 1.2rem; }
+        .contact-info li strong { color: #D4AF37; }
+        .contact-info a { display: block; margin-top: 0.5rem; }
+
+        .contact-form { 
+            background: #112240; 
+            padding: 3rem; 
+            border-radius: 16px; 
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .contact-form h3 { font-size: 2rem; color: #D4AF37; margin-bottom: 2rem; }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input, .form-group textarea, .form-group select { 
+            width: 100%; 
+            padding: 1rem; 
+            background: #0A1A2F; 
+            border: 1px solid #D4AF37; 
+            border-radius: 8px; 
+            color: #E0E0E0; 
+            font-size: 1rem;
+        }
+        .form-group textarea { height: 150px; resize: vertical; }
+        .submit-btn { background: #D4AF37; color: #0A1A2F; padding: 1rem 2.5rem; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+        .submit-btn:hover { background: #FFFFFF; }
+
+        .portal-cta { text-align: center; padding: 6rem 0; background: rgba(17, 34, 64, 0.4); }
+        .portal-cta h2 { font-size: 3rem; margin-bottom: 2rem; }
+        .portal-cta p { max-width: 800px; margin: 0 auto 3rem; font-size: 1.2rem; }
+
+        footer { background: #000000; padding: 4rem 0 2rem; text-align: center; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">Mogul Strategies</div>
+                <div class="nav-links">
+                    <a href="/">Home</a>
+                    <a href="/about.html">About</a>
+                    <a href="/strategies.html">Strategies</a>
+                    <a href="/funds.html">Our Funds</a>
+                    <a href="/insights.html">Insights</a>
+                    <a href="/contact.html">Contact</a>
+                </div>
+                <a href="https://mogulstrategies.invportal.com/" class="cta-button">Investors Portal</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Contact Us</h1>
+            <p>We welcome inquiries from accredited investors, family offices, and institutional partners interested in our diversified alternative investment strategies.</p>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title">Get in Touch</h2>
+            <div class="contact-grid">
+                <div class="contact-info">
+                    <h3>Contact Information</h3>
+                    <ul>
+                        <li><strong>Phone:</strong> <a href="tel:+18007760990">(800) 776-0990</a></li>
+                        <li><strong>Email:</strong> <a href="mailto:info@mogulstrategies.com">info@mogulstrategies.com</a></li>
+                        <li><strong>Investor Relations:</strong> <a href="mailto:ir@mogulstrategies.com">ir@mogulstrategies.com</a></li>
+                        <li><strong>Office Hours:</strong> Monday – Friday, 9:00 AM – 6:00 PM EST</li>
+                        <li><strong>Mailing Address:</strong><br>Mogul Strategies Inc.<br>48 Wall St, Suite 1100<br>New York, NY 10005<br>United States</li>
+                    </ul>
+                    <p style="margin-top: 2rem; font-size: 1.1rem;">
+                        <strong>Note:</strong> All investments are available exclusively to accredited investors as defined by SEC regulations.
+                    </p>
+                </div>
+
+                <div class="contact-form">
+                    <h3>Send Us a Message</h3>
+                    <form action="#" method="POST">
+                        <div class="form-group">
+                            <label for="name">Full Name *</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone (optional)</label>
+                            <input type="tel" id="phone" name="phone">
+                        </div>
+                        <div class="form-group">
+                            <label for="type">Inquiry Type *</label>
+                            <select id="type" name="type" required>
+                                <option value="">Select...</option>
+                                <option value="general">General Inquiry</option>
+                                <option value="investment">Investment Opportunities</option>
+                                <option value="portal">Investors Portal Access</option>
+                                <option value="partnership">Partnership / Syndication</option>
+                                <option value="press">Press / Media</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="accredited">Are you an accredited investor? *</label>
+                            <select id="accredited" name="accredited" required>
+                                <option value="">Select...</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+                                <option value="institution">Institutional Investor</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Message *</label>
+                            <textarea id="message" name="message" required placeholder="Please provide details about your inquiry..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Submit Inquiry</button>
+                    </form>
+                    <p style="margin-top: 1.5rem; font-size: 0.9rem; color: #AAAAAA;">
+                        Your information is secure and will only be used in accordance with our Privacy Policy.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="portal-cta">
+        <div class="container">
+            <h2>Existing Investors</h2>
+            <p>Registered accredited investors can access fund documents, performance reports, and secure messaging directly through our Investors Portal.</p>
+            <a href="https://mogulstrategies.invportal.com/" class="cta-button" style="font-size: 1.2rem; padding: 1rem 3rem;">Enter Investors Portal</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Mogul Strategies Inc. For Accredited Investors Only.</p>
+            <p>Call us: <a href="tel:+18007760990">(800) 776-0990</a> | <a href="https://mogulstrategies.invportal.com/">Investors Portal</a></p>
+            <p><small>Investments involve risk. Past performance is not indicative of future results.</small></p>
+        </div>
+    </footer>
+
+</body>
+</html>

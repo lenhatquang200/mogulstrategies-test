@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal | Mogul Strategies</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            min-height: 100vh;
+            display: flex;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        a { color: #D4AF37; text-decoration: none; transition: color 0.3s; }
+        a:hover { color: #FFFFFF; }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: rgba(17, 34, 64, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .admin-logo { 
+            font-size: 2.2rem; 
+            color: #D4AF37; 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            font-weight: bold;
+        }
+        .admin-nav { list-style: none; }
+        .admin-nav li { margin-bottom: 0.5rem; }
+        .admin-nav a {
+            display: block;
+            padding: 1rem 2rem;
+            color: #E0E0E0;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            border-left: 4px solid #D4AF37;
+        }
+        .admin-nav i { margin-right: 1rem; width: 20px; text-align: center; }
+
+        /* Main Content */
+        main { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        .admin-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); 
+            gap: 2rem; 
+            margin-bottom: 4rem;
+        }
+        .admin-card {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            transition: transform 0.3s;
+        }
+        .admin-card:hover { transform: translateY(-8px); }
+        .admin-card h3 { font-size: 1.8rem; color: #D4AF37; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 0.8rem; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 2.4rem; color: #D4AF37; font-weight: bold; }
+        .stat-label { font-size: 1rem; opacity: 0.9; }
+
+        .action-list { list-style: none; }
+        .action-list li {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .action-list li:last-child { border-bottom: none; }
+        .action-btn {
+            background: transparent;
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .action-btn:hover { background: #D4AF37; color: #0A1A2F; }
+
+        .table-container {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        th { background: rgba(212, 175, 55, 0.1); color: #D4AF37; }
+
+        .search-bar {
+            width: 100%;
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+            margin-bottom: 2rem;
+        }
+
+        footer { text-align: center; padding: 3rem 0; font-size: 0.9rem; color: #AAAAAA; }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .admin-sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; width: 100%; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-logo">Mogul Admin</div>
+        <ul class="admin-nav">
+            <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> User Management</a></li>
+            <li><a href="#"><i class="fas fa-user-check"></i> KYC & Accreditation</a></li>
+            <li><a href="#"><i class="fas fa-handshake"></i> Offerings & Syndications</a></li>
+            <li><a href="#"><i class="fas fa-file-alt"></i> Documents & Reports</a></li>
+            <li><a href="#"><i class="fas fa-dollar-sign"></i> Distributions & Capital Calls</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="#"><i class="fas fa-envelope"></i> Messaging</a></li>
+            <li><a href="#"><i class="fas fa-calendar"></i> Events & Webinars</a></li>
+            <li><a href="#"><i class="fas fa-book"></i> Resource Library</a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics & Reporting</a></li>
+            <li><a href="#"><i class="fas fa-shield-alt"></i> Compliance & Moderation</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> System Settings</a></li>
+            <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <!-- Page Title -->
+        <h1 class="page-title">Admin Portal Dashboard</h1>
+
+        <!-- Quick Stats -->
+        <section class="admin-grid">
+            <div class="admin-card">
+                <h3>Platform Overview</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">1,248</div>
+                        <div class="stat-label">Total Investors</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">842</div>
+                        <div class="stat-label">Verified Users</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">$1.84B</div>
+                        <div class="stat-label">AUM</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">6</div>
+                        <div class="stat-label">Active Funds</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="admin-card">
+                <h3>Pending Actions</h3>
+                <ul class="action-list">
+                    <li><span>KYC Reviews Pending</span> <span class="action-btn">12</span></li>
+                    <li><span>Accreditation Submissions</span> <span class="action-btn">8</span></li>
+                    <li><span>Capital Call Responses</span> <span class="action-btn">23</span></li>
+                    <li><span>Support Tickets</span> <span class="action-btn">5</span></li>
+                    <li><span>Document Approvals</span> <span class="action-btn">3</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Recent Activity -->
+        <section class="admin-card">
+            <h3>Recent Activity Log</h3>
+            <input type="text" class="search-bar" placeholder="Search activity...">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Details</th>
+                            <th>IP Address</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>14:32 EST</td>
+                            <td>John Doe (MS-INV-4872)</td>
+                            <td>Login</td>
+                            <td>Successful login</td>
+                            <td>192.168.1.100</td>
+                        </tr>
+                        <tr>
+                            <td>14:15 EST</td>
+                            <td>Admin User</td>
+                            <td>Approved KYC</td>
+                            <td>Investor MS-INV-4865</td>
+                            <td>10.0.0.50</td>
+                        </tr>
+                        <tr>
+                            <td>13:45 EST</td>
+                            <td>Jane Smith (MS-INV-4850)</td>
+                            <td>Subscription</td>
+                            <td>Real Estate Fund Tranche 3</td>
+                            <td>203.0.113.78</td>
+                        </tr>
+                        <tr>
+                            <td>12:20 EST</td>
+                            <td>Admin User</td>
+                            <td>Uploaded Document</td>
+                            <td>Q4 2025 Investor Letter</td>
+                            <td>10.0.0.50</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Moderation & Compliance -->
+        <section class="admin-grid">
+            <div class="admin-card">
+                <h3>Compliance Queue</h3>
+                <ul class="action-list">
+                    <li><span>Pending Accreditation Reviews</span> <span class="action-btn">8</span></li>
+                    <li><span>Suspicious Login Attempts</span> <span class="action-btn">2</span></li>
+                    <li><span>Document Verification Needed</span> <span class="action-btn">5</span></li>
+                    <li><span>AML Flags</span> <span class="action-btn">0</span></li>
+                </ul>
+            </div>
+
+            <div class="admin-card">
+                <h3>System Controls</h3>
+                <ul class="action-list">
+                    <li><span>Portal Status</span> <span class="action-btn">Online</span></li>
+                    <li><span>Maintenance Mode</span> <span class="action-btn">Off</span></li>
+                    <li><span>Email Delivery</span> <span class="action-btn">Normal</span></li>
+                    <li><span>API Status</span> <span class="action-btn">Healthy</span></li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | Admin Portal</p>
+    </footer>
+
+    <script>
+        // Mobile sidebar toggle (if needed)
+        const hamburger = document.createElement('button');
+        hamburger.innerHTML = '☰';
+        hamburger.style.position = 'fixed';
+        hamburger.style.top = '1rem';
+        hamburger.style.left = '1rem';
+        hamburger.style.zIndex = '1001';
+        hamburger.style.fontSize = '2rem';
+        hamburger.style.background = 'none';
+        hamburger.style.border = 'none';
+        hamburger.style.color = '#D4AF37';
+        hamburger.style.display = 'none';
+        document.body.appendChild(hamburger);
+
+        const sidebar = document.getElementById('adminSidebar');
+
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 1024) {
+                hamburger.style.display = 'block';
+            } else {
+                hamburger.style.display = 'none';
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+
+</body>
+</html>

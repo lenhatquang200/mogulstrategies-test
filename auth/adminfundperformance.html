@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fund Performance & Reporting | Mogul Strategies Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            min-height: 100vh;
+            display: flex;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: rgba(17, 34, 64, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .admin-logo { 
+            font-size: 2.2rem; 
+            color: #D4AF37; 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            font-weight: bold;
+        }
+        .admin-nav { list-style: none; }
+        .admin-nav li { margin-bottom: 0.5rem; }
+        .admin-nav a {
+            display: block;
+            padding: 1rem 2rem;
+            color: #E0E0E0;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            border-left: 4px solid #D4AF37;
+        }
+        .admin-nav i { margin-right: 1rem; width: 20px; text-align: center; }
+
+        /* Main Content */
+        main { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .fund-selector, .date-range {
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+        }
+        .action-btn {
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .action-btn:hover { background: #FFFFFF; }
+
+        .performance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .performance-card {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .performance-card h3 { font-size: 1.8rem; color: #D4AF37; margin-bottom: 1.5rem; text-align: center; }
+        .chart-container { height: 320px; position: relative; }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .kpi-card {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .kpi-value { font-size: 3rem; color: #D4AF37; font-weight: bold; }
+        .kpi-label { font-size: 1.1rem; margin-top: 0.5rem; }
+
+        .table-container {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .section-title { font-size: 2rem; color: #D4AF37; margin-bottom: 1.5rem; text-align: center; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td { padding: 1.2rem; text-align: left; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        th { background: rgba(212, 175, 55, 0.1); color: #D4AF37; }
+        tr:hover { background: rgba(212, 175, 55, 0.05); }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.8rem;
+        }
+        .action-btn {
+            background: transparent;
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .action-btn:hover { background: #D4AF37; color: #0A1A2F; }
+
+        footer { text-align: center; padding: 3rem 0; font-size: 0.9rem; color: #AAAAAA; margin-top: 6rem; }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .admin-sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; width: 100%; }
+        }
+        @media (max-width: 768px) {
+            .controls-bar { flex-direction: column; align-items: stretch; }
+            .performance-grid, .kpi-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-logo">Mogul Admin</div>
+        <ul class="admin-nav">
+            <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> User Management</a></li>
+            <li><a href="#"><i class="fas fa-user-check"></i> KYC & Accreditation</a></li>
+            <li><a href="#"><i class="fas fa-handshake"></i> Offerings & Syndications</a></li>
+            <li><a href="#"><i class="fas fa-file-alt"></i> Documents & Reports</a></li>
+            <li><a href="#"><i class="fas fa-dollar-sign"></i> Distributions & Capital Calls</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="#"><i class="fas fa-envelope"></i> Secure Messaging</a></li>
+            <li><a href="#"><i class="fas fa-calendar"></i> Events & Webinars</a></li>
+            <li><a href="#"><i class="fas fa-book"></i> Resource Library</a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics & Reporting</a></li>
+            <li><a href="#"><i class="fas fa-shield-alt"></i> Compliance & Moderation</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> System Settings</a></li>
+            <li><a href="#" class="active"><i class="fas fa-chart-line"></i> Fund Performance & Reporting</a></li>
+            <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <!-- Page Title -->
+        <h1 class="page-title">Fund Performance & Reporting Engine</h1>
+
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+            <select class="fund-selector">
+                <option>All Funds</option>
+                <option>Mogul Real Estate Fund</option>
+                <option>Mogul Digital Fund</option>
+                <option>Mogul Technologies Fund</option>
+                <option>Creative Arts Fund</option>
+            </select>
+            <div class="date-range">
+                <span>As of:</span>
+                <input type="date" value="2025-12-31">
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button class="action-btn"><i class="fas fa-calculator"></i> Recalculate Performance</button>
+                <button class="action-btn"><i class="fas fa-file-export"></i> Generate LP Report</button>
+                <button class="action-btn"><i class="fas fa-plus"></i> Add Benchmark</button>
+            </div>
+        </div>
+
+        <!-- Key Performance KPIs -->
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="kpi-value">+27.9%</div>
+                <div class="kpi-label">Portfolio YTD Return</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">24.1%</div>
+                <div class="kpi-label">Net IRR (Since Inception)</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">1.68x</div>
+                <div class="kpi-label">Multiple on Invested Capital</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">94%</div>
+                <div class="kpi-label">Deployment Rate</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">$1.84B</div>
+                <div class="kpi-label">Total AUM</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-value">+12.4%</div>
+                <div class="kpi-label">vs Benchmark</div>
+            </div>
+        </div>
+
+        <!-- Performance Charts -->
+        <div class="performance-grid">
+            <!-- Cumulative Returns -->
+            <div class="performance-card">
+                <h3>Cumulative Returns vs Benchmark</h3>
+                <div class="chart-container">
+                    <canvas id="returnsChart"></canvas>
+                </div>
+            </div>
+
+            <!-- IRR Waterfall -->
+            <div class="performance-card">
+                <h3>IRR Contribution by Fund</h3>
+                <div class="chart-container">
+                    <canvas id="irrChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Attribution Analysis -->
+            <div class="performance-card">
+                <h3>Performance Attribution</h3>
+                <div class="chart-container">
+                    <canvas id="attributionChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Historical NAV -->
+            <div class="performance-card">
+                <h3>Historical Net Asset Value</h3>
+                <div class="chart-container">
+                    <canvas id="navChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fund Performance Table -->
+        <div class="table-container">
+            <h2 class="section-title">Detailed Fund Performance</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fund</th>
+                        <th>Vintage</th>
+                        <th>Committed Capital</th>
+                        <th>Called Capital</th>
+                        <th>Distributed</th>
+                        <th>NAV</th>
+                        <th>Net IRR</th>
+                        <th>MOIC</th>
+                        <th>vs Benchmark</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Mogul Real Estate Fund</td>
+                        <td>2023</td>
+                        <td>$500M</td>
+                        <td>$375M (75%)</td>
+                        <td>$156M</td>
+                        <td>$612M</td>
+                        <td>14.8%</td>
+                        <td>1.63x</td>
+                        <td>+4.2%</td>
+                        <td class="action-buttons">
+                            <button class="action-btn"><i class="fas fa-eye"></i> View</button>
+                            <button class="action-btn"><i class="fas fa-file-pdf"></i> LP Report</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mogul Digital Fund</td>
+                        <td>2024</td>
+                        <td>$400M</td>
+                        <td>$400M (100%)</td>
+                        <td>$212M</td>
+                        <td>$592M</td>
+                        <td>38.2%</td>
+                        <td>1.48x</td>
+                        <td>+18.6%</td>
+                        <td class="action-buttons">
+                            <button class="action-btn"><i class="fas fa-eye"></i> View</button>
+                            <button class="action-btn"><i class="fas fa-file-pdf"></i> LP Report</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Mogul Technologies Fund</td>
+                        <td>2024</td>
+                        <td>$340M</td>
+                        <td>$190M (56%)</td>
+                        <td>$98M</td>
+                        <td>$382M</td>
+                        <td>26.5%</td>
+                        <td>2.01x</td>
+                        <td>+9.8%</td>
+                        <td class="action-buttons">
+                            <button class="action-btn"><i class="fas fa-eye"></i> View</button>
+                            <button class="action-btn"><i class="fas fa-file-pdf"></i> LP Report</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | Admin Portal</p>
+    </footer>
+
+    <script>
+        // Mobile sidebar toggle
+        const hamburger = document.createElement('button');
+        hamburger.innerHTML = '☰';
+        hamburger.style.position = 'fixed';
+        hamburger.style.top = '1rem';
+        hamburger.style.left = '1rem';
+        hamburger.style.zIndex = '1001';
+        hamburger.style.fontSize = '2rem';
+        hamburger.style.background = 'none';
+        hamburger.style.border = 'none';
+        hamburger.style.color = '#D4AF37';
+        hamburger.style.display = 'none';
+        document.body.appendChild(hamburger);
+
+        const sidebar = document.getElementById('adminSidebar');
+
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 1024) {
+                hamburger.style.display = 'block';
+            } else {
+                hamburger.style.display = 'none';
+                sidebar.classList.remove('open');
+            }
+        });
+
+        // Charts
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { labels: { color: '#E0E0E0' } } },
+            scales: {
+                x: { ticks: { color: '#AAAAAA' }, grid: { color: 'rgba(212, 175, 55, 0.1)' } },
+                y: { ticks: { color: '#AAAAAA' }, grid: { color: 'rgba(212, 175, 55, 0.1)' } }
+            }
+        };
+
+        // Cumulative Returns vs Benchmark
+        new Chart(document.getElementById('returnsChart'), {
+            type: 'line',
+            data: {
+                labels: ['2023', 'Q1 24', 'Q2 24', 'Q3 24', 'Q4 24', 'Q1 25', 'Q2 25', 'Q3 25', 'Q4 25'],
+                datasets: [
+                    {
+                        label: 'Portfolio',
+                        data: [0, 8.2, 15.6, 22.1, 28.4, 32.7, 38.9, 44.2, 52.8],
+                        borderColor: '#D4AF37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    },
+                    {
+                        label: 'Benchmark (Public Markets)',
+                        data: [0, 6.1, 11.8, 15.3, 18.9, 21.4, 24.8, 27.1, 30.4],
+                        borderColor: '#00ccff',
+                        borderDash: [5, 5]
+                    }
+                ]
+            },
+            options: chartOptions
+        });
+
+        // IRR Contribution by Fund
+        new Chart(document.getElementById('irrChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Real Estate', 'Digital Assets', 'Technology', 'Creative Arts'],
+                datasets: [{
+                    label: 'Net IRR',
+                    data: [14.8, 38.2, 26.5, 18.9],
+                    backgroundColor: '#D4AF37'
+                }]
+            },
+            options: chartOptions
+        });
+
+        // Attribution Analysis
+        new Chart(document.getElementById('attributionChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Asset Selection', 'Market Timing', 'Manager Skill', 'Fees Impact'],
+                datasets: [{
+                    data: [45, 28, 20, -7],
+                    backgroundColor: ['#D4AF37', '#00ccff', '#0f0', '#ff6b6b']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { color: '#E0E0E0' } } }
+            }
+        });
+
+        // Historical NAV
+        new Chart(document.getElementById('navChart'), {
+            type: 'line',
+            data: {
+                labels: ['Q1 23', 'Q2 23', 'Q3 23', 'Q4 23', 'Q1 24', 'Q2 24', 'Q3 24', 'Q4 24', 'Q1 25', 'Q2 25', 'Q3 25', 'Q4 25'],
+                datasets: [{
+                    label: 'Portfolio NAV ($B)',
+                    data: [0.8, 0.95, 1.1, 1.25, 1.38, 1.52, 1.65, 1.78, 1.84, 1.92, 2.05, 2.18],
+                    borderColor: '#D4AF37',
+                    backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: chartOptions
+        });
+    </script>
+
+</body>
+</html>

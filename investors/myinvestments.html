@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Investments | Mogul Strategies Investors Portal</title>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@^3"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            line-height: 1.6; 
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        a { color: #D4AF37; text-decoration: none; transition: color 0.3s; }
+        a:hover { color: #FFFFFF; }
+
+        header { 
+            position: fixed; top: 0; left: 0; right: 0; background: rgba(0, 0, 0, 0.9); backdrop-filter: blur(10px); z-index: 1000; 
+        }
+        .header-container { max-width: 1600px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .header-left { display: flex; align-items: center; gap: 1.5rem; }
+        .logo { font-size: 2rem; color: #D4AF37; font-weight: bold; }
+        .hamburger { display: none; font-size: 1.8rem; background: none; border: none; color: #D4AF37; cursor: pointer; }
+
+        .sidebar-toggle {
+            background: rgba(17, 34, 64, 0.8);
+            border: none;
+            color: #D4AF37;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s;
+        }
+        .sidebar-toggle:hover { background: rgba(212, 175, 55, 0.3); }
+
+        .user-menu { display: flex; align-items: center; gap: 1rem; position: relative; }
+        .user-menu button { background: transparent; border: none; color: #E0E0E0; cursor: pointer; font-size: 1rem; }
+        .dropdown { display: none; position: absolute; right: 0; top: 100%; background: rgba(17, 34, 64, 0.9); border-radius: 8px; padding: 1rem; min-width: 200px; }
+        .dropdown a, .dropdown button { display: block; padding: 0.5rem 0; width: 100%; text-align: left; }
+        .user-menu:hover .dropdown { display: block; }
+        .logout { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; padding: 0.6rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .logout:hover { background: #D4AF37; color: #0A1A2F; }
+
+        .sidebar {
+            position: fixed; top: 80px; left: 0; bottom: 0; width: 280px; background: rgba(17, 34, 64, 0.8); backdrop-filter: blur(10px); padding: 1.5rem 0; overflow-y: auto; z-index: 900;
+            transition: transform 0.3s ease;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .sidebar.collapsed { transform: translateX(-100%); }
+
+        .nav-menu { list-style: none; }
+        .nav-menu li { margin-bottom: 0.2rem; }
+        .nav-menu a {
+            display: block; padding: 0.9rem 2rem; color: #E0E0E0; font-weight: 500; font-size: 0.95rem; transition: all 0.3s;
+        }
+        .nav-menu a:hover, .nav-menu a.active { background: rgba(212, 175, 55, 0.2); color: #D4AF37; border-left: 4px solid #D4AF37; }
+
+        main { margin-left: 280px; padding-top: 100px; padding: 2rem; transition: margin-left 0.3s ease; }
+        main.expanded { margin-left: 0; }
+
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        .top-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem; }
+        .top-card { background: #112240; border-radius: 16px; padding: 2rem; animation: pulse-glow 5s ease-in-out infinite; }
+
+        /* Compact Overall Summary */
+        .investments-summary {
+            background: #112240;
+            border-radius: 16px;
+            padding: 1.5rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            margin-bottom: 3rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.2rem;
+        }
+        .summary-item { text-align: center; }
+        .summary-value { font-size: 2rem; color: #D4AF37; font-weight: bold; margin-bottom: 0.3rem; }
+        .summary-label { font-size: 0.9rem; opacity: 0.9; }
+
+        .investments-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(600px, 1fr)); gap: 2.5rem; }
+        .investment-card {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            transition: transform 0.3s;
+        }
+        .investment-card:hover { transform: translateY(-8px); }
+        .investment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+        }
+        .investment-title { font-size: 1.8rem; color: #D4AF37; }
+        .investment-status { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.9rem; background: rgba(0, 255, 0, 0.2); color: #0f0; }
+
+        .investment-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        .investment-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .detail-group { }
+        .detail-label { font-size: 0.9rem; opacity: 0.8; margin-bottom: 0.4rem; }
+        .detail-value { font-size: 1.3rem; font-weight: bold; color: #D4AF37; }
+
+        .performance-chart {
+            height: 220px;
+            margin-top: 1rem;
+        }
+
+        /* IRR Chart Added */
+        .irr-chart {
+            height: 180px;
+            margin-top: 1.5rem;
+        }
+
+        .investment-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .manage-wrapper {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        .action-btn {
+            padding: 0.9rem;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .action-btn.primary { background: #D4AF37; color: #0A1A2F; }
+        .action-btn.primary:hover { background: #FFFFFF; }
+        .action-btn.secondary { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; }
+        .action-btn.secondary:hover { background: #D4AF37; color: #0A1A2F; }
+
+        footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9rem; color: #AAAAAA; }
+
+        @media (max-width: 1024px) {
+            .hamburger { display: block; }
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; }
+        }
+        @media (max-width: 768px) {
+            .top-row, .investments-grid, .investment-content, .investment-details { grid-template-columns: 1fr; }
+            .investment-actions { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <header>
+        <div class="header-container">
+            <div class="header-left">
+                <button class="hamburger" aria-label="Menu">☰</button>
+                <div class="logo">Mogul Strategies</div>
+                <button class="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
+            </div>
+            <div class="user-menu">
+                <span>Welcome, John Doe</span>
+                <button class="user-menu-btn">▼</button>
+                <div class="dropdown">
+                    <a href="#">Account Settings</a>
+                    <button class="logout">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <ul class="nav-menu">
+            <li><a href="#">KYC & Accreditation</a></li>
+            <li><a href="#">Active Offerings</a></li>
+            <li><a href="#">Subscription Center</a></li>
+            <li><a href="#" class="active">My Investments</a></li>
+            <li><a href="#">Portfolio Summary</a></li>
+            <li><a href="#">Performance Analytics</a></li>
+            <li><a href="#">Documents & Reports</a></li>
+            <li><a href="#">Distributions & Tax</a></li>
+            <li><a href="#">Capital Calls</a></li>
+            <li><a href="#">Notifications</a></li>
+            <li><a href="#">Secure Messaging</a></li>
+            <li><a href="#">Webinars & Events</a></li>
+            <li><a href="#">Resource Library</a></li>
+            <li><a href="#">Support & FAQ</a></li>
+        </ul>
+    </nav>
+
+    <main id="main-content">
+        <!-- Page Title -->
+        <h1 class="page-title">My Investments</h1>
+
+        <!-- Top Row: Account Info + Secure Messaging -->
+        <section class="top-row">
+            <div class="top-card account-info-card">
+                <h3>Account Information</h3>
+                <ul>
+                    <li><strong>Name:</strong> John Doe</li>
+                    <li><strong>Email:</strong> john.doe@example.com</li>
+                    <li><strong>Investor Type:</strong> Accredited Individual</li>
+                    <li><strong>Account ID:</strong> MS-INV-4872</li>
+                    <li><strong>Joined:</strong> March 15, 2023</li>
+                    <li><strong>Last Login:</strong> December 24, 2025</li>
+                </ul>
+            </div>
+
+            <div class="top-card messaging-card">
+                <h3>Secure Messaging</h3>
+                <p>Communicate directly with your relationship manager.</p>
+                <a href="#" style="display:block; margin:1rem 0; font-weight:bold;">Open Inbox (2 unread)</a>
+                <textarea placeholder="Type your message..." style="width:100%; height:100px; padding:1rem; background:#0A1A2F; border:1px solid #D4AF37; border-radius:8px; color:#E0E0E0;"></textarea>
+                <button style="margin-top:1rem; background:#D4AF37; color:#0A1A2F; padding:0.8rem 1.5rem; border:none; border-radius:8px; cursor:pointer;">Send Message</button>
+            </div>
+        </section>
+
+        <!-- Compact Overall Summary -->
+        <section class="investments-summary">
+            <div class="summary-item">
+                <div class="summary-value">$1,240,000</div>
+                <div class="summary-label">Total Committed</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">$965,000</div>
+                <div class="summary-label">Called Capital</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">$275,000</div>
+                <div class="summary-label">Uncalled Capital</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">$1,586,400</div>
+                <div class="summary-label">Current Value</div>
+            </div>
+            <div class="summary-item">
+                <div class="summary-value">+27.9%</div>
+                <div class="summary-label">Net Return</div>
+            </div>
+        </section>
+
+        <!-- Individual Investments -->
+        <section class="investments-grid">
+            <!-- Investment 1 -->
+            <div class="investment-card">
+                <div class="investment-header">
+                    <div class="investment-title">Mogul Real Estate Fund – Tranche 3</div>
+                    <span class="investment-status">Active</span>
+                </div>
+                <div class="investment-content">
+                    <div class="investment-details">
+                        <div class="detail-group">
+                            <div class="detail-label">Commitment Amount</div>
+                            <div class="detail-value">$500,000</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Called Capital</div>
+                            <div class="detail-value">$375,000 (75%)</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Uncalled Capital</div>
+                            <div class="detail-value">$125,000</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Estimated Value</div>
+                            <div class="detail-value">$612,000</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Net Return</div>
+                            <div class="detail-value">+22.4%</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">IRR (since inception)</div>
+                            <div class="detail-value">14.8%</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="performance-chart">
+                            <canvas id="chart1"></canvas>
+                        </div>
+                        <div class="irr-chart">
+                            <canvas id="irr1"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="investment-actions">
+                    <a href="#" class="action-btn secondary">Download Signed Docs</a>
+                    <a href="#" class="action-btn secondary">View Reports</a>
+                    <a href="#" class="action-btn primary">Fund Summary</a>
+                </div>
+                <div class="manage-wrapper">
+                    <a href="#" class="action-btn secondary">Manage</a>
+                </div>
+            </div>
+
+            <!-- Investment 2 -->
+            <div class="investment-card">
+                <div class="investment-header">
+                    <div class="investment-title">Mogul Digital Fund</div>
+                    <span class="investment-status">Active</span>
+                </div>
+                <div class="investment-content">
+                    <div class="investment-details">
+                        <div class="detail-group">
+                            <div class="detail-label">Commitment Amount</div>
+                            <div class="detail-value">$400,000</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Called Capital</div>
+                            <div class="detail-value">$400,000 (100%)</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Uncalled Capital</div>
+                            <div class="detail-value">$0</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Estimated Value</div>
+                            <div class="detail-value">$592,000</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Net Return</div>
+                            <div class="detail-value">+48.0%</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">IRR (since inception)</div>
+                            <div class="detail-value">38.2%</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="performance-chart">
+                            <canvas id="chart2"></canvas>
+                        </div>
+                        <div class="irr-chart">
+                            <canvas id="irr2"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="investment-actions">
+                    <a href="#" class="action-btn secondary">Download Signed Docs</a>
+                    <a href="#" class="action-btn secondary">View Reports</a>
+                    <a href="#" class="action-btn primary">Fund Summary</a>
+                </div>
+                <div class="manage-wrapper">
+                    <a href="#" class="action-btn secondary">Manage</a>
+                </div>
+            </div>
+
+            <!-- Investment 3 -->
+            <div class="investment-card">
+                <div class="investment-header">
+                    <div class="investment-title">Mogul Technologies Fund</div>
+                    <span class="investment-status">Active</span>
+                </div>
+                <div class="investment-content">
+                    <div class="investment-details">
+                        <div class="detail-group">
+                            <div class="detail-label">Commitment Amount</div>
+                            <div class="detail-value">$340,000</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Called Capital</div>
+                            <div class="detail-value">$190,000 (56%)</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Uncalled Capital</div>
+                            <div class="detail-value">$150,000</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Estimated Value</div>
+                            <div class="detail-value">$382,400</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Net Return</div>
+                            <div class="detail-value">+31.7%</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">IRR (since inception)</div>
+                            <div class="detail-value">26.5%</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="performance-chart">
+                            <canvas id="chart3"></canvas>
+                        </div>
+                        <div class="irr-chart">
+                            <canvas id="irr3"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="investment-actions">
+                    <a href="#" class="action-btn secondary">Download Signed Docs</a>
+                    <a href="#" class="action-btn secondary">View Reports</a>
+                    <a href="#" class="action-btn primary">Fund Summary</a>
+                </div>
+                <div class="manage-wrapper">
+                    <a href="#" class="action-btn secondary">Manage</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | For Accredited Investors Only</p>
+        <p><small>Investments involve risk. Past performance is not indicative of future results.</small></p>
+    </footer>
+
+    <script>
+        // Toggle functionality
+        const hamburger = document.querySelector('.hamburger');
+        const sidebarToggle = document.querySelector('.sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('main-content');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+        }
+
+        hamburger.addEventListener('click', toggleSidebar);
+        sidebarToggle.addEventListener('click', toggleSidebar);
+
+        // Performance Value Chart
+        function createValueChart(canvasId, data) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Value ($)',
+                        data: data,
+                        borderColor: '#D4AF37',
+                        backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { enabled: true } },
+                    scales: { x: { display: false }, y: { display: false } }
+                }
+            });
+        }
+
+        // IRR Gauge Chart (simulated)
+        function createIRRChart(canvasId, irr) {
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    datasets: [{
+                        data: [irr, 100 - irr],
+                        backgroundColor: ['#D4AF37', '#333333'],
+                        borderWidth: 0,
+                        cutout: '80%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false },
+                        datalabels: {
+                            formatter: () => irr + '% IRR',
+                            color: '#D4AF37',
+                            font: { size: 20, weight: 'bold' }
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'textCenter',
+                    beforeDraw: chart => {
+                        const width = chart.width, height = chart.height;
+                        const ctx = chart.ctx;
+                        ctx.restore();
+                        ctx.font = 'bold 20px Inter';
+                        ctx.fillStyle = '#D4AF37';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(irr + '% IRR', width / 2, height / 2);
+                        ctx.save();
+                    }
+                }]
+            });
+        }
+
+        // Sample data
+        createValueChart('chart1', [500000, 510000, 520000, 530000, 545000, 560000, 570000, 580000, 595000, 605000, 610000, 612000]);
+        createIRRChart('irr1', 14.8);
+
+        createValueChart('chart2', [400000, 420000, 440000, 470000, 500000, 530000, 550000, 570000, 580000, 585000, 590000, 592000]);
+        createIRRChart('irr2', 38.2);
+
+        createValueChart('chart3', [340000, 345000, 350000, 360000, 370000, 375000, 380000, 382000, 382400, 382400, 382400, 382400]);
+        createIRRChart('irr3', 26.5);
+    </script>
+
+</body>
+</html>

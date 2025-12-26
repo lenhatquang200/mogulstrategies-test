@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audit & Activity Logs | Mogul Strategies Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            min-height: 100vh;
+            display: flex;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: rgba(17, 34, 64, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .admin-logo { 
+            font-size: 2.2rem; 
+            color: #D4AF37; 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            font-weight: bold;
+        }
+        .admin-nav { list-style: none; }
+        .admin-nav li { margin-bottom: 0.5rem; }
+        .admin-nav a {
+            display: block;
+            padding: 1rem 2rem;
+            color: #E0E0E0;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            border-left: 4px solid #D4AF37;
+        }
+        .admin-nav i { margin-right: 1rem; width: 20px; text-align: center; }
+
+        /* Main Content */
+        main { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .search-input {
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+            width: 350px;
+        }
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+        }
+        .filter-select, .date-input {
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+        }
+        .export-btn {
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .export-btn:hover { background: #FFFFFF; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .stat-card {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .stat-value { font-size: 2.8rem; color: #D4AF37; font-weight: bold; }
+        .stat-label { font-size: 1.1rem; margin-top: 0.5rem; }
+
+        .table-container {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            overflow-x: auto;
+        }
+        .section-title { font-size: 2rem; color: #D4AF37; margin-bottom: 1.5rem; text-align: center; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td { padding: 1.2rem; text-align: left; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        th { background: rgba(212, 175, 55, 0.1); color: #D4AF37; }
+        tr:hover { background: rgba(212, 175, 55, 0.05); }
+
+        .log-type {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        .type-admin { background: rgba(212, 175, 55, 0.3); color: #D4AF37; }
+        .type-system { background: rgba(0, 204, 255, 0.2); color: #00ccff; }
+        .type-security { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+        .type-data { background: rgba(0, 255, 0, 0.2); color: #0f0; }
+
+        footer { text-align: center; padding: 3rem 0; font-size: 0.9rem; color: #AAAAAA; margin-top: 6rem; }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .admin-sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; width: 100%; }
+        }
+        @media (max-width: 768px) {
+            .controls-bar { flex-direction: column; align-items: stretch; }
+            .search-input { width: 100%; }
+            .filter-group { flex-direction: column; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-logo">Mogul Admin</div>
+        <ul class="admin-nav">
+            <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> User Management</a></li>
+            <li><a href="#"><i class="fas fa-user-check"></i> KYC & Accreditation</a></li>
+            <li><a href="#"><i class="fas fa-handshake"></i> Offerings & Syndications</a></li>
+            <li><a href="#"><i class="fas fa-file-alt"></i> Documents & Reports</a></li>
+            <li><a href="#"><i class="fas fa-dollar-sign"></i> Distributions & Capital Calls</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="#"><i class="fas fa-envelope"></i> Secure Messaging</a></li>
+            <li><a href="#"><i class="fas fa-calendar"></i> Events & Webinars</a></li>
+            <li><a href="#"><i class="fas fa-book"></i> Resource Library</a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics & Reporting</a></li>
+            <li><a href="#"><i class="fas fa-shield-alt"></i> Compliance & Moderation</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> System Settings</a></li>
+            <li><a href="#" class="active"><i class="fas fa-file-medical-alt"></i> Audit & Activity Logs</a></li>
+            <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <!-- Page Title -->
+        <h1 class="page-title">Audit & Activity Logs</h1>
+
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+            <input type="text" class="search-input" placeholder="Search logs by user, action, or IP...">
+            <div class="filter-group">
+                <select class="filter-select">
+                    <option>All Log Types</option>
+                    <option>Admin Actions</option>
+                    <option>System Events</option>
+                    <option>Security Events</option>
+                    <option>Data Access</option>
+                </select>
+                <input type="date" class="date-input" value="2025-12-01">
+                <span>to</span>
+                <input type="date" class="date-input" value="2025-12-24">
+                <button class="export-btn"><i class="fas fa-download"></i> Export CSV Report</button>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">48,521</div>
+                <div class="stat-label">Total Log Entries</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">1,248</div>
+                <div class="stat-label">Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12</div>
+                <div class="stat-label">Security Alerts</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">842</div>
+                <div class="stat-label">Data Access Events</div>
+            </div>
+        </div>
+
+        <!-- Audit Log Table -->
+        <div class="table-container">
+            <h2 class="section-title">Complete System Audit Trail</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Type</th>
+                        <th>User / System</th>
+                        <th>Action</th>
+                        <th>Target</th>
+                        <th>IP Address</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Dec 24, 2025 14:32 EST</td>
+                        <td><span class="log-type type-admin">Admin</span></td>
+                        <td>Admin User</td>
+                        <td>Login Successful</td>
+                        <td>—</td>
+                        <td>192.168.1.100</td>
+                        <td>2FA verified</td>
+                    </tr>
+                    <tr>
+                        <td>Dec 24, 2025 14:10 EST</td>
+                        <td><span class="log-type type-admin">Admin</span></td>
+                        <td>Compliance Officer</td>
+                        <td>Approved Accreditation</td>
+                        <td>MS-INV-4898 (Jane Smith)</td>
+                        <td>10.0.0.50</td>
+                        <td>Net worth verified via CPA letter</td>
+                    </tr>
+                    <tr>
+                        <td>Dec 24, 2025 13:45 EST</td>
+                        <td><span class="log-type type-security">Security</span></td>
+                        <td>System</td>
+                        <td>Failed Login Attempt</td>
+                        <td>MS-INV-4850</td>
+                        <td>203.0.113.78</td>
+                        <td>3 attempts from unknown IP – account locked</td>
+                    </tr>
+                    <tr>
+                        <td>Dec 24, 2025 12:20 EST</td>
+                        <td><span class="log-type type-data">Data Access</span></td>
+                        <td>Admin User</td>
+                        <td>Viewed Investor Profile</td>
+                        <td>MS-INV-4872 (John Doe)</td>
+                        <td>192.168.1.100</td>
+                        <td>Accessed KYC documents</td>
+                    </tr>
+                    <tr>
+                        <td>Dec 23, 2025 18:40 EST</td>
+                        <td><span class="log-type type-system">System</span></td>
+                        <td>Automated Process</td>
+                        <td>Capital Call Notification Sent</td>
+                        <td>312 recipients</td>
+                        <td>—</td>
+                        <td>Email batch completed</td>
+                    </tr>
+                    <tr>
+                        <td>Dec 23, 2025 11:45 EST</td>
+                        <td><span class="log-type type-admin">Admin</span></td>
+                        <td>Compliance Officer</td>
+                        <td>Rejected KYC</td>
+                        <td>MS-INV-4905</td>
+                        <td>10.0.0.50</td>
+                        <td>Document unclear – requested resubmit</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | Admin Portal</p>
+    </footer>
+
+    <script>
+        // Mobile sidebar toggle
+        const hamburger = document.createElement('button');
+        hamburger.innerHTML = '☰';
+        hamburger.style.position = 'fixed';
+        hamburger.style.top = '1rem';
+        hamburger.style.left = '1rem';
+        hamburger.style.zIndex = '1001';
+        hamburger.style.fontSize = '2rem';
+        hamburger.style.background = 'none';
+        hamburger.style.border = 'none';
+        hamburger.style.color = '#D4AF37';
+        hamburger.style.display = 'none';
+        document.body.appendChild(hamburger);
+
+        const sidebar = document.getElementById('adminSidebar');
+
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 1024) {
+                hamburger.style.display = 'block';
+            } else {
+                hamburger.style.display = 'none';
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+
+</body>
+</html>

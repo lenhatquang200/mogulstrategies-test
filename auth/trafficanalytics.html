@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Traffic Analytics | Mogul Strategies Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simpleheatmap@0.1.3/dist/simpleheatmap.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            min-height: 100vh;
+            display: flex;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: rgba(17, 34, 64, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .admin-logo { 
+            font-size: 2.2rem; 
+            color: #D4AF37; 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            font-weight: bold;
+        }
+        .admin-nav { list-style: none; }
+        .admin-nav li { margin-bottom: 0.5rem; }
+        .admin-nav a {
+            display: block;
+            padding: 1rem 2rem;
+            color: #E0E0E0;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            border-left: 4px solid #D4AF37;
+        }
+        .admin-nav i { margin-right: 1rem; width: 20px; text-align: center; }
+
+        /* Main Content */
+        main { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .date-range {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .date-range input {
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+        }
+        .export-btn, .add-campaign-btn, .ab-test-btn {
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .export-btn:hover, .add-campaign-btn:hover, .ab-test-btn:hover { background: #FFFFFF; }
+
+        /* Key Metrics – Below Campaign Table */
+        .stats-grid {
+            display: flex;
+            gap: 2rem;
+            margin: 3rem 0;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        .stat-card {
+            background: #112240;
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            text-align: center;
+            animation: pulse-glow 5s ease-in-out infinite;
+            min-width: 180px;
+            flex: 1;
+        }
+        .stat-value { font-size: 2.4rem; color: #D4AF37; font-weight: bold; }
+        .stat-label { font-size: 1rem; margin-top: 0.5rem; opacity: 0.9; }
+
+        /* Campaign Table */
+        .table-container {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            margin-bottom: 3rem;
+        }
+        .section-title { font-size: 2rem; color: #D4AF37; margin-bottom: 1.5rem; text-align: center; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td { padding: 1.2rem; text-align: left; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+        th { background: rgba(212, 175, 55, 0.1); color: #D4AF37; }
+        tr:hover { background: rgba(212, 175, 55, 0.05); }
+
+        /* Analytics Tabs – Below Charts */
+        .analytics-tabs {
+            display: flex;
+            gap: 1rem;
+            margin: 3rem 0 2rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        .analytics-tab {
+            padding: 0.8rem 1.5rem;
+            background: #333;
+            border-radius: 8px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .analytics-tab.active, .analytics-tab:hover {
+            background: #D4AF37;
+            color: #0A1A2F;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        .chart-card {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .chart-card h3 { font-size: 1.8rem; color: #D4AF37; margin-bottom: 1.5rem; text-align: center; }
+        .chart-container { height: 350px; position: relative; }
+
+        .heatmap-container {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            margin-bottom: 3rem;
+        }
+        .heatmap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .heatmap-container h3 { font-size: 1.8rem; color: #D4AF37; margin: 0; }
+        .page-selector {
+            padding: 0.8rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+        }
+        .heatmap-wrapper {
+            position: relative;
+            height: 600px;
+            background: #0A1A2F;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .heatmap-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+
+        .session-replay {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .session-replay h3 { font-size: 1.8rem; color: #D4AF37; margin-bottom: 1.5rem; text-align: center; }
+        .replay-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .replay-btn {
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .replay-btn:hover { background: #FFFFFF; }
+        .replay-player {
+            height: 500px;
+            background: #0A1A2F;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #AAAAAA;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background: #112240;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 3rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 1.5rem; right: 2rem;
+            font-size: 2rem;
+            color: #AAAAAA;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .close-modal:hover { color: #D4AF37; }
+        .modal-title { font-size: 2.4rem; color: #D4AF37; text-align: center; margin-bottom: 2rem; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.6rem;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+        }
+        .form-group textarea { height: 120px; resize: vertical; }
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        .modal-btn {
+            padding: 1rem 2.5rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .modal-btn.cancel {
+            background: transparent;
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+        }
+        .modal-btn.cancel:hover { background: #D4AF37; color: #0A1A2F; }
+        .modal-btn.save {
+            background: #D4AF37;
+            color: #0A1A2F;
+            border: none;
+        }
+        .modal-btn.save:hover { background: #FFFFFF; }
+
+        footer { text-align: center; padding: 3rem 0; font-size: 0.9rem; color: #AAAAAA; margin-top: 6rem; }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .admin-sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; width: 100%; }
+        }
+        @media (max-width: 768px) {
+            .controls-bar { flex-direction: column; align-items: stretch; }
+            .charts-grid { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-logo">Mogul Admin</div>
+        <ul class="admin-nav">
+            <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> User Management</a></li>
+            <li><a href="#"><i class="fas fa-user-check"></i> KYC & Accreditation</a></li>
+            <li><a href="#"><i class="fas fa-handshake"></i> Offerings & Syndications</a></li>
+            <li><a href="#"><i class="fas fa-file-alt"></i> Documents & Reports</a></li>
+            <li><a href="#"><i class="fas fa-dollar-sign"></i> Distributions & Capital Calls</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="#"><i class="fas fa-envelope"></i> Secure Messaging</a></li>
+            <li><a href="#"><i class="fas fa-calendar"></i> Events & Webinars</a></li>
+            <li><a href="#"><i class="fas fa-book"></i> Resource Library</a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics & Reporting</a></li>
+            <li><a href="#"><i class="fas fa-shield-alt"></i> Compliance & Moderation</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> System Settings</a></li>
+            <li><a href="#" class="active"><i class="fas fa-globe"></i> Website Traffic Analytics</a></li>
+            <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <!-- Page Title -->
+        <h1 class="page-title">Website Traffic Analytics</h1>
+
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+            <div class="date-range">
+                <input type="date" value="2025-12-01">
+                <span>to</span>
+                <input type="date" value="2025-12-24">
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <button class="add-campaign-btn" id="openCampaignModal"><i class="fas fa-plus"></i> Add Campaign</button>
+                <button class="ab-test-btn" id="openABTestModal"><i class="fas fa-vial"></i> New A/B Test</button>
+                <button class="export-btn"><i class="fas fa-download"></i> Export Report</button>
+            </div>
+        </div>
+
+        <!-- Campaign Details Table -->
+        <div class="table-container">
+            <h2 class="section-title">Ad Campaign Details</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Campaign Name</th>
+                        <th>Source / Medium</th>
+                        <th>Impressions</th>
+                        <th>Clicks</th>
+                        <th>CTR</th>
+                        <th>Cost</th>
+                        <th>Conversions</th>
+                        <th>CPC</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Accredited Investor Outreach Q4</td>
+                        <td>LinkedIn / Sponsored</td>
+                        <td>145,200</td>
+                        <td>8,421</td>
+                        <td>5.8%</td>
+                        <td>$42,105</td>
+                        <td>248</td>
+                        <td>$5.00</td>
+                        <td>Active</td>
+                        <td class="action-buttons">
+                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn"><i class="fas fa-chart-line"></i></button>
+                            <button class="action-btn delete"><i class="fas fa-pause"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Google Search Real Estate Focus</td>
+                        <td>Google Ads / Search</td>
+                        <td>89,300</td>
+                        <td>5,612</td>
+                        <td>6.3%</td>
+                        <td>$28,060</td>
+                        <td>156</td>
+                        <td>$5.00</td>
+                        <td>Active</td>
+                        <td class="action-buttons">
+                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn"><i class="fas fa-chart-line"></i></button>
+                            <button class="action-btn delete"><i class="fas fa-pause"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Retargeting – Abandoned Registrations</td>
+                        <td>Facebook / Retargeting</td>
+                        <td>62,100</td>
+                        <td>3,845</td>
+                        <td>6.2%</td>
+                        <td>$15,380</td>
+                        <td>98</td>
+                        <td>$4.00</td>
+                        <td>Active</td>
+                        <td class="action-buttons">
+                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn"><i class="fas fa-chart-line"></i></button>
+                            <button class="action-btn delete"><i class="fas fa-pause"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Investor Newsletter Q4</td>
+                        <td>Email / Newsletter</td>
+                        <td>—</td>
+                        <td>2,156</td>
+                        <td>—</td>
+                        <td>$0</td>
+                        <td>89</td>
+                        <td>$0</td>
+                        <td>Completed</td>
+                        <td class="action-buttons">
+                            <button class="action-btn"><i class="fas fa-eye"></i></button>
+                            <button class="action-btn"><i class="fas fa-chart-line"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Twitter Thought Leadership Series</td>
+                        <td>Twitter/X / Promoted</td>
+                        <td>78,500</td>
+                        <td>4,210</td>
+                        <td>5.4%</td>
+                        <td>$21,050</td>
+                        <td>112</td>
+                        <td>$5.00</td>
+                        <td>Active</td>
+                        <td class="action-buttons">
+                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn"><i class="fas fa-chart-line"></i></button>
+                            <button class="action-btn delete"><i class="fas fa-pause"></i></button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Webinar Promotion – Digital Assets</td>
+                        <td>LinkedIn / Event</td>
+                        <td>55,000</td>
+                        <td>3,120</td>
+                        <td>5.7%</td>
+                        <td>$15,600</td>
+                        <td>145</td>
+                        <td>$5.00</td>
+                        <td>Active</td>
+                        <td class="action-buttons">
+                            <button class="action-btn edit"><i class="fas fa-edit"></i></button>
+                            <button class="action-btn"><i class="fas fa-chart-line"></i></button>
+                            <button class="action-btn delete"><i class="fas fa-pause"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Key Metrics – Below Campaign Table -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">18,421</div>
+                <div class="stat-label">Total Visits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">12,856</div>
+                <div class="stat-label">Unique Visitors</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">3.8</div>
+                <div class="stat-label">Avg. Pages/Session</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">4:32</div>
+                <div class="stat-label">Avg. Session Duration</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">42.1%</div>
+                <div class="stat-label">Bounce Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">1,248</div>
+                <div class="stat-label">New Registrations</div>
+            </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Traffic Over Time</h3>
+                <div class="chart-container">
+                    <canvas id="trafficChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Traffic Sources</h3>
+                <div class="chart-container">
+                    <canvas id="sourcesChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Conversion Funnel</h3>
+                <div class="chart-container">
+                    <canvas id="funnelChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <h3>Ad Campaign Performance</h3>
+                <div class="chart-container">
+                    <canvas id="campaignChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tabs – Below Charts -->
+        <div class="analytics-tabs">
+            <div class="analytics-tab active">Traffic Overview</div>
+            <div class="analytics-tab">Sources & Referrals</div>
+            <div class="analytics-tab">Conversion Funnel</div>
+            <div class="analytics-tab">Campaign Performance</div>
+            <div class="analytics-tab">User Behavior</div>
+            <div class="analytics-tab">Session Replay</div>
+        </div>
+
+        <!-- User Behavior Heatmap -->
+        <div class="heatmap-container">
+            <div class="heatmap-header">
+                <h3>User Behavior Heatmap</h3>
+                <select class="page-selector" id="heatmapPageSelector">
+                    <option value="home">Homepage</option>
+                    <option value="offerings">Active Offerings</option>
+                    <option value="syndications">Syndications</option>
+                    <option value="login">Login / Registration</option>
+                    <option value="resources">Resource Library</option>
+                </select>
+            </div>
+            <div class="heatmap-wrapper" id="heatmapWrapper">
+                <div style="position: relative; width: 100%; height: 100%; background: #000; border-radius: 12px; overflow: hidden;">
+                    <div style="padding: 3rem; text-align: center;">
+                        <h2 style="font-size: 2.5rem; color: #D4AF37;">Welcome to Mogul Strategies</h2>
+                        <p style="margin: 2rem 0; font-size: 1.2rem;">Exclusive Alternative Investments for Accredited Investors</p>
+                        <button style="background: #D4AF37; color: #0A1A2F; padding: 1.5rem 3rem; border: none; border-radius: 12px; font-size: 1.4rem; cursor: pointer;">Explore Offerings</button>
+                        <div style="margin-top: 4rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+                            <div style="background: #112240; padding: 2rem; border-radius: 12px;">
+                                <h4>Real Estate Funds</h4>
+                                <p>Premium Gulf region multifamily</p>
+                            </div>
+                            <div style="background: #112240; padding: 2rem; border-radius: 12px;">
+                                <h4>Digital Assets</h4>
+                                <p>Bitcoin strategy & blockchain</p>
+                            </div>
+                            <div style="background: #112240; padding: 2rem; border-radius: 12px;">
+                                <h4>Technology Ventures</h4>
+                                <p>AI & deep tech opportunities</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <canvas class="heatmap-canvas" id="heatmapCanvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Session Replay Player -->
+        <div class="session-replay">
+            <h3>Session Replay Player</h3>
+            <div class="replay-controls">
+                <button class="replay-btn"><i class="fas fa-backward"></i></button>
+                <button class="replay-btn"><i class="fas fa-play"></i> Play</button>
+                <button class="replay-btn"><i class="fas fa-pause"></i> Pause</button>
+                <button class="replay-btn"><i class="fas fa-forward"></i></button>
+                <button class="replay-btn"><i class="fas fa-expand"></i> Fullscreen</button>
+            </div>
+            <div class="replay-player">
+                Session Replay Viewer<br><br>
+                Mouse movements • Clicks • Scrolls • Form interactions<br>
+                (Powered by Mixpanel Session Recording)
+            </div>
+            <div style="margin-top: 1.5rem; text-align: center;">
+                <select style="padding: 0.8rem; background: #0A1A2F; border: 1px solid #D4AF37; border-radius: 8px; color: #E0E0E0;">
+                    <option>Select a session to replay...</option>
+                    <option>Session #1248 – Dec 24, 2025 14:32</option>
+                    <option>Session #1247 – Dec 24, 2025 13:15</option>
+                    <option>Session #1246 – Dec 23, 2025 18:40</option>
+                </select>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add Campaign Modal -->
+    <div class="modal-overlay" id="campaignModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeCampaignModal">×</span>
+            <div class="modal-title">Add New Ad Campaign</div>
+
+            <form>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="campaignName">Campaign Name *</label>
+                        <input type="text" id="campaignName" placeholder="e.g., Accredited Investor Outreach Q4" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="platform">Platform *</label>
+                        <select id="platform" required>
+                            <option>LinkedIn Ads</option>
+                            <option>Google Ads</option>
+                            <option>Facebook/Instagram</option>
+                            <option>Twitter/X Ads</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="budget">Budget ($)</label>
+                        <input type="number" id="budget" placeholder="e.g., 50000">
+                    </div>
+                    <div class="form-group">
+                        <label for="startDate">Start Date</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="endDate">End Date</label>
+                        <input type="date" id="endDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="targetAudience">Target Audience</label>
+                        <select id="targetAudience">
+                            <option>Accredited Investors</option>
+                            <option>High Net Worth Individuals</option>
+                            <option>Family Offices</option>
+                            <option>Institutional</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="campaignGoal">Campaign Goal</label>
+                        <textarea id="campaignGoal" placeholder="e.g., Drive registrations to portal and generate qualified leads..."></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="trackingUrl">Tracking URL / UTM Parameters</label>
+                        <input type="url" id="trackingUrl" placeholder="https://mogulstrategies.com/?utm_source=linkedin&utm_campaign=q4_outreach">
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn cancel">Cancel</button>
+                    <button type="submit" class="modal-btn save">Create Campaign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Detailed A/B Test Modal -->
+    <div class="modal-overlay" id="abTestModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeABTestModal">×</span>
+            <div class="modal-title">Create New A/B Test</div>
+
+            <form>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="abTestName">Test Name *</label>
+                        <input type="text" id="abTestName" placeholder="e.g., Homepage CTA Variant Test" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="abTestPage">Target Page *</label>
+                        <select id="abTestPage" required>
+                            <option>/home</option>
+                            <option>/offerings</option>
+                            <option>/syndications</option>
+                            <option>/login</option>
+                            <option>/register</option>
+                            <option>/resources</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="abTestGoal">Primary Goal Metric *</label>
+                        <select id="abTestGoal" required>
+                            <option>Registrations</option>
+                            <option>KYC Starts</option>
+                            <option>Page Views</option>
+                            <option>Time on Page</option>
+                            <option>Click Through Rate</option>
+                            <option>Bounce Rate Reduction</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="abVariantCount">Number of Variants (including control)</label>
+                        <select id="abVariantCount">
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="abTraffic">Traffic Allocation per Variant (%)</label>
+                        <input type="number" id="abTraffic" value="50" min="10" max="90">
+                    </div>
+                    <div class="form-group">
+                        <label for="abDuration">Expected Test Duration (days)</label>
+                        <input type="number" id="abDuration" value="14" min="7">
+                    </div>
+                    <div class="form-group">
+                        <label for="abConfidence">Confidence Level Required</label>
+                        <select id="abConfidence">
+                            <option>95%</option>
+                            <option>90%</option>
+                            <option>99%</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="abHypothesis">Test Hypothesis *</label>
+                        <textarea id="abHypothesis" placeholder="State your hypothesis clearly... e.g., Changing the primary CTA from 'Explore Offerings' to 'Start Investing Today' will increase registration rate by at least 15%." required></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Variant Implementation Notes</label>
+                        <textarea placeholder="Describe what changes each variant includes...&#10;Control: Current design&#10;Variant A: New gold CTA button + testimonial section&#10;Variant B: Video hero background + simplified navigation"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn cancel">Cancel</button>
+                    <button type="submit" class="modal-btn save">Launch A/B Test</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | Admin Portal</p>
+    </footer>
+
+    <script>
+        // Sidebar toggle (same)
+
+        // Modals (same)
+
+        // Charts – Fixed with proper options
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { labels: { color: '#E0E0E0' } },
+                tooltip: { backgroundColor: '#112240' }
+            },
+            scales: {
+                x: { ticks: { color: '#AAAAAA' }, grid: { color: 'rgba(212, 175, 55, 0.1)' } },
+                y: { ticks: { color: '#AAAAAA' }, grid: { color: 'rgba(212, 175, 55, 0.1)' }, beginAtZero: true }
+            }
+        };
+
+        // Traffic Over Time
+        new Chart(document.getElementById('trafficChart'), {
+            type: 'line',
+            data: {
+                labels: ['Dec 1', 'Dec 5', 'Dec 10', 'Dec 15', 'Dec 20', 'Dec 24'],
+                datasets: [{
+                    label: 'Sessions',
+                    data: [2450, 3120, 2890, 3560, 4210, 5180],
+                    borderColor: '#D4AF37',
+                    backgroundColor: 'rgba(212, 175, 55, 0.2)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: chartOptions
+        });
+
+        // Traffic Sources
+        new Chart(document.getElementById('sourcesChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Direct', 'LinkedIn Ads', 'Google Ads', 'Email', 'Referral', 'Organic'],
+                datasets: [{
+                    data: [28, 22, 18, 15, 10, 7],
+                    backgroundColor: ['#D4AF37', '#00ccff', '#ff6b6b', '#0f0', '#ff0', '#00ffff']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom', labels: { color: '#E0E0E0' } } }
+            }
+        });
+
+        // Conversion Funnel
+        new Chart(document.getElementById('funnelChart'), {
+            type: 'bar',
+            data: {
+                labels: ['Impressions', 'Landing Views', 'Portal Visits', 'Registrations', 'KYC Started', 'Verified'],
+                datasets: [{
+                    label: 'Users',
+                    data: [145200, 18421, 12856, 1248, 892, 842],
+                    backgroundColor: '#D4AF37'
+                }]
+            },
+            options: {
+                ...chartOptions,
+                indexAxis: 'y',
+                plugins: { legend: { display: false } }
+            }
+        });
+
+        // Campaign Performance
+        new Chart(document.getElementById('campaignChart'), {
+            type: 'bar',
+            data: {
+                labels: ['LinkedIn Q4', 'Google Search', 'FB Retargeting', 'Email Q3', 'Twitter Series', 'Webinar Promo'],
+                datasets: [
+                    { label: 'Clicks', data: [8421, 5612, 3845, 2156, 4210, 3120], backgroundColor: '#D4AF37' },
+                    { label: 'Conversions', data: [248, 156, 98, 89, 112, 145], backgroundColor: '#0f0' }
+                ]
+            },
+            options: chartOptions
+        });
+
+        // Heatmap (fixed)
+        const heatmapWrapper = document.getElementById('heatmapWrapper');
+        const heatmapCanvas = document.getElementById('heatmapCanvas');
+        heatmapCanvas.width = heatmapWrapper.clientWidth;
+        heatmapCanvas.height = heatmapWrapper.clientHeight;
+
+        const heatmap = new SimpleHeatmap(heatmapCanvas);
+
+        const clicks = [];
+        for (let i = 0; i < 400; i++) {
+            clicks.push([
+                Math.random() * heatmapCanvas.width,
+                Math.random() * heatmapCanvas.height,
+                Math.random() * 60 + 20
+            ]);
+        }
+
+        heatmap.data(clicks);
+        heatmap.radius(40, 80);
+        heatmap.max(80);
+        heatmap.gradient({ 0: 'rgba(0,255,255,0)', 0.4: 'cyan', 0.7: 'lime', 1: 'yellow' });
+        heatmap.draw();
+
+        // Page selector for heatmap
+        document.getElementById('heatmapPageSelector').addEventListener('change', () => {
+            // Simulate page change
+            heatmap.draw();
+        });
+
+        // Session replay controls
+        document.querySelectorAll('.replay-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                alert('Session replay action triggered');
+            });
+        });
+    </script>
+
+</body>
+</html>

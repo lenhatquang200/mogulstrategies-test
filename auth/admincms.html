@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Management System | Mogul Strategies Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            min-height: 100vh;
+            display: flex;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: rgba(17, 34, 64, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .admin-logo { 
+            font-size: 2.2rem; 
+            color: #D4AF37; 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            font-weight: bold;
+        }
+        .admin-nav { list-style: none; }
+        .admin-nav li { margin-bottom: 0.5rem; }
+        .admin-nav a {
+            display: block;
+            padding: 1rem 2rem;
+            color: #E0E0E0;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            border-left: 4px solid #D4AF37;
+        }
+        .admin-nav i { margin-right: 1rem; width: 20px; text-align: center; }
+
+        /* Main Content */
+        main { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        .controls-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .search-input {
+            padding: 1rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+            width: 350px;
+        }
+        .create-btn {
+            background: #D4AF37;
+            color: #0A1A2F;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .create-btn:hover { background: #FFFFFF; }
+
+        .cms-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        .cms-tab {
+            padding: 1rem 2rem;
+            background: #333;
+            border-radius: 8px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .cms-tab.active, .cms-tab:hover {
+            background: #D4AF37;
+            color: #0A1A2F;
+        }
+
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        .cms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2.5rem;
+        }
+        .cms-card {
+            background: #112240;
+            border-radius: 16px;
+            padding: 2.5rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .cms-card h3 {
+            font-size: 2rem;
+            color: #D4AF37;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            padding-bottom: 0.8rem;
+        }
+
+        .page-list, .post-list {
+            list-style: none;
+        }
+        .page-item, .post-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.2rem 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .page-item:last-child, .post-item:last-child { border-bottom: none; }
+        .item-name { font-weight: bold; }
+        .item-meta { font-size: 0.9rem; color: #AAAAAA; }
+        .item-actions {
+            display: flex;
+            gap: 1rem;
+        }
+        .action-btn {
+            background: transparent;
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+        .action-btn:hover { background: #D4AF37; color: #0A1A2F; }
+        .action-btn.edit { border-color: #00ccff; color: #00ccff; }
+        .action-btn.edit:hover { background: #00ccff; color: #0A1A2F; }
+
+        .seo-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+        }
+        .metric-item {
+            text-align: center;
+        }
+        .metric-value { font-size: 2rem; color: #D4AF37; font-weight: bold; }
+        .metric-label { font-size: 1rem; margin-top: 0.5rem; }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+        .media-item {
+            background: #0A1A2F;
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+        }
+        .media-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        .media-info {
+            padding: 1rem;
+        }
+        .media-name { font-weight: bold; margin-bottom: 0.5rem; }
+        .media-meta { font-size: 0.9rem; color: #AAAAAA; }
+
+        footer { text-align: center; padding: 3rem 0; font-size: 0.9rem; color: #AAAAAA; margin-top: 6rem; }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .admin-sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; width: 100%; }
+        }
+        @media (max-width: 768px) {
+            .controls-bar { flex-direction: column; align-items: stretch; }
+            .search-input { width: 100%; }
+            .cms-grid { grid-template-columns: 1fr; }
+            .media-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-logo">Mogul Admin</div>
+        <ul class="admin-nav">
+            <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> User Management</a></li>
+            <li><a href="#"><i class="fas fa-user-check"></i> KYC & Accreditation</a></li>
+            <li><a href="#"><i class="fas fa-handshake"></i> Offerings & Syndications</a></li>
+            <li><a href="#"><i class="fas fa-file-alt"></i> Documents & Reports</a></li>
+            <li><a href="#"><i class="fas fa-dollar-sign"></i> Distributions & Capital Calls</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="#"><i class="fas fa-envelope"></i> Secure Messaging</a></li>
+            <li><a href="#"><i class="fas fa-calendar"></i> Events & Webinars</a></li>
+            <li><a href="#"><i class="fas fa-book"></i> Resource Library</a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics & Reporting</a></li>
+            <li><a href="#"><i class="fas fa-shield-alt"></i> Compliance & Moderation</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> System Settings</a></li>
+            <li><a href="#" class="active"><i class="fas fa-globe"></i> Content Management System</a></li>
+            <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <!-- Page Title -->
+        <h1 class="page-title">Content Management System</h1>
+
+        <!-- Controls Bar -->
+        <div class="controls-bar">
+            <input type="text" class="search-input" placeholder="Search pages, posts, media...">
+            <button class="create-btn"><i class="fas fa-plus"></i> Create New Page</button>
+        </div>
+
+        <!-- CMS Tabs -->
+        <div class="cms-tabs">
+            <div class="cms-tab active" data-tab="pages">Pages</div>
+            <div class="cms-tab" data-tab="blog">Blog & News</div>
+            <div class="cms-tab" data-tab="seo">SEO Tools</div>
+            <div class="cms-tab" data-tab="media">Media Library</div>
+        </div>
+
+        <!-- Tab Contents -->
+        <!-- Pages Tab -->
+        <div id="pages" class="tab-content active">
+            <div class="cms-grid">
+                <div class="cms-card">
+                    <h3>Website Pages</h3>
+                    <ul class="page-list">
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">Homepage</div>
+                                <div class="item-meta">/ • Last edited Dec 20, 2025</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn"><i class="fas fa-eye"></i> Preview</button>
+                            </div>
+                        </li>
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">About Us</div>
+                                <div class="item-meta">/about • Last edited Nov 15, 2025</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn"><i class="fas fa-eye"></i> Preview</button>
+                            </div>
+                        </li>
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">Investment Strategy</div>
+                                <div class="item-meta">/strategy • Last edited Dec 10, 2025</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn"><i class="fas fa-eye"></i> Preview</button>
+                            </div>
+                        </li>
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">Contact</div>
+                                <div class="item-meta">/contact • Last edited Oct 5, 2025</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn"><i class="fas fa-eye"></i> Preview</button>
+                            </div>
+                        </li>
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">Legal & Privacy</div>
+                                <div class="item-meta">/legal • Last edited Jan 1, 2025</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn"><i class="fas fa-eye"></i> Preview</button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="cms-card">
+                    <h3>Marketing Landing Pages</h3>
+                    <ul class="page-list">
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">Real Estate Fund Launch</div>
+                                <div class="item-meta">/re-fund-launch • Active</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn"><i class="fas fa-chart-line"></i> Analytics</button>
+                            </div>
+                        </li>
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">Webinar Registration – Digital Assets</div>
+                                <div class="item-meta">/webinar-da-2026 • 412 registrations</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn"><i class="fas fa-users"></i> Registrants</button>
+                            </div>
+                        </li>
+                    </ul>
+                    <div style="margin-top: 2rem; text-align: center;">
+                        <button class="create-btn"><i class="fas fa-plus"></i> New Landing Page</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Blog & News Tab -->
+        <div id="blog" class="tab-content">
+            <div class="cms-grid">
+                <div class="cms-card">
+                    <h3>Blog Posts & News</h3>
+                    <ul class="post-list">
+                        <li class="post-item">
+                            <div>
+                                <div class="item-name">Q4 2025 Market Commentary</div>
+                                <div class="item-meta">Published Dec 20, 2025 • 1,248 views</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn"><i class="fas fa-eye"></i> Preview</button>
+                                <button class="action-btn"><i class="fas fa-chart-line"></i> Analytics</button>
+                            </div>
+                        </li>
+                        <li class="post-item">
+                            <div>
+                                <div class="item-name">New Syndication Launch: Dubai Luxury Villa</div>
+                                <div class="item-meta">Published Nov 15, 2025 • 892 views</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn"><i class="fas fa-eye"></i> Preview</button>
+                                <button class="action-btn"><i class="fas fa-chart-line"></i> Analytics</button>
+                            </div>
+                        </li>
+                        <li class="post-item">
+                            <div>
+                                <div class="item-name">Bitcoin Strategy Update – Draft</div>
+                                <div class="item-meta">Last edited Dec 23, 2025</div>
+                            </div>
+                            <div class="item-actions">
+                                <button class="action-btn edit"><i class="fas fa-edit"></i> Edit</button>
+                                <button class="action-btn"><i class="fas fa-paper-plane"></i> Publish</button>
+                            </div>
+                        </li>
+                    </ul>
+                    <div style="margin-top: 2rem; text-align: center;">
+                        <button class="create-btn"><i class="fas fa-plus"></i> New Blog Post</button>
+                    </div>
+                </div>
+
+                <div class="cms-card">
+                    <h3>Post Analytics Overview</h3>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">12</div>
+                            <div class="stat-label">Published Posts (2025)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">8,421</div>
+                            <div class="stat-label">Total Post Views</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">4:12</div>
+                            <div class="stat-label">Avg. Time on Post</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEO Tools Tab -->
+        <div id="seo" class="tab-content">
+            <div class="cms-grid">
+                <div class="cms-card">
+                    <h3>Site-Wide SEO Performance</h3>
+                    <div class="seo-metrics">
+                        <div class="metric-item">
+                            <div class="metric-value">92</div>
+                            <div class="metric-label">Google PageSpeed Score</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">4.8</div>
+                            <div class="metric-label">Domain Authority</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">1,248</div>
+                            <div class="metric-label">Indexed Pages</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">42</div>
+                            <div class="metric-label">New Backlinks</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value">0</div>
+                            <div class="metric-label">Critical Issues</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 2rem; text-align: center;">
+                        <button class="create-btn"><i class="fas fa-search"></i> Run Full SEO Audit</button>
+                    </div>
+                </div>
+
+                <div class="cms-card">
+                    <h3>Top Ranking Keywords</h3>
+                    <ul class="page-list">
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">accredited investor platform</div>
+                                <div class="item-meta">Position 3 • Volume: 2,900</div>
+                            </div>
+                        </li>
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">private real estate funds</div>
+                                <div class="item-meta">Position 5 • Volume: 1,900</div>
+                            </div>
+                        </li>
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">alternative investments</div>
+                                <div class="item-meta">Position 8 • Volume: 4,400</div>
+                            </div>
+                        </li>
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">bitcoin investment fund</div>
+                                <div class="item-meta">Position 12 • Volume: 1,200</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="cms-card">
+                    <h3>Recent SEO Recommendations</h3>
+                    <ul class="page-list">
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">Add alt text to hero images</div>
+                                <div class="item-meta">Priority: High • Page: Homepage</div>
+                            </div>
+                        </li>
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">Improve internal linking</div>
+                                <div class="item-meta">Priority: Medium • Site-wide</div>
+                            </div>
+                        </li>
+                        <li class="page-item">
+                            <div>
+                                <div class="item-name">Update meta descriptions</div>
+                                <div class="item-meta">Priority: Low • 12 pages</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Media Library Tab -->
+        <div id="media" class="tab-content">
+            <div class="cms-grid">
+                <div class="cms-card">
+                    <h3>Media Library</h3>
+                    <div style="margin-bottom: 2rem; text-align: center;">
+                        <button class="create-btn"><i class="fas fa-upload"></i> Upload Media</button>
+                    </div>
+                    <div class="media-grid">
+                        <div class="media-item">
+                            <img src="https://via.placeholder.com/400x300/112240/D4AF37?text=Hero+Image+1" alt="Hero">
+                            <div class="media-info">
+                                <div class="media-name">hero-home-2025.jpg</div>
+                                <div class="media-meta">2.4 MB • Dec 2025</div>
+                            </div>
+                        </div>
+                        <div class="media-item">
+                            <img src="https://via.placeholder.com/400x300/112240/D4AF37?text=Team+Photo" alt="Team">
+                            <div class="media-info">
+                                <div class="media-name">team-photo.jpg</div>
+                                <div class="media-meta">1.8 MB • Nov 2025</div>
+                            </div>
+                        </div>
+                        <div class="media-item">
+                            <img src="https://via.placeholder.com/400x300/112240/D4AF37?text=Property+Dubai" alt="Property">
+                            <div class="media-info">
+                                <div class="media-name">dubai-villa.jpg</div>
+                                <div class="media-meta">3.1 MB • Oct 2025</div>
+                            </div>
+                        </div>
+                        <div class="media-item">
+                            <img src="https://via.placeholder.com/400x300/112240/D4AF37?text=Chart+Performance" alt="Chart">
+                            <div class="media-info">
+                                <div class="media-name">performance-chart.png</div>
+                                <div class="media-meta">892 KB • Dec 2025</div>
+                            </div>
+                        </div>
+                        <div class="media-item">
+                            <img src="https://via.placeholder.com/400x300/112240/D4AF37?text=Logo" alt="Logo">
+                            <div class="media-info">
+                                <div class="media-name">mogul-logo.svg</div>
+                                <div class="media-meta">124 KB • Jan 2025</div>
+                            </div>
+                        </div>
+                        <div class="media-item">
+                            <img src="https://via.placeholder.com/400x300/112240/D4AF37?text=Webinar+Thumbnail" alt="Webinar">
+                            <div class="media-info">
+                                <div class="media-name">webinar-q1-2026.jpg</div>
+                                <div class="media-meta">1.5 MB • Dec 2025</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | Admin Portal</p>
+    </footer>
+
+    <script>
+        // Mobile sidebar toggle (same as before)
+
+        // CMS Tab Switching
+        document.querySelectorAll('.cms-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+
+                // Update active tab
+                document.querySelectorAll('.cms-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Show corresponding content
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+    </script>
+
+</body>
+</html>

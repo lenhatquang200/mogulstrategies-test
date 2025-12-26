@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Strategies | Mogul Strategies</title>
+    <meta name="description" content="Discover Mogul Strategies' sophisticated investment approach: diversification across verticals, Bitcoin integration for risk mitigation, operational excellence, and secure compliance for accredited investors.">
+    <style>
+        /* Consistent styles from previous pages */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            line-height: 1.6; 
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            box-shadow: 0 0 10px white;
+            animation: shooting-star linear infinite;
+        }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+        a { color: #D4AF37; text-decoration: none; transition: color 0.3s; }
+        a:hover { color: #FFFFFF; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
+
+        header { position: fixed; top: 0; width: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 1000; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; }
+        .logo { font-size: 1.8rem; font-weight: bold; color: #D4AF37; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { font-weight: 500; }
+        .cta-button { background: #D4AF37; color: #0A1A2F; padding: 0.8rem 1.8rem; border-radius: 4px; font-weight: bold; transition: background 0.3s; }
+        .cta-button:hover { background: #FFFFFF; color: #0A1A2F; }
+
+        .hero { height: 80vh; min-height: 600px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://thumbs.dreamstime.com/b/stock-market-chart-showing-growing-trends-upward-arrow-bars-illustrating-positive-financial-investment-trading-data-394056257.jpg') center/cover no-repeat; display: flex; align-items: center; }
+        .hero-content { text-align: center; max-width: 1000px; margin: 0 auto; }
+        .hero h1 { font-size: 4.5rem; color: #FFFFFF; margin-bottom: 1.5rem; }
+        .hero p { font-size: 1.6rem; max-width: 800px; margin: 0 auto; color: #CCCCCC; }
+
+        section { padding: 8rem 0; }
+        .section-title { text-align: center; font-size: 3rem; margin-bottom: 4rem; color: #D4AF37; }
+
+        .strategy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 3rem; }
+        .strategy-card { 
+            background: #112240; 
+            padding: 2.5rem; 
+            border-radius: 12px; 
+            text-align: center; 
+            animation: pulse-glow 5s ease-in-out infinite;
+            transition: transform 0.4s ease;
+        }
+        .strategy-card:hover { transform: translateY(-10px); }
+        .strategy-card img { width: 100%; height: 250px; object-fit: cover; border-radius: 12px; margin-bottom: 1.5rem; }
+        .strategy-card h3 { font-size: 2rem; color: #D4AF37; margin-bottom: 1rem; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 4rem; }
+        .feature-item { background: rgba(17, 34, 64, 0.6); padding: 2rem; border-radius: 12px; animation: pulse-glow 4s ease-in-out infinite; text-align: center; }
+
+        footer { background: #000000; padding: 4rem 0 2rem; text-align: center; }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .strategy-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">Mogul Strategies</div>
+                <div class="nav-links">
+                    <a href="/">Home</a>
+                    <a href="/about.html">About</a>
+                    <a href="/strategies.html">Strategies</a>
+                    <a href="/funds.html">Our Funds</a>
+                    <a href="#insights">Insights</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <a href="https://mogulstrategies.invportal.com/" class="cta-button">Investors Portal</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Our Investment Strategies</h1>
+            <p>Sophisticated, diversified approaches blending traditional stability with innovative edges — including Bitcoin integration for enhanced risk mitigation and superior potential returns.</p>
+        </div>
+    </section>
+
+    <section id="core-approach">
+        <div class="container">
+            <h2 class="section-title">Core Investment Approach</h2>
+            <div class="strategy-grid">
+                <div class="strategy-card">
+                    <img src="https://thumbs.dreamstime.com/b/stock-market-chart-showing-growing-trends-upward-arrow-bars-illustrating-positive-financial-investment-trading-data-394056257.jpg" alt="Portfolio Diversification">
+                    <h3>Diversification Across Verticals</h3>
+                    <p>We allocate capital across equities, digital assets, real estate, technologies, creative arts, and sustainable recycling — reducing volatility while capturing growth in high-potential sectors.</p>
+                </div>
+                <div class="strategy-card">
+                    <img src="https://www.blockhead.co/content/images/size/w1200/2025/08/blockheadco_digital_lines_and_nodes_and_blockchain_elements_abs_e3a76075-be47-4b4f-8ff5-8a98f0ccc193.webp" alt="Bitcoin Integration">
+                    <h3>Innovative Bitcoin Integration</h3>
+                    <p>Seamlessly blending Bitcoin and blockchain assets with conventional strategies for enhanced portfolio resilience and asymmetric upside potential.</p>
+                </div>
+                <div class="strategy-card">
+                    <img src="https://media.istockphoto.com/id/2161298305/photo/big-data-technology-background.jpg?s=612x612&w=0&k=20&c=khClhyFXpnxIFpeZl3rHjE_m1mLhP_0YEuZmBE1V7ME=" alt="AI-Driven Insights">
+                    <h3>AI-Driven Insights & Analytics</h3>
+                    <p>Leveraging artificial intelligence and advanced data analytics to identify opportunities, optimize allocations, and deliver predictive performance modeling.</p>
+                </div>
+                <div class="strategy-card">
+                    <img src="https://media.istockphoto.com/id/1488294044/photo/businessman-works-on-laptop-showing-business-analytics-dashboard-with-charts-metrics-and-kpi.jpg?s=612x612&w=0&k=20&c=AcxzQAe1LY4lGp0C6EQ6reI7ZkFC2ftS09yw_3BVkpk=" alt="Advanced Risk Management">
+                    <h3>Advanced Risk Management</h3>
+                    <p>Rigorous assessment, 4-eyes checks, deal-by-deal performance fees, and strategic hedging to protect capital in all market conditions.</p>
+                </div>
+                <div class="strategy-card">
+                    <img src="https://www.elliptic.co/hubfs/75_Global-crypto-regulation-landscape-launch_R%26A-Image.png" alt="Sustainable & Ethical Growth">
+                    <h3>Sustainable & Ethical Growth</h3>
+                    <p>Prioritizing responsible investments with long-term environmental and societal impact, aligned with ESG principles across our funds.</p>
+                </div>
+                <div class="strategy-card">
+                    <img src="https://gabelli.com/wp-content/uploads/2025/10/fifa-4-1024x576.png" alt="Exclusive Deal Flow">
+                    <h3>Exclusive Syndications & Deal Flow</h3>
+                    <p>Providing accredited investors access to proprietary, high-impact private deals and syndications not available on public markets.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="operational-excellence">
+        <div class="container">
+            <h2 class="section-title">Operational Excellence & Security</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <h3>Secure Compliance</h3>
+                    <p>Strict protocols including role-based access, encryption, multi-factor authentication, and Mogul Custody Solutions.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Advanced Tools</h3>
+                    <p>AI-driven insights, automated valuations, customized reporting, and in-depth visualization for transparent performance monitoring.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Flexible Structures</h3>
+                    <p>Support for diverse payments (wire, crypto, etc.), performance fees (deal-by-deal or whole fund), and tailored syndications.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>Investor-Centric</h3>
+                    <p>Exclusive access to high-impact opportunities, personalized support, and seamless portal integration.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Mogul Strategies Inc. For Accredited Investors Only.</p>
+            <p>Call us: <a href="tel:+18007760990">(800) 776-0990</a> | <a href="https://mogulstrategies.invportal.com/">Investors Portal</a></p>
+            <p><small>Investments involve risk. Past performance is not indicative of future results.</small></p>
+        </div>
+    </footer>
+
+</body>
+</html>

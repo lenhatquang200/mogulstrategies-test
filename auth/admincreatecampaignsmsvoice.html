@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Campaign | Mogul Strategies Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            background: #000000; 
+            color: #E0E0E0; 
+            min-height: 100vh;
+            display: flex;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1606125784258-570fc63c22c1?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8ZGVlcCUyMHNwYWNlfGVufDB8fDB8fHww') center/cover no-repeat;
+            opacity: 0.3;
+            z-index: -2;
+        }
+        .stars {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        @keyframes shooting-star {
+            0% { transform: translateX(0) translateY(0) rotate(45deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateX(200vw) translateY(200vh) rotate(45deg); opacity: 0; }
+        }
+        .star { position: absolute; width: 2px; height: 2px; background: white; box-shadow: 0 0 10px white; animation: shooting-star linear infinite; }
+        .star:nth-child(1) { top: 20%; left: -10%; animation-delay: 0s; animation-duration: 8s; }
+        .star:nth-child(2) { top: 50%; left: -20%; animation-delay: 3s; animation-duration: 10s; }
+        .star:nth-child(3) { top: 10%; left: -15%; animation-delay: 6s; animation-duration: 12s; }
+        .star:nth-child(4) { top: 70%; left: -5%; animation-delay: 9s; animation-duration: 7s; }
+        .star:nth-child(5) { top: 30%; left: -30%; animation-delay: 12s; animation-duration: 9s; }
+
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
+        }
+
+        h1, h2, h3, h4 { font-family: 'Playfair Display', serif; font-weight: 700; }
+
+        /* Sidebar */
+        .admin-sidebar {
+            width: 280px;
+            background: rgba(17, 34, 64, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem 0;
+            position: fixed;
+            left: 0; top: 0; bottom: 0;
+            overflow-y: auto;
+            z-index: 1000;
+            animation: pulse-glow 6s ease-in-out infinite;
+        }
+        .admin-logo { 
+            font-size: 2.2rem; 
+            color: #D4AF37; 
+            text-align: center; 
+            margin-bottom: 3rem; 
+            font-weight: bold;
+        }
+        .admin-nav { list-style: none; }
+        .admin-nav li { margin-bottom: 0.5rem; }
+        .admin-nav a {
+            display: block;
+            padding: 1rem 2rem;
+            color: #E0E0E0;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .admin-nav a:hover, .admin-nav a.active {
+            background: rgba(212, 175, 55, 0.2);
+            color: #D4AF37;
+            border-left: 4px solid #D4AF37;
+        }
+        .admin-nav i { margin-right: 1rem; width: 20px; text-align: center; }
+
+        /* Main Content */
+        main { margin-left: 280px; padding: 2rem; width: calc(100% - 280px); }
+        .page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+
+        .create-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .create-card {
+            background: #112240;
+            border-radius: 16px;
+            padding: 3rem;
+            animation: pulse-glow 5s ease-in-out infinite;
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+        .step {
+            padding: 1rem 2rem;
+            background: #333;
+            border-radius: 30px;
+            margin: 0 0.5rem;
+            transition: all 0.3s;
+        }
+        .step.active {
+            background: #D4AF37;
+            color: #0A1A2F;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+        }
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 1.2rem;
+            background: #0A1A2F;
+            border: 1px solid #D4AF37;
+            border-radius: 8px;
+            color: #E0E0E0;
+            font-size: 1rem;
+        }
+        .form-group textarea { height: 180px; resize: vertical; }
+
+        .upload-area {
+            border: 3px dashed #D4AF37;
+            border-radius: 12px;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 1rem;
+        }
+        .upload-area:hover { background: rgba(212, 175, 55, 0.1); }
+        .upload-icon { font-size: 4rem; color: #D4AF37; margin-bottom: 1rem; }
+
+        .phone-pool {
+            background: #0A1A2F;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .phone-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .phone-item:last-child { border-bottom: none; }
+        .phone-number { font-family: monospace; font-size: 1.2rem; color: #D4AF37; }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 2rem;
+            margin-top: 4rem;
+        }
+        .btn {
+            padding: 1.2rem 3rem;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn.cancel {
+            background: transparent;
+            border: 1px solid #D4AF37;
+            color: #D4AF37;
+        }
+        .btn.cancel:hover { background: #D4AF37; color: #0A1A2F; }
+        .btn.save {
+            background: #D4AF37;
+            color: #0A1A2F;
+            border: none;
+        }
+        .btn.save:hover { background: #FFFFFF; }
+
+        footer { text-align: center; padding: 3rem 0; font-size: 0.9rem; color: #AAAAAA; margin-top: 6rem; }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .admin-sidebar.open { transform: translateX(0); }
+            main { margin-left: 0; width: 100%; }
+        }
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .actions { flex-direction: column; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="stars">
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+    <!-- Admin Sidebar -->
+    <aside class="admin-sidebar" id="adminSidebar">
+        <div class="admin-logo">Mogul Admin</div>
+        <ul class="admin-nav">
+            <li><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> User Management</a></li>
+            <li><a href="#"><i class="fas fa-user-check"></i> KYC & Accreditation</a></li>
+            <li><a href="#"><i class="fas fa-handshake"></i> Offerings & Syndications</a></li>
+            <li><a href="#"><i class="fas fa-file-alt"></i> Documents & Reports</a></li>
+            <li><a href="#"><i class="fas fa-dollar-sign"></i> Distributions & Capital Calls</a></li>
+            <li><a href="#"><i class="fas fa-bell"></i> Notifications</a></li>
+            <li><a href="#"><i class="fas fa-envelope"></i> Secure Messaging</a></li>
+            <li><a href="#"><i class="fas fa-calendar"></i> Events & Webinars</a></li>
+            <li><a href="#"><i class="fas fa-book"></i> Resource Library</a></li>
+            <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics & Reporting</a></li>
+            <li><a href="#"><i class="fas fa-shield-alt"></i> Compliance & Moderation</a></li>
+            <li><a href="#"><i class="fas fa-cog"></i> System Settings</a></li>
+            <li><a href="#" class="active"><i class="fas fa-phone-volume"></i> Voice & SMS Campaigns</a></li>
+            <li><a href="#"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main>
+        <!-- Page Title -->
+        <h1 class="page-title">Create New Campaign</h1>
+
+        <!-- Step Indicator -->
+        <div class="step-indicator">
+            <div class="step active">1. Basic Info</div>
+            <div class="step">2. Phone Number</div>
+            <div class="step">3. Script & AI</div>
+            <div class="step">4. Targeting</div>
+            <div class="step">5. Schedule & Review</div>
+        </div>
+
+        <!-- Create Campaign Form -->
+        <div class="create-container">
+            <div class="create-card">
+                <form>
+                    <!-- Step 1: Basic Info -->
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="campaignName">Campaign Name *</label>
+                            <input type="text" id="campaignName" placeholder="e.g., Q4 Accredited Investor Outreach" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignType">Campaign Type *</label>
+                            <select id="campaignType" required>
+                                <option>Voice AI Outbound</option>
+                                <option>Voice AI Inbound Support</option>
+                                <option>SMS Campaign</option>
+                                <option>Hybrid (SMS + Voice)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="campaignGoal">Primary Goal *</label>
+                            <select id="campaignGoal" required>
+                                <option>Lead Qualification</option>
+                                <option>Capital Call Reminders</option>
+                                <option>Event Promotion</option>
+                                <option>Investor Support</option>
+                                <option>General Outreach</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="expectedVolume">Expected Volume (calls/SMS)</label>
+                            <input type="number" id="expectedVolume" placeholder="e.g., 5000">
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Phone Number Assignment -->
+                    <h3 style="font-size: 1.8rem; color: #D4AF37; margin: 3rem 0 1.5rem;">Assign Phone Number</h3>
+                    <div class="form-group">
+                        <label>Available Twilio Numbers</label>
+                        <div class="phone-pool">
+                            <div class="phone-item">
+                                <span class="phone-number">+1 (555) 421-8921</span>
+                                <span>Available – New York area</span>
+                            </div>
+                            <div class="phone-item">
+                                <span class="phone-number">+1 (555) 888-5678</span>
+                                <span>Available – National toll-free</span>
+                            </div>
+                            <div class="phone-item">
+                                <span class="phone-number">+1 (555) 777-1234</span>
+                                <span>Available – Miami area</span>
+                            </div>
+                            <div class="phone-item">
+                                <span class="phone-number">+1 (855) MOGUL-AI</span>
+                                <span>Available – Vanity number</span>
+                            </div>
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 0.9rem; color: #AAAAAA;">Or purchase new number via Twilio integration</p>
+                    </div>
+
+                    <!-- Step 3: AI Script / Message -->
+                    <h3 style="font-size: 1.8rem; color: #D4AF37; margin: 3rem 0 1.5rem;">AI Script & Behavior (SimpleTalkAI)</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="aiPrompt">AI System Prompt *</label>
+                            <textarea id="aiPrompt" placeholder="You are a professional, warm, and knowledgeable investor relations associate for Mogul Strategies..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="voiceProfile">Voice Profile</label>
+                            <select id="voiceProfile">
+                                <option>Matthew (Professional male)</option>
+                                <option>Joanna (Warm female)</option>
+                                <option>Custom Neural Voice</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="language">Language</label>
+                            <select id="language">
+                                <option>English (US)</option>
+                                <option>English (UK)</option>
+                                <option>Spanish</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Targeting -->
+                    <h3 style="font-size: 1.8rem; color: #D4AF37; margin: 3rem 0 1.5rem;">Targeting & Contact List</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="targetSource">Contact Source</label>
+                            <select id="targetSource">
+                                <option>Upload CSV</option>
+                                <option>CRM Segment</option>
+                                <option>Manual Entry</option>
+                                <option>All Accredited Investors</option>
+                            </select>
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Upload Contact List (CSV)</label>
+                            <div class="upload-area">
+                                <div class="upload-icon">📤</div>
+                                <p>Drag & drop CSV or click to browse</p>
+                                <p style="font-size: 0.9rem; margin-top: 0.5rem;">Required columns: Name, Phone, Email (optional)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: Schedule -->
+                    <h3 style="font-size: 1.8rem; color: #D4AF37; margin: 3rem 0 1.5rem;">Schedule & Compliance</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="startDate">Start Date *</label>
+                            <input type="date" id="startDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">End Date</label>
+                            <input type="date" id="endDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="callingHours">Calling Hours (local time)</label>
+                            <select id="callingHours">
+                                <option>9AM – 8PM (Compliant)</option>
+                                <option>10AM – 6PM (Conservative)</option>
+                                <option>Custom</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dncCompliance">DNC / Opt-out Compliance</label>
+                            <select id="dncCompliance">
+                                <option>Enabled (Scrub against national DNC)</option>
+                                <option>Disabled (internal list only)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button type="button" class="btn cancel">Cancel</button>
+                        <button type="submit" class="btn save">Save as Draft</button>
+                        <button type="submit" class="btn save">Launch Campaign</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mogul Strategies Inc. | Admin Portal</p>
+    </footer>
+
+    <script>
+        // Mobile sidebar toggle
+        const hamburger = document.createElement('button');
+        hamburger.innerHTML = '☰';
+        hamburger.style.position = 'fixed';
+        hamburger.style.top = '1rem';
+        hamburger.style.left = '1rem';
+        hamburger.style.zIndex = '1001';
+        hamburger.style.fontSize = '2rem';
+        hamburger.style.background = 'none';
+        hamburger.style.border = 'none';
+        hamburger.style.color = '#D4AF37';
+        hamburger.style.display = 'none';
+        document.body.appendChild(hamburger);
+
+        const sidebar = document.getElementById('adminSidebar');
+
+        hamburger.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth <= 1024) {
+                hamburger.style.display = 'block';
+            } else {
+                hamburger.style.display = 'none';
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
+
+</body>
+</html>
