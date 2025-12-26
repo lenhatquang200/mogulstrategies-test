@@ -56,7 +56,7 @@
         }
         .header-container { max-width: 1600px; margin: 0 auto; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
         .header-left { display: flex; align-items: center; gap: 1.5rem; }
-        .logo { font-size: 2rem; color: #D4AF37; font-weight: bold; }
+        .logo { font-size: 2rem; color: #D4AF37; font-weight: bold; text-decoration: none; display: inline-block; }
         .hamburger { display: none; font-size: 1.8rem; background: none; border: none; color: #D4AF37; cursor: pointer; }
 
         .sidebar-toggle {
@@ -80,7 +80,7 @@
         .dropdown { display: none; position: absolute; right: 0; top: 100%; background: rgba(17, 34, 64, 0.9); border-radius: 8px; padding: 1rem; min-width: 200px; }
         .dropdown a, .dropdown button { display: block; padding: 0.5rem 0; width: 100%; text-align: left; }
         .user-menu:hover .dropdown { display: block; }
-        .logout { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; padding: 0.6rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.3s; }
+        .logout { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; padding: 0.6rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
         .logout:hover { background: #D4AF37; color: #0A1A2F; }
 
         .sidebar {
@@ -171,15 +171,15 @@
         <div class="header-container">
             <div class="header-left">
                 <button class="hamburger" aria-label="Menu">☰</button>
-                <div class="logo">Mogul Strategies</div>
+                <a href="portfoliosummary.html" class="logo">Mogul Strategies</a>
                 <button class="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
             </div>
             <div class="user-menu">
                 <span>Welcome, John Doe</span>
                 <button class="user-menu-btn">▼</button>
                 <div class="dropdown">
-                    <a href="#">Account Settings</a>
-                    <button class="logout">Logout</button>
+                    <a href="usersettings.html">Account Settings</a>
+                    <a href="../login.html" class="logout">Logout</a>
                 </div>
             </div>
         </div>
@@ -188,20 +188,20 @@
     <!-- Sidebar Navigation -->
     <nav class="sidebar" id="sidebar">
         <ul class="nav-menu">
-            <li><a href="#">KYC & Accreditation</a></li>
-            <li><a href="#" class="active">Active Offerings</a></li>
-            <li><a href="#">Subscription Center</a></li>
-            <li><a href="#">My Investments</a></li>
-            <li><a href="#">Portfolio Summary</a></li>
-            <li><a href="#">Performance Analytics</a></li>
-            <li><a href="#">Documents & Reports</a></li>
-            <li><a href="#">Distributions & Tax</a></li>
-            <li><a href="#">Capital Calls</a></li>
-            <li><a href="#">Notifications</a></li>
-            <li><a href="#">Secure Messaging</a></li>
-            <li><a href="#">Webinars & Events</a></li>
-            <li><a href="#">Resource Library</a></li>
-            <li><a href="#">Support & FAQ</a></li>
+            <li><a href="kyc1.html">KYC & Accreditation</a></li>
+            <li><a href="activeofferings.html" class="active">Active Offerings</a></li>
+            <li><a href="subscriptioncenter.html">Subscription Center</a></li>
+            <li><a href="myinvestments.html">My Investments</a></li>
+            <li><a href="portfoliosummary.html">Portfolio Summary</a></li>
+            <li><a href="performanceanalytics.html">Performance Analytics</a></li>
+            <li><a href="docsreports.html">Documents & Reports</a></li>
+            <li><a href="distributionstax.html">Distributions & Tax</a></li>
+            <li><a href="capitalcalls.html">Capital Calls</a></li>
+            <li><a href="notifications.html">Notifications</a></li>
+            <li><a href="securemessaging.html">Secure Messaging</a></li>
+            <li><a href="events.html">Webinars & Events</a></li>
+            <li><a href="resourcelibrary.html">Resource Library</a></li>
+            <li><a href="supportfaq.html">Support & FAQ</a></li>
         </ul>
     </nav>
 
