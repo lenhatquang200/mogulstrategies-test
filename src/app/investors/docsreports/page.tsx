@@ -1,7 +1,20 @@
+'use client';
 import React from 'react';
 
 export default function DocsReportsPage() {
-    const categories = [
+    interface Document {
+        name: string;
+        date: string;
+        status?: string;
+        action?: string;
+    }
+
+    interface Category {
+        title: string;
+        docs: Document[];
+    }
+
+    const categories: Category[] = [
         {
             title: 'Quarterly Investor Letters',
             docs: [
@@ -48,6 +61,7 @@ export default function DocsReportsPage() {
             ]
         }
     ];
+
 
     return (
         <>
