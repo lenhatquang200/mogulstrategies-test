@@ -23,6 +23,7 @@ export default function PortfolioSummaryPage() {
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             position: 'bottom',
@@ -49,6 +50,7 @@ export default function PortfolioSummaryPage() {
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     plugins: {
                         legend: { labels: { color: '#E0E0E0' } }
                     },
@@ -112,7 +114,7 @@ export default function PortfolioSummaryPage() {
             {/* Portfolio Stats */}
             <section id="portfolio-stats">
                 <h2 className="section-title">Portfolio Overview</h2>
-                <div className="stats-grid">
+                <div className="stats-grid-portal">
                     <div className="stat-card">
                         <div className="stat-value">$1,240,000</div>
                         <p className="stat-label">Total Invested</p>
@@ -142,11 +144,15 @@ export default function PortfolioSummaryPage() {
                 <div className="charts-grid">
                     <div className="chart-card">
                         <h3>Asset Allocation</h3>
-                        <canvas ref={allocationCanvasRef}></canvas>
+                        <div style={{ position: 'relative', height: '300px', width: '100%' }}>
+                            <canvas ref={allocationCanvasRef}></canvas>
+                        </div>
                     </div>
                     <div className="chart-card">
                         <h3>Portfolio Value Over Time</h3>
-                        <canvas ref={portfolioCanvasRef}></canvas>
+                        <div style={{ position: 'relative', height: '300px', width: '100%' }}>
+                            <canvas ref={portfolioCanvasRef}></canvas>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -186,4 +192,5 @@ export default function PortfolioSummaryPage() {
             </section>
         </>
     );
+
 }

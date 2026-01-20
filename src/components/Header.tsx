@@ -1,9 +1,12 @@
 'use client';
 import Link from 'next/link';
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { status } = useSession();
+    const portalLink = status === 'authenticated' ? '/investors/portfoliosummary' : '/login';
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -25,7 +28,8 @@ export default function Header() {
                         <Link href="/funds" onClick={closeMenu}>Our Funds</Link>
                         <Link href="/insights" onClick={closeMenu}>Insights</Link>
                         <Link href="/contact" onClick={closeMenu}>Contact</Link>
-                        <Link href="/login" className="cta-button" onClick={closeMenu}>Investors Portal</Link>
+                        <Link href={portalLink} className="cta-button" onClick={closeMenu}>Investors Portal</Link>
+
                     </div>
                     <button
                         className="mobile-menu-toggle"
@@ -35,7 +39,7 @@ export default function Header() {
                     >
                         {isMenuOpen ? '✕' : '☰'}
                     </button>
-                    <Link href="/login" className="cta-button">Investors Portal</Link>
+                    <Link href={portalLink} className="cta-button">Investors Portal</Link>
                 </nav>
             </div>
         </header>

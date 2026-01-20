@@ -8,7 +8,7 @@ export default function LoginPage() {
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
     const [loginData, setLoginData] = useState({ email: '', password: '' });
-    const [registerData, setRegisterData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+    const [registerData, setRegisterData] = useState({ name: '', email: '', password: '', confirmPassword: '', accreditationStatus: '' });
     const [status, setStatus] = useState<{ type: 'error' | 'success', message: string } | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -58,6 +58,7 @@ export default function LoginPage() {
                     name: registerData.name,
                     email: registerData.email,
                     password: registerData.password,
+                    accreditationStatus: registerData.accreditationStatus,
                 }),
             });
 
@@ -81,7 +82,7 @@ export default function LoginPage() {
         setLoginData({ ...loginData, [e.target.name]: e.target.value });
     };
 
-    const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setRegisterData({ ...registerData, [e.target.name]: e.target.value });
     };
 
@@ -217,7 +218,14 @@ export default function LoginPage() {
                             </div>
                             <div className="form-group">
                                 <label htmlFor="reg-accredited">Accreditation Status *</label>
-                                <select id="reg-accredited" name="reg-accredited" required style={{ width: '100%' }}>
+                                <select
+                                    id="reg-accredited"
+                                    name="accreditationStatus"
+                                    required
+                                    style={{ width: '100%' }}
+                                    value={registerData.accreditationStatus}
+                                    onChange={handleRegisterChange}
+                                >
                                     <option value="">Select your status...</option>
                                     <option value="individual">Accredited Individual Investor</option>
                                     <option value="family">Family Office</option>

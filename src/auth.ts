@@ -2,8 +2,10 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { authConfig } from "./auth.config";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+    ...authConfig,
     providers: [
         Credentials({
             credentials: {
@@ -23,8 +25,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 });
 
                 if (!user) {
-                    // User not found
-                    // In production, acts same as wrong password to prevent enumeration
                     return null;
                 }
 
@@ -34,30 +34,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     return null;
                 }
 
-                // Return user object that matches the User type expected by NextAuth
                 return {
                     id: user.id.toString(),
                     email: user.email,
                     name: user.name,
+                    role: user.role,
                 };
             },
         }),
     ],
-    pages: {
-        signIn: '/login',
-    },
-    callbacks: {
-        async session({ session, token }) {
-            if (token && session.user) {
-                session.user.id = token.sub as string;
-            }
-            return session;
-        },
-        async jwt({ token, user }) {
-            if (user) {
-                token.sub = user.id;
-            }
-            return token;
-        }
-    }
 });
+

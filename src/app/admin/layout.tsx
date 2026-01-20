@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { signOut } from 'next-auth/react';
 
 export default function AdminLayout({
     children,
@@ -26,7 +27,6 @@ export default function AdminLayout({
         { name: 'Analytics & Reporting', href: '/admin/reporting', icon: 'fa-chart-bar' },
         { name: 'Compliance & Moderation', href: '/admin/moderation', icon: 'fa-shield-alt' },
         { name: 'System Settings', href: '/admin/settings', icon: 'fa-cog' },
-        { name: 'Logout', href: '/login', icon: 'fa-sign-out-alt' },
     ];
 
     return (
@@ -67,6 +67,27 @@ export default function AdminLayout({
                             </Link>
                         </li>
                     ))}
+                    <li>
+                        <button
+                            onClick={() => signOut({ callbackUrl: '/login' })}
+                            style={{
+                                width: '100%',
+                                background: 'none',
+                                border: 'none',
+                                color: '#E0E0E0',
+                                padding: '1rem 2rem',
+                                textAlign: 'left',
+                                cursor: 'pointer',
+                                fontSize: '1rem',
+                                transition: 'all 0.3s'
+                            }}
+                            className="admin-logout-btn"
+                        >
+                            <i className="fas fa-sign-out-alt" style={{ marginRight: '1rem', width: '20px', textAlign: 'center' }}></i>
+                            Logout
+                        </button>
+                    </li>
+
                 </ul>
             </aside>
 
