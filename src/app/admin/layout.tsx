@@ -12,6 +12,10 @@ export default function AdminLayout({
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const pathname = usePathname();
 
+    const toggleSidebar = () => {
+        setIsSidebarOpen(!isSidebarOpen);
+    };
+
     const navItems = [
         { name: 'Dashboard', href: '/admin', icon: 'fa-tachometer-alt' },
         { name: 'User Management', href: '/admin/usermanage', icon: 'fa-users' },
@@ -30,39 +34,23 @@ export default function AdminLayout({
     ];
 
     return (
-        <div className="admin-portal-layout">
-            {/* Mobile Toggle */}
-            <button
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                style={{
-                    position: 'fixed', top: '1rem', left: '1rem', zIndex: 1100,
-                    background: 'none', border: 'none', color: '#D4AF37', fontSize: '2rem',
-                    display: isSidebarOpen ? 'none' : 'block'
-                }}
-                className="mobile-hamburger"
-            >
-                ☰
-            </button>
-
-            {/* Sidebar */}
-            <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`} style={{
-                width: '280px', background: 'rgba(17, 34, 64, 0.9)', backdropFilter: 'blur(10px)',
-                padding: '2rem 0', position: 'fixed', left: 0, top: 0, bottom: 0,
-                overflowY: 'auto', zIndex: 1000, transition: 'transform 0.3s ease',
-                transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
-                borderRight: '1px solid rgba(212, 175, 55, 0.2)'
-            }}>
-                <div style={{ padding: '0 2rem', marginBottom: '1rem' }}>
-                    <button onClick={() => setIsSidebarOpen(false)} style={{ background: 'none', border: 'none', color: '#D4AF37', fontSize: '1.5rem', cursor: 'pointer', float: 'right' }}>✕</button>
+        <div className="portal-layout">
+            <header>
+                <div className="header-container">
+                    <div className="header-left">
+                        <button className="hamburger" aria-label="Menu" onClick={toggleSidebar}>☰</button>
+                        <Link href="/admin" className="logo">Mogul Admin</Link>
+                    </div>
                 </div>
-                <Link href="/admin" className="admin-logo" style={{ textDecoration: 'none', display: 'block', textAlign: 'center', fontSize: '2.2rem', color: '#D4AF37', fontWeight: 'bold', marginBottom: '3rem' }}>
-                    Mogul Admin
-                </Link>
-                <ul className="admin-nav">
+            </header>
+
+            {/* Sidebar Navigation */}
+            <aside className={`sidebar ${isSidebarOpen ? '' : 'collapsed'}`} id="sidebar">
+                <ul className="nav-menu">
                     {navItems.map((item) => (
                         <li key={item.href}>
                             <Link href={item.href} className={pathname === item.href ? 'active' : ''}>
-                                <i className={`fas ${item.icon}`} style={{ marginRight: '1rem', width: '20px', textAlign: 'center' }}></i>
+                                <i className={`fas ${item.icon}`} style={{ marginRight: '0.8rem', width: '20px', textAlign: 'center' }}></i>
                                 {item.name}
                             </Link>
                         </li>
@@ -70,37 +58,31 @@ export default function AdminLayout({
                     <li>
                         <button
                             onClick={() => signOut({ callbackUrl: '/login' })}
+                            className="logout"
                             style={{
                                 width: '100%',
                                 background: 'none',
                                 border: 'none',
-                                color: '#E0E0E0',
-                                padding: '1rem 2rem',
+                                color: '#D4AF37',
+                                padding: '0.9rem 2rem',
                                 textAlign: 'left',
                                 cursor: 'pointer',
-                                fontSize: '1rem',
-                                transition: 'all 0.3s'
+                                fontSize: '0.95rem',
+                                transition: 'all 0.3s',
+                                fontWeight: 500
                             }}
-                            className="admin-logout-btn"
                         >
-                            <i className="fas fa-sign-out-alt" style={{ marginRight: '1rem', width: '20px', textAlign: 'center' }}></i>
+                            <i className="fas fa-sign-out-alt" style={{ marginRight: '0.8rem', width: '20px', textAlign: 'center' }}></i>
                             Logout
                         </button>
                     </li>
-
                 </ul>
             </aside>
 
             {/* Main Content */}
-            <main style={{
-                marginLeft: isSidebarOpen ? '280px' : '0',
-                padding: '2rem',
-                width: isSidebarOpen ? 'calc(100% - 280px)' : '100%',
-                transition: 'all 0.3s ease',
-                minHeight: '100vh'
-            }}>
+            <main id="main-content" className={isSidebarOpen ? '' : 'expanded'}>
                 {children}
-                <footer style={{ textAlign: 'center', padding: '3rem 0', fontSize: '0.9rem', color: '#AAAAAA' }}>
+                <footer style={{ textAlign: 'center', padding: '3rem 0', marginTop: '4rem', fontSize: '0.9rem', color: '#AAAAAA' }}>
                     <p>&copy; 2025 Mogul Strategies Inc. | Admin Portal</p>
                 </footer>
             </main>
@@ -109,14 +91,11 @@ export default function AdminLayout({
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
             <style jsx>{`
-        .admin-sidebar::-webkit-scrollbar { width: 5px; }
-        .admin-sidebar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
-        .admin-sidebar::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 10px; }
-        
-        @media (max-width: 1024px) {
-           .mobile-hamburger { display: block !important; }
-        }
-      `}</style>
+                .sidebar::-webkit-scrollbar { width: 5px; }
+                .sidebar::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
+                .sidebar::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 10px; }
+            `}</style>
         </div>
     );
 }
+

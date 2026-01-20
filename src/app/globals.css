@@ -1109,7 +1109,7 @@ footer a {
 /* Investors Portal specific styles */
 .portal-layout {
   min-height: 100vh;
-  background: #000000;
+  background: transparent;
   color: #E0E0E0;
 }
 

@@ -10,50 +10,96 @@ export default function AdminDashboardPage() {
 
     return (
         <>
-            <h1 className="page-title" style={{ fontSize: '3.2rem', color: '#D4AF37', textAlign: 'center', margin: '2rem 0 3rem' }}>Admin Portal Dashboard</h1>
+            <h1 className="section-title">Admin Portal Dashboard</h1>
 
-            <section className="admin-grid">
-                <div className="admin-card">
-                    <h3>Platform Overview</h3>
-                    <div className="stats-grid">
-                        <div className="stat-item">
-                            <div className="stat-value">1,248</div>
-                            <div className="stat-label">Total Investors</div>
-                        </div>
-                        <div className="stat-item">
-                            <div className="stat-value">842</div>
-                            <div className="stat-label">Verified Users</div>
-                        </div>
-                        <div className="stat-item">
-                            <div className="stat-value">$1.84B</div>
-                            <div className="stat-label">AUM</div>
-                        </div>
-                        <div className="stat-item">
-                            <div className="stat-value">6</div>
-                            <div className="stat-label">Active Funds</div>
-                        </div>
-                    </div>
+            {/* Platform Overview */}
+            <section className="stats-grid-portal">
+                <div className="stat-card">
+                    <div className="stat-value">1,248</div>
+                    <div className="stat-label">Total Investors</div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-value">842</div>
+                    <div className="stat-label">Verified Users</div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-value">$1.84B</div>
+                    <div className="stat-label">Assets Under Management</div>
+                </div>
+                <div className="stat-card">
+                    <div className="stat-value">6</div>
+                    <div className="stat-label">Active Funds</div>
+                </div>
+            </section>
+
+            {/* Main Action Grid */}
+            <section className="top-row">
+                <div className="top-card">
+                    <h3>Pending Actions</h3>
+                    <ul className="account-info-card">
+                        <li style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>KYC Reviews Pending</span>
+                            <span style={{ color: '#D4AF37', fontWeight: 'bold' }}>12</span>
+                        </li>
+                        <li style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Accreditation Submissions</span>
+                            <span style={{ color: '#D4AF37', fontWeight: 'bold' }}>8</span>
+                        </li>
+                        <li style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Capital Call Responses</span>
+                            <span style={{ color: '#D4AF37', fontWeight: 'bold' }}>23</span>
+                        </li>
+                        <li style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Support Tickets</span>
+                            <span style={{ color: '#D4AF37', fontWeight: 'bold' }}>5</span>
+                        </li>
+                        <li style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Document Approvals</span>
+                            <span style={{ color: '#D4AF37', fontWeight: 'bold' }}>3</span>
+                        </li>
+                    </ul>
                 </div>
 
-                <div className="admin-card">
-                    <h3>Pending Actions</h3>
-                    <ul className="action-list">
-                        <li><span>KYC Reviews Pending</span> <span className="action-btn">12</span></li>
-                        <li><span>Accreditation Submissions</span> <span className="action-btn">8</span></li>
-                        <li><span>Capital Call Responses</span> <span className="action-btn">23</span></li>
-                        <li><span>Support Tickets</span> <span className="action-btn">5</span></li>
-                        <li><span>Document Approvals</span> <span className="action-btn">3</span></li>
+                <div className="top-card">
+                    <h3>System Status</h3>
+                    <ul className="account-info-card">
+                        <li style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Portal Status</span>
+                            <span style={{ color: '#00ffcc', fontWeight: 'bold' }}>Online</span>
+                        </li>
+                        <li style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Database Connection</span>
+                            <span style={{ color: '#00ffcc', fontWeight: 'bold' }}>Healthy</span>
+                        </li>
+                        <li style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Email Service</span>
+                            <span style={{ color: '#00ffcc', fontWeight: 'bold' }}>Active</span>
+                        </li>
+                        <li style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>API Latency</span>
+                            <span style={{ color: '#00ffcc', fontWeight: 'bold' }}>24ms</span>
+                        </li>
+                        <li style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <span>Last Backup</span>
+                            <span style={{ color: '#AAAAAA' }}>2 hours ago</span>
+                        </li>
                     </ul>
                 </div>
             </section>
 
-            <section className="admin-card">
+            {/* Recent Activity Log */}
+            <section className="lower-card">
                 <h3>Recent Activity Log</h3>
-                <input type="text" className="search-bar" placeholder="Search activity..." style={{
-                    width: '100%', padding: '1rem', background: '#0A1A2F', border: '1px solid #D4AF37', borderRadius: '8px', color: '#E0E0E0', marginBottom: '2rem'
-                }} />
-                <div className="table-container" style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '1rem' }}>
+                    <input type="text" placeholder="Search activity..." style={{
+                        flex: 1, padding: '0.8rem', background: '#0A1A2F', border: '1px solid #D4AF37', borderRadius: '8px', color: '#E0E0E0'
+                    }} />
+                    <button style={{
+                        padding: '0.8rem 1.5rem', background: '#D4AF37', color: '#0A1A2F', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer'
+                    }}>Filter</button>
+                </div>
+                <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '800px' }}>
                         <thead>
                             <tr style={{ background: 'rgba(212, 175, 55, 0.1)', color: '#D4AF37' }}>
                                 <th style={{ padding: '1rem', textAlign: 'left', borderBottom: '1px solid rgba(212, 175, 55, 0.2)' }}>Time</th>
@@ -65,40 +111,30 @@ export default function AdminDashboardPage() {
                         </thead>
                         <tbody>
                             {recentActivities.map((activity, idx) => (
-                                <tr key={idx}>
-                                    <td style={{ padding: '1rem', textAlign: 'left', borderBottom: '1px solid rgba(212, 175, 55, 0.2)' }}>{activity.time}</td>
-                                    <td style={{ padding: '1rem', textAlign: 'left', borderBottom: '1px solid rgba(212, 175, 55, 0.2)' }}>{activity.user}</td>
-                                    <td style={{ padding: '1rem', textAlign: 'left', borderBottom: '1px solid rgba(212, 175, 55, 0.2)' }}>{activity.action}</td>
-                                    <td style={{ padding: '1rem', textAlign: 'left', borderBottom: '1px solid rgba(212, 175, 55, 0.2)' }}>{activity.details}</td>
-                                    <td style={{ padding: '1rem', textAlign: 'left', borderBottom: '1px solid rgba(212, 175, 55, 0.2)' }}>{activity.ip}</td>
+                                <tr key={idx} style={{ borderBottom: '1px solid rgba(212, 175, 55, 0.1)' }}>
+                                    <td style={{ padding: '1rem' }}>{activity.time}</td>
+                                    <td style={{ padding: '1rem' }}>{activity.user}</td>
+                                    <td style={{ padding: '1rem' }}>
+                                        <span style={{
+                                            padding: '0.2rem 0.6rem', borderRadius: '4px', fontSize: '0.9rem',
+                                            background: activity.action === 'Login' ? 'rgba(0, 255, 204, 0.1)' :
+                                                activity.action === 'Approved KYC' ? 'rgba(212, 175, 55, 0.1)' :
+                                                    'rgba(255, 255, 255, 0.1)',
+                                            color: activity.action === 'Login' ? '#00ffcc' :
+                                                activity.action === 'Approved KYC' ? '#D4AF37' : '#E0E0E0'
+                                        }}>
+                                            {activity.action}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '1rem', color: '#AAAAAA' }}>{activity.details}</td>
+                                    <td style={{ padding: '1rem', fontFamily: 'monospace' }}>{activity.ip}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
             </section>
-
-            <section className="admin-grid">
-                <div className="admin-card">
-                    <h3>Compliance Queue</h3>
-                    <ul className="action-list">
-                        <li><span>Pending Accreditation Reviews</span> <span className="action-btn">8</span></li>
-                        <li><span>Suspicious Login Attempts</span> <span className="action-btn">2</span></li>
-                        <li><span>Document Verification Needed</span> <span className="action-btn">5</span></li>
-                        <li><span>AML Flags</span> <span className="action-btn">0</span></li>
-                    </ul>
-                </div>
-
-                <div className="admin-card">
-                    <h3>System Controls</h3>
-                    <ul className="action-list">
-                        <li><span>Portal Status</span> <span className="action-btn">Online</span></li>
-                        <li><span>Maintenance Mode</span> <span className="action-btn">Off</span></li>
-                        <li><span>Email Delivery</span> <span className="action-btn">Normal</span></li>
-                        <li><span>API Status</span> <span className="action-btn">Healthy</span></li>
-                    </ul>
-                </div>
-            </section>
         </>
     );
 }
+
