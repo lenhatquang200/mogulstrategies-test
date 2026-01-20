@@ -1082,8 +1082,8 @@ footer a {
 
 #main-content {
   margin-left: 280px;
-  padding-top: 100px;
   padding: 2rem;
+  padding-top: 100px;
   transition: margin-left 0.3s ease;
   min-height: 100vh;
 }
