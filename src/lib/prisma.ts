@@ -8,29 +8,35 @@ const globalForPrisma = globalThis as unknown as {
 
 const createPrismaClient = () => {
     const dbUrl = process.env.DATABASE_URL;
-    let pool;
+    let adapter;
 
-    if (dbUrl) {
-        try {
-            const url = new URL(dbUrl);
-            pool = createPool({
-                host: url.hostname,
-                user: url.username,
-                password: url.password,
-                database: url.pathname.slice(1),
-                port: Number(url.port),
-                ssl: { rejectUnauthorized: false }
-            });
-        } catch (error) {
-            console.warn("Failed to parse DATABASE_URL, falling back to string");
-            pool = createPool(dbUrl);
-        }
-    } else {
-        pool = createPool("");
+    if (!dbUrl) {
+        // If DATABASE_URL is missing (e.g. build time without env), fallback to a mock or throw if runtime.
+        // For Next.js build, we often want to avoid crashing if pages don't strictly need DB.
+        console.warn("⚠️ DATABASE_URL is missing. Prisma Adapter will not be initialized correctly.");
+        // We cannot create a valid pool without a URL.
+        // Throwing here to prevent 'createPool("")' invalid string error.
+        throw new Error("DATABASE_URL environment variable is missing.");
     }
 
-    // @ts-ignore
-    const adapter = new PrismaMariaDb(pool);
+    try {
+        const url = new URL(dbUrl);
+        // Enforce SSL for Railway/Production
+        const pool = createPool({
+            host: url.hostname,
+            user: url.username,
+            password: url.password,
+            database: url.pathname.slice(1),
+            port: Number(url.port),
+            ssl: { rejectUnauthorized: false }, // Critical for Railway
+            connectionLimit: 5
+        });
+        // @ts-ignore
+        adapter = new PrismaMariaDb(pool);
+    } catch (error) {
+        console.error("Failed to parse DATABASE_URL or create pool:", error);
+        throw error;
+    }
 
     return new PrismaClient({
         adapter,
