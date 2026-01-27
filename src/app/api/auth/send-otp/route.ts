@@ -9,7 +9,7 @@ export async function POST(request: Request) {
         const body = await request.json();
         CommonService.log(" Request body:", { ...body, password: "***" });
 
-        const { email, password } = body;
+        const { email, password, role } = body;
 
         // Validate required fields
         const missingFields = CommonService.validateRequired(body, ['email', 'password']);
@@ -21,12 +21,25 @@ export async function POST(request: Request) {
             );
         }
 
-        // Validate credentials
+        // Validate role if provided
+        if (role && !['INVESTOR', 'ADMIN'].includes(role)) {
+            CommonService.log(" Invalid role");
+            return NextResponse.json(
+                CommonService.error('Invalid role'),
+                { status: 400 }
+            );
+        }
+
+        // Validate credentials with role check
         const sanitizedEmail = CommonService.sanitizeEmail(email);
-        CommonService.log(` Validating credentials for: ${sanitizedEmail}`);
+        CommonService.log(` Validating credentials for: ${sanitizedEmail}${role ? ` (${role})` : ''}`);
         
-        const user = await AuthService.validateCredentials({ email: sanitizedEmail, password });
-        CommonService.log(` Credentials valid for user: ${user.id}`);
+        const user = await AuthService.validateCredentials({ 
+            email: sanitizedEmail, 
+            password,
+            role: role as 'INVESTOR' | 'ADMIN' | undefined
+        });
+        CommonService.log(` Credentials valid for user: ${user.id} (${user.role.name})`);
 
         // Check if 2FA is enabled
         if (!user.twoFactorEnabled) {

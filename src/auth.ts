@@ -22,6 +22,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
                 const user = await prisma.user.findUnique({
                     where: { email },
+                    include: {
+                        role: true
+                    }
                 });
 
                 if (!user) {
@@ -38,10 +41,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     id: user.id.toString(),
                     email: user.email,
                     name: user.name,
-                    role: user.role,
+                    role: (user.role as any).name, // Type assertion to fix TypeScript
                 };
             },
         }),
     ],
 });
-
