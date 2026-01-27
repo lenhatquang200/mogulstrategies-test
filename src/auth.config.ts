@@ -2,7 +2,7 @@ import type { NextAuthConfig } from "next-auth";
 
 export const authConfig = {
     pages: {
-        signIn: '/login', // Default investor login
+        // Remove default signIn to avoid automatic fallback
     },
     callbacks: {
         async session({ session, token }) {
