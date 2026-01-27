@@ -27,10 +27,6 @@ export default function Home() {
           <h2 className="section-title">Why Mogul Strategies?</h2>
           <div className="stats">
             <div className="stat-item">
-              <h3>$45M</h3>
-              <p>Assets Under Management</p>
-            </div>
-            <div className="stat-item">
               <h3>45+</h3>
               <p>Years Combined Experience</p>
             </div>
@@ -41,6 +37,10 @@ export default function Home() {
             <div className="stat-item">
               <h3>20+</h3>
               <p>New Clients Every Year</p>
+            </div>
+            <div className="stat-item">
+              <h3>$450M</h3>
+              <p>Actively Raising</p>
             </div>
           </div>
         </div>
@@ -64,8 +64,8 @@ export default function Home() {
             </div>
             <div className="fund-card">
               <div className="fund-img">
-                <img src="https://thumbs.dreamstime.com/z/cryptocurrency-revolution-visualization-digital-realm-graphic-art-futuristic-environment-abstract-concept-explore-vibrant-351927303.jpg"
-                  alt="Mogul Digital Fund - Futuristic Blockchain Visualization" />
+                <img src="/imgs/mogul_digital_found.png"
+                  alt="Mogul Digital Fund - Blockchain Technology" />
               </div>
               <div className="fund-content">
                 <h3>Mogul Digital Fund</h3>

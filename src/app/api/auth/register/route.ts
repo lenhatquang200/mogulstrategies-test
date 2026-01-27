@@ -1,61 +1,81 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import bcrypt from 'bcryptjs';
+import { AuthService } from '@/services/auth.service';
+import { EmailService } from '@/services/email.service';
+import { CommonService } from '@/services/common.service';
 
 export async function POST(request: Request) {
     try {
-        console.log("📝 Register API hit");
+        CommonService.log("📝 Register API hit");
         const body = await request.json();
-        console.log("📦 Request body:", JSON.stringify({ ...body, password: "***" }, null, 2));
+        CommonService.log("📦 Request body:", { ...body, password: "***" });
 
         const { email, password, name, accreditationStatus } = body;
 
-        if (!email || !password) {
-            console.warn("⚠️ Missing email or password");
+        // Validate required fields
+        const missingFields = CommonService.validateRequired(body, ['email', 'password']);
+        if (missingFields.length > 0) {
+            CommonService.log(`⚠️ Missing fields: ${missingFields.join(', ')}`);
             return NextResponse.json(
-                { message: 'Email and password are required' },
+                CommonService.error(`Missing required fields: ${missingFields.join(', ')}`),
+                { status: 400 }
+            );
+        }
+
+        // Validate email format
+        if (!CommonService.isValidEmail(email)) {
+            CommonService.log("⚠️ Invalid email format");
+            return NextResponse.json(
+                CommonService.error('Invalid email format'),
                 { status: 400 }
             );
         }
 
         // Check if user already exists
-        console.log(`🔍 Checking existing user: ${email}`);
-        const existingUser = await prisma.user.findUnique({
-            where: { email },
-        });
-        console.log("👤 Existing user result:", existingUser ? "Found" : "Not Found");
-
-        if (existingUser) {
+        const sanitizedEmail = CommonService.sanitizeEmail(email);
+        CommonService.log(`🔍 Checking existing user: ${sanitizedEmail}`);
+        
+        if (await AuthService.userExists(sanitizedEmail)) {
+            CommonService.log("👤 User already exists");
             return NextResponse.json(
-                { message: 'User already exists' },
+                CommonService.error('User already exists'),
                 { status: 400 }
             );
         }
 
-        // Hash password
-        console.log("🔐 Hashing password...");
-        const hashedPassword = await bcrypt.hash(password, 10);
-
         // Create user
-        console.log("💾 Creating user in DB...");
-        const user = await prisma.user.create({
-            data: {
-                email,
-                password: hashedPassword,
-                name,
-                accreditationStatus,
-            },
+        CommonService.log("💾 Creating user in DB...");
+        const user = await AuthService.createUser({
+            email: sanitizedEmail,
+            password,
+            name,
+            accreditationStatus,
         });
-        console.log("✅ User created successfully:", user.id);
+        CommonService.log(`✅ User created successfully: ${user.id}`);
+
+        // Send welcome email
+        CommonService.log("📧 Sending welcome email...");
+        const [emailSent, emailError] = await CommonService.handleAsync(
+            () => EmailService.sendWelcomeEmail(sanitizedEmail, name || 'Investor'),
+            'Failed to send welcome email'
+        );
+
+        if (emailError) {
+            CommonService.logError("Email sending failed", emailError);
+        } else {
+            CommonService.log("✅ Welcome email sent successfully");
+        }
 
         return NextResponse.json(
-            { message: 'User created successfully', userId: user.id },
+            CommonService.success(
+                'Registration successful! Please check your email for confirmation.',
+                { userId: user.id, emailSent: !!emailSent }
+            ),
             { status: 201 }
         );
     } catch (error) {
-        console.error('❌ Registration error:', error);
+        CommonService.logError('Registration error', error);
         return NextResponse.json(
-            { message: 'Internal server error' },
+            CommonService.error('Internal server error'),
             { status: 500 }
         );
     }

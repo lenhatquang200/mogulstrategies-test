@@ -7,7 +7,7 @@ export default function InsightsPage() {
             date: "December 24, 2025",
             title: "Bitcoin as the Ultimate Portfolio Hedge in 2026",
             description: "Updated analysis on Bitcoin's correlation dynamics and its role in reducing portfolio volatility amid rising geopolitical risks.",
-            image: "https://media.istockphoto.com/id/1314145224/photo/businessman-analyzing-data-on-laptop.jpg?s=612x612&w=0&k=20&c=3fZ7pZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9v="
+            image: "/imgs/unnamed.jpg"
         },
         {
             date: "December 15, 2025",

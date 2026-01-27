@@ -4,7 +4,7 @@ export default function AboutPage() {
     return (
         <main>
             <section className="hero" style={{
-                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://static.vecteezy.com/system/resources/previews/065/273/911/large_2x/team-of-diversity-business-person-are-discussing-over-the-new-strategic-strategy-project-on-investment-real-estate-while-working-in-modern-office-building-for-new-project-and-planning-photo.jpg')`
+                backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1611224923853-80b023f02d71?fm=jpg&q=80&w=2000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`
             }}>
                 <div className="container hero-content">
                     <h1>About Mogul Strategies</h1>
@@ -70,7 +70,7 @@ export default function AboutPage() {
                     <h2 className="section-title">Leadership</h2>
                     <div className="leadership">
                         <div className="leader-img">
-                            <img src="https://thumbs.dreamstime.com/b/handsome-stylish-modern-african-american-business-man-entrepreneur-executive-sitting-outside-office-cheerful-smile-155856257.jpg"
+                            <img src="/imgs/Daniel.png"
                                 alt="Daniel Fainman, General Partner" />
                         </div>
                         <div className="leader-bio">
@@ -84,6 +84,18 @@ export default function AboutPage() {
                                 is committed to delivering exceptional risk-adjusted returns while advancing industry
                                 breakthroughs. His multifaceted background in finance, technology, and entertainment ensures
                                 Mogul Strategies remains at the forefront of alternative investments.</p>
+                        </div>
+                    </div>
+                    <div className="leadership">
+                        <div className="leader-img">
+                            <img src="/imgs/SimbarasheNdemera.png"
+                                alt="Simbarashe Ndemera, CFO, CFA & CCO" />
+                        </div>
+                        <div className="leader-bio">
+                            <h3>Simbarashe Ndemera</h3>
+                            <p><strong>CFO, CFA & CCO</strong></p>
+                            <p>Simbarashe Ndemera brings extensive financial expertise and compliance leadership to Mogul Strategies. As Chief Financial Officer, Chartered Financial Analyst, and Chief Compliance Officer, he oversees financial operations, investment analysis, and regulatory compliance across all fund structures.</p>
+                            <p>With deep experience in fund management, risk assessment, and regulatory frameworks, Simbarashe ensures that Mogul Strategies maintains the highest standards of financial integrity and compliance while optimizing investment performance and operational efficiency.</p>
                         </div>
                     </div>
                 </div>
@@ -113,7 +125,7 @@ export default function AboutPage() {
                                 integration for risk mitigation.</p>
                         </div>
                         <div className="milestone-card">
-                            <h4>$45M AUM Achieved</h4>
+                            <h4>$450M Actively Raising</h4>
                             <p>Rapid growth managing diversified funds across multiple high-potential verticals.</p>
                         </div>
                         <div className="milestone-card">
@@ -133,10 +145,6 @@ export default function AboutPage() {
                 <div className="container">
                     <div className="stats-grid">
                         <div className="stat-item">
-                            <h3>$45M</h3>
-                            <p>Assets Under Management</p>
-                        </div>
-                        <div className="stat-item">
                             <h3>45+</h3>
                             <p>Years Combined Experience</p>
                         </div>
@@ -147,6 +155,10 @@ export default function AboutPage() {
                         <div className="stat-item">
                             <h3>20+</h3>
                             <p>New Clients Every Year</p>
+                        </div>
+                        <div className="stat-item">
+                            <h3>$450M</h3>
+                            <p>Actively Raising</p>
                         </div>
                     </div>
                 </div>

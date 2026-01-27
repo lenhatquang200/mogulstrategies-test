@@ -36,7 +36,7 @@ export default function FundsPage() {
 
                         <div className="fund-card">
                             <div className="fund-img">
-                                <img src="https://media.istockphoto.com/id/1463049530/photo/blockchain-technology-background-cryptocurrency-fin-tech-block-chain-network-and-programming.jpg?s=612x612&w=0&k=20&c=J2tCf7e6tR3d7eD9y9Y9n7n7n7n7n7n7n7n7n7n7n7n7n7="
+                                <img src="/imgs/mogul_digital_found.png"
                                     alt="Mogul Digital Fund" />
                             </div>
                             <div className="fund-content">

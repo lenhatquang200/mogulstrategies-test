@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import StarsBackground from '@/components/StarsBackground';
+import ParticlesBackground from '@/components/ParticlesBackground';
 import { Providers } from '@/components/Providers';
 
 
@@ -23,6 +24,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <StarsBackground />
+          <ParticlesBackground />
           {children}
         </Providers>
       </body>

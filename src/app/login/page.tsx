@@ -1,8 +1,9 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Header from '@/components/Header';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -11,14 +12,130 @@ export default function LoginPage() {
     const [registerData, setRegisterData] = useState({ name: '', email: '', password: '', confirmPassword: '', accreditationStatus: '' });
     const [status, setStatus] = useState<{ type: 'error' | 'success', message: string } | null>(null);
     const [loading, setLoading] = useState(false);
+    const [showOtpForm, setShowOtpForm] = useState(false);
+    const [otpCode, setOtpCode] = useState(['', '', '', '', '', '']);
+    const otpInputs = useMemo(() => Array(6).fill(null), []);
 
-    // Login Handler
+    // Login Handler - Step 1: Check credentials and 2FA status
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setStatus(null);
 
         try {
+            // First, check if 2FA is enabled and send OTP
+            const otpRes = await fetch('/api/auth/send-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: loginData.email,
+                    password: loginData.password,
+                }),
+            });
+
+            const otpData = await otpRes.json();
+
+            if (!otpRes.ok) {
+                setStatus({ type: 'error', message: otpData.message || 'Invalid email or password.' });
+                return;
+            }
+
+            if (otpData.twoFactorRequired) {
+                // Show OTP form
+                setShowOtpForm(true);
+                setStatus({ type: 'success', message: 'Verification code sent to your email.' });
+            } else {
+                // No 2FA, proceed with normal login
+                const res = await signIn('credentials', {
+                    redirect: false,
+                    email: loginData.email,
+                    password: loginData.password,
+                });
+
+                if (res?.error) {
+                    setStatus({ type: 'error', message: 'Invalid email or password.' });
+                } else {
+                    router.push('/investors/portfoliosummary');
+                }
+            }
+        } catch (error) {
+            setStatus({ type: 'error', message: 'An unexpected error occurred.' });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Handle OTP input changes
+    const handleOtpChange = useCallback((index: number, value: string) => {
+        if (value.length > 1) return; // Only allow single digit
+        
+        const newOtp = [...otpCode];
+        newOtp[index] = value;
+        setOtpCode(newOtp);
+        
+        // Auto focus next input
+        if (value && index < 5) {
+            otpInputs[index + 1]?.focus();
+        }
+    }, [otpCode]);
+    
+    // Handle OTP key down
+    const handleOtpKeyDown = useCallback((index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Backspace' && !otpCode[index] && index > 0) {
+            otpInputs[index - 1]?.focus();
+        }
+    }, [otpCode]);
+
+    // Handle OTP paste
+    const handleOtpPaste = useCallback((e: React.ClipboardEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        const pastedData = e.clipboardData.getData('text').slice(0, 6);
+        const digits = pastedData.split('').filter(char => /\d/.test(char));
+        
+        const newOtp = [...otpCode];
+        digits.forEach((digit, index) => {
+            if (index < 6) {
+                newOtp[index] = digit;
+            }
+        });
+        setOtpCode(newOtp);
+        
+        // Focus last filled input
+        const lastFilledIndex = Math.min(digits.length - 1, 5);
+        otpInputs[lastFilledIndex]?.focus();
+    }, [otpCode]);
+
+    // Login Handler - Step 2: Verify OTP and complete login
+    const handleVerifyOtp = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setStatus(null);
+
+        try {
+            const otpString = otpCode.join('');
+            if (otpString.length !== 6) {
+                setStatus({ type: 'error', message: 'Please enter all 6 digits.' });
+                return;
+            }
+
+            // Verify OTP
+            const verifyRes = await fetch('/api/auth/verify-otp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: loginData.email,
+                    otp: otpString,
+                }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (!verifyRes.ok) {
+                setStatus({ type: 'error', message: verifyData.message || 'Invalid verification code.' });
+                return;
+            }
+
+            // OTP verified, proceed with login
             const res = await signIn('credentials', {
                 redirect: false,
                 email: loginData.email,
@@ -26,9 +143,8 @@ export default function LoginPage() {
             });
 
             if (res?.error) {
-                setStatus({ type: 'error', message: 'Invalid email or password.' });
+                setStatus({ type: 'error', message: 'Login failed. Please try again.' });
             } else {
-                // Successful login
                 router.push('/investors/portfoliosummary');
             }
         } catch (error) {
@@ -68,7 +184,7 @@ export default function LoginPage() {
                 throw new Error(data.message || 'Registration failed');
             }
 
-            setStatus({ type: 'success', message: 'Registration successful! Please login.' });
+            setStatus({ type: 'success', message: 'Registration successful! Please check your email for confirmation.' });
             setActiveTab('login');
             setLoginData({ email: registerData.email, password: '' }); // Pre-fill email
         } catch (error: any) {
@@ -87,13 +203,16 @@ export default function LoginPage() {
     };
 
     return (
-        <div style={{
-            minHeight: '100vh',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '2rem'
-        }}>
+        <>
+            <Header />
+            <div style={{
+                minHeight: '100vh',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '2rem',
+                paddingTop: '100px'
+            }}>
             <div className="portal-container">
                 <div className="logo">
                     <Link href="/" style={{ color: '#D4AF37', textDecoration: 'none' }}>Mogul Strategies</Link>
@@ -129,7 +248,7 @@ export default function LoginPage() {
                 )}
 
                 {/* Login Tab */}
-                {activeTab === 'login' && (
+                {activeTab === 'login' && !showOtpForm && (
                     <div id="login" className="tab-content active">
                         <form onSubmit={handleLogin}>
                             <div className="form-group">
@@ -161,6 +280,81 @@ export default function LoginPage() {
                             </button>
                         </form>
                         <a href="#" className="switch-link">Forgot password?</a>
+                    </div>
+                )}
+
+                {/* OTP Verification Form */}
+                {activeTab === 'login' && showOtpForm && (
+                    <div id="otp-verify" className="tab-content active">
+                        <form onSubmit={handleVerifyOtp}>
+                            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                                <p style={{ color: '#e0e0e0', fontSize: '0.95rem' }}>
+                                    Enter the 6-digit verification code sent to<br />
+                                    <strong style={{ color: '#D4AF37' }}>{loginData.email}</strong>
+                                </p>
+                            </div>
+                            <div className="form-group">
+                                <label>Verification Code</label>
+                                <div style={{ 
+                                    display: 'flex', 
+                                    gap: '0.5rem', 
+                                    justifyContent: 'center', 
+                                    marginBottom: '1rem' 
+                                }}>
+                                    {[0, 1, 2, 3, 4, 5].map((index) => (
+                                        <input
+                                            key={index}
+                                            type="text"
+                                            inputMode="numeric"
+                                            pattern="[0-9]*"
+                                            maxLength={1}
+                                            ref={(el) => { otpInputs[index] = el; }}
+                                            value={otpCode[index]}
+                                            onChange={(e) => handleOtpChange(index, e.target.value)}
+                                            onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                                            onPaste={index === 0 ? handleOtpPaste : undefined}
+                                            style={{
+                                                width: '50px',
+                                                height: '50px',
+                                                textAlign: 'center',
+                                                fontSize: '1.5rem',
+                                                fontWeight: 'bold',
+                                                background: '#0A1A2F',
+                                                border: '2px solid #D4AF37',
+                                                borderRadius: '8px',
+                                                color: '#E0E0E0',
+                                                outline: 'none',
+                                                transition: 'all 0.2s ease'
+                                            }}
+                                            onFocus={(e) => e.target.style.borderColor = '#FFD700'}
+                                            onBlur={(e) => e.target.style.borderColor = '#D4AF37'}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                            <button type="submit" className="submit-btn" disabled={loading}>
+                                {loading ? 'Verifying...' : 'Verify & Login'}
+                            </button>
+                        </form>
+                        <button
+                            onClick={() => { 
+                                setShowOtpForm(false); 
+                                setOtpCode(['', '', '', '', '', '']); 
+                                setStatus(null); 
+                            }}
+                            className="switch-link"
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', marginTop: '1rem' }}
+                        >
+                            ← Back to Login
+                        </button>
+                        <button
+                            onClick={handleLogin}
+                            className="switch-link"
+                            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'block', marginTop: '0.5rem' }}
+                            disabled={loading}
+                        >
+                            Resend Code
+                        </button>
                     </div>
                 )}
 
@@ -250,5 +444,6 @@ export default function LoginPage() {
                 </p>
             </div>
         </div>
+        </>
     );
 }
