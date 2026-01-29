@@ -1,0 +1,41 @@
+.hero { height: 80vh; min-height: 600px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://static.vecteezy.com/system/resources/previews/065/273/911/large_2x/team-of-diversity-business-person-are-discussing-over-the-new-strategic-strategy-project-on-investment-real-estate-while-working-in-modern-office-building-for-new-project-and-planning-photo.jpg') center/cover no-repeat; display: flex; align-items: center; }
+.hero-content { text-align: center; max-width: 1000px; margin: 0 auto; }
+.hero h1 { font-size: 4.5rem; color: var(--color-white); margin-bottom: 1.5rem; }
+.hero p { font-size: 1.6rem; max-width: 800px; margin: 0 auto; color: #CCCCCC; }
+
+.mission { text-align: center; max-width: 900px; margin: 0 auto 6rem; font-size: 1.2rem; }
+
+.values-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 3rem; }
+.value-card { 
+    background: #112240; 
+    padding: 2.5rem; 
+    border-radius: 12px; 
+    text-align: center; 
+    animation: pulse-glow 5s ease-in-out infinite;
+    transition: transform 0.4s ease;
+}
+.value-card:hover { transform: translateY(-10px); }
+.value-card h3 { font-size: 1.8rem; color: var(--color-gold); margin-bottom: 1.5rem; }
+.value-card p { font-size: 1.1rem; }
+
+.leadership { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 4rem; align-items: center; }
+.leader-img { border-radius: 12px; overflow: hidden; animation: pulse-glow 5s ease-in-out infinite; }
+.leader-img img { width: 100%; height: auto; object-fit: cover; }
+.leader-bio h3 { font-size: 2.2rem; color: var(--color-gold); margin-bottom: 1rem; }
+.leader-bio p { font-size: 1.1rem; margin-bottom: 1rem; }
+
+.team-img { text-align: center; margin: 6rem 0; }
+.team-img img { border-radius: 12px; max-width: 100%; animation: pulse-glow 5s ease-in-out infinite; }
+
+.milestones { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+.milestone-card { background: #112240; padding: 2rem; border-radius: 12px; text-align: center; animation: pulse-glow 5s ease-in-out infinite; }
+.milestone-card h4 { color: var(--color-gold); margin-bottom: 1rem; }
+
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; text-align: center; margin-top: 6rem; }
+.stat-item { background: rgba(17, 34, 64, 0.6); padding: 2rem; border-radius: 12px; animation: pulse-glow 4s ease-in-out infinite; }
+.stat-item h3 { font-size: 2.5rem; color: var(--color-gold); }
+
+@media (max-width: 768px) {
+    .hero h1 { font-size: 3rem; }
+    .leadership { grid-template-columns: 1fr; }
+}

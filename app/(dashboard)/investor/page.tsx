@@ -1,0 +1,246 @@
+"use client";
+export default function InvestorDashboard() {
+  return (
+    <>
+
+        <h1 className="page-title">Step 1: Personal Information</h1>
+
+        <section className="top-row">
+            <div className="top-card account-info-card">
+                <h3>Account Information</h3>
+                <ul>
+                    <li><strong>Name:</strong> John Doe</li>
+                    <li><strong>Email:</strong> john.doe@example.com</li>
+                    <li><strong>Investor Type:</strong> Accredited Individual</li>
+                    <li><strong>Account ID:</strong> MS-INV-4872</li>
+                    <li><strong>Joined:</strong> March 15, 2023</li>
+                    <li><strong>Last Login:</strong> December 24, 2025</li>
+                </ul>
+            </div>
+
+            <div className="top-card messaging-card">
+                <h3>Secure Messaging</h3>
+
+                <p>Communicate directly with your relationship manager.</p>
+
+                <a
+                    href="#"
+                    style={{
+                    display: "block",
+                    margin: "1rem 0",
+                    fontWeight: "bold",
+                    }}
+                >
+                    Open Inbox (2 unread)
+                </a>
+
+                <textarea
+                    placeholder="Type your message..."
+                    style={{
+                    width: "100%",
+                    height: "100px",
+                    padding: "1rem",
+                    background: "var(--color-navy)",
+                    border: "1px solid var(--color-gold)",
+                    borderRadius: "8px",
+                    color: "#E0E0E0",
+                    resize: "none",
+                    }}
+                />
+
+                <button
+                    style={{
+                    marginTop: "1rem",
+                    background: "var(--color-gold)",
+                    color: "var(--color-navy)",
+                    padding: "0.8rem 1.5rem",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                    }}
+                >
+                    Send Message
+                </button>
+                </div>
+
+        </section>
+
+
+        <section className="progress-container">
+            <h2>KYC & Accreditation Progress</h2>
+
+            <div className="progress-bar">
+                <div className="progress-line"></div>
+
+                <div
+                className="progress-fill"
+                style={{ width: "25%" }}
+                />
+
+                <div className="progress-step active">
+                <div className="progress-circle">1</div>
+                <div className="progress-label">Personal Information</div>
+                </div>
+
+                <div className="progress-step">
+                <div className="progress-circle">2</div>
+                <div className="progress-label">Identity Verification</div>
+                </div>
+
+                <div className="progress-step">
+                <div className="progress-circle">3</div>
+                <div className="progress-label">Accreditation</div>
+                </div>
+
+                <div className="progress-step">
+                <div className="progress-circle">4</div>
+                <div className="progress-label">Review & Approval</div>
+                </div>
+            </div>
+
+            <p style={{ fontSize: "1.2rem" }}>
+                Step 1 of 4 – Please complete your personal details below.
+            </p>
+        </section>
+
+
+        <section className="kyc-form">
+            <h2>Personal Information</h2>
+
+            <p style={{ textAlign: "center", marginBottom: "3rem" }}>
+                All fields marked with * are required.
+            </p>
+
+            <form>
+                <div className="form-grid">
+                <div className="form-group">
+                    <label htmlFor="firstName">First Name *</label>
+                    <input
+                    type="text"
+                    id="firstName"
+                    placeholder="John"
+                    required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="lastName">Last Name *</label>
+                    <input
+                    type="text"
+                    id="lastName"
+                    placeholder="Doe"
+                    required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="middleName">Middle Name (optional)</label>
+                    <input
+                    type="text"
+                    id="middleName"
+                    placeholder="Middle"
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="dateOfBirth">Date of Birth *</label>
+                    <input
+                    type="date"
+                    id="dateOfBirth"
+                    required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="nationality">Nationality *</label>
+                    <input
+                    type="text"
+                    id="nationality"
+                    placeholder="United States"
+                    required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="countryOfResidence">Country of Residence *</label>
+                    <select id="countryOfResidence" required>
+                    <option value="">Select Country</option>
+                    <option value="US">United States</option>
+                    <option value="CA">Canada</option>
+                    <option value="GB">United Kingdom</option>
+                    </select>
+                </div>
+
+                <div className="form-group full-width">
+                    <label htmlFor="residentialAddress">Residential Address *</label>
+                    <input
+                    type="text"
+                    id="residentialAddress"
+                    placeholder="123 Main Street, Apt 4B"
+                    required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="city">City *</label>
+                    <input
+                    type="text"
+                    id="city"
+                    placeholder="New York"
+                    required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="state">State/Province *</label>
+                    <input
+                    type="text"
+                    id="state"
+                    placeholder="NY"
+                    required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="postalCode">Postal Code *</label>
+                    <input
+                    type="text"
+                    id="postalCode"
+                    placeholder="10001"
+                    required
+                    />
+                </div>
+
+                <div className="form-group">
+                    <label htmlFor="phone">Phone Number *</label>
+                    <input
+                    type="tel"
+                    id="phone"
+                    placeholder="+1 (555) 123-4567"
+                    required
+                    />
+                </div>
+                </div>
+
+                <button type="submit" className="next-btn">
+                Save & Continue to Step 2
+                </button>
+            </form>
+
+            <p
+                style={{
+                marginTop: "2rem",
+                fontSize: "0.9rem",
+                textAlign: "center",
+                color: "#AAAAAA",
+                }}
+            >
+                Your information is encrypted and stored securely in compliance with global
+                data protection standards.
+            </p>
+            </section>
+
+    </>
+  );
+}

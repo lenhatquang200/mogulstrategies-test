@@ -1,0 +1,18 @@
+/* Header/Navigation */
+header { position: fixed; top: 0; width: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 1000; }
+nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; }
+.logo { font-size: 1.8rem; font-weight: bold; color: var(--color-gold); text-decoration: none; display: inline-block; }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a { font-weight: 500; }
+.cta-button { background: var(--color-gold); color: var(--color-navy); padding: 0.8rem 1.8rem; border-radius: 4px; font-weight: bold; transition: background 0.3s; }
+.cta-button:hover { background: var(--color-white); color: var(--color-navy); }
+.cta-outline { background: transparent; border: 2px solid #E5E4E2; color: #E5E4E2; }
+.cta-outline:hover { background: #E5E4E2; color: #000000; }
+
+/* Sections */
+section { padding: 8rem 0; }
+.section-title { text-align: center; font-size: 3rem; margin-bottom: 4rem; color: var(--color-gold); }
+
+/* Footer */
+footer { background: #000000; padding: 4rem 0 2rem; text-align: center; }
+footer a { margin: 0 1rem; }
