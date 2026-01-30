@@ -1,0 +1,25 @@
+.hero { height: 80vh; min-height: 600px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://thumbs.dreamstime.com/b/stock-market-chart-showing-growing-trends-upward-arrow-bars-illustrating-positive-financial-investment-trading-data-394056257.jpg') center/cover no-repeat; display: flex; align-items: center; }
+.hero-content { text-align: center; max-width: 1000px; margin: 0 auto; }
+.hero h1 { font-size: 4.5rem; color: var(--color-white); margin-bottom: 1.5rem; }
+.hero p { font-size: 1.6rem; max-width: 800px; margin: 0 auto; color: #CCCCCC; }
+
+.strategy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 3rem; }
+.strategy-card { 
+    background: #112240; 
+    padding: 2.5rem; 
+    border-radius: 12px; 
+    text-align: center; 
+    animation: pulse-glow 5s ease-in-out infinite;
+    transition: transform 0.4s ease;
+}
+.strategy-card:hover { transform: translateY(-10px); }
+.strategy-card img { width: 100%; height: 250px; object-fit: cover; border-radius: 12px; margin-bottom: 1.5rem; }
+.strategy-card h3 { font-size: 2rem; color: var(--color-gold); margin-bottom: 1rem; }
+
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 4rem; }
+.feature-item { background: rgba(17, 34, 64, 0.6); padding: 2rem; border-radius: 12px; animation: pulse-glow 4s ease-in-out infinite; text-align: center; }
+
+@media (max-width: 768px) {
+    .hero h1 { font-size: 3rem; }
+    .strategy-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,48 @@
+.hero { height: 80vh; min-height: 600px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://media.istockphoto.com/id/1344743482/photo/golden-bitcoin-and-various-metal-gears.jpg?s=612x612&w=0&k=20&c=gn1v9L6u8Kk9xzkY2x_7K3z2fE2rQJ4l8g5f7p8v9kM=') center/cover no-repeat; display: flex; align-items: center; }
+.hero-content { text-align: center; max-width: 1000px; margin: 0 auto; }
+.hero h1 { font-size: 4.5rem; color: var(--color-white); margin-bottom: 1.5rem; }
+.hero p { font-size: 1.6rem; max-width: 800px; margin: 0 auto 2rem; color: #CCCCCC; }
+
+.contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 4rem; align-items: start; }
+.contact-info { 
+    background: #112240; 
+    padding: 3rem; 
+    border-radius: 16px; 
+    animation: pulse-glow 5s ease-in-out infinite;
+}
+.contact-info h3 { font-size: 2rem; color: var(--color-gold); margin-bottom: 2rem; }
+.contact-info ul { list-style: none; }
+.contact-info li { margin-bottom: 1.5rem; font-size: 1.2rem; }
+.contact-info li strong { color: var(--color-gold); }
+.contact-info a { display: block; margin-top: 0.5rem; }
+
+.contact-form { 
+    background: #112240; 
+    padding: 3rem; 
+    border-radius: 16px; 
+    animation: pulse-glow 5s ease-in-out infinite;
+}
+.contact-form h3 { font-size: 2rem; color: var(--color-gold); margin-bottom: 2rem; }
+.form-group { margin-bottom: 1.5rem; }
+.form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+.form-group input, .form-group textarea, .form-group select { 
+    width: 100%; 
+    padding: 1rem; 
+    background: var(--color-navy); 
+    border: 1px solid var(--color-gold); 
+    border-radius: 8px; 
+    color: #E0E0E0; 
+    font-size: 1rem;
+}
+.form-group textarea { height: 150px; resize: vertical; font-family: monospace; }
+.submit-btn { background: var(--color-gold); color: var(--color-navy); padding: 1rem 2.5rem; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background 0.3s; }
+.submit-btn:hover { background: var(--color-white); }
+
+.portal-cta { text-align: center; padding: 6rem 0; background: rgba(17, 34, 64, 0.4); }
+.portal-cta h2 { font-size: 3rem; margin-bottom: 2rem; }
+.portal-cta p { max-width: 800px; margin: 0 auto 3rem; font-size: 1.2rem; }
+
+@media (max-width: 768px) {
+    .hero h1 { font-size: 3rem; }
+    .contact-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,69 @@
+.syndications-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2.5rem; }
+.syndication-card {
+    background: #112240;
+    border-radius: 16px;
+    padding: 2.5rem;
+    animation: pulse-glow 5s ease-in-out infinite;
+    transition: transform 0.3s;
+}
+.syndication-card:hover { transform: translateY(-10px); }
+.syndication-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+.syndication-title { font-size: 2rem; color: #D4AF37; }
+.syndication-status { padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; background: rgba(0, 255, 0, 0.2); color: #0f0; }
+.syndication-details { margin-bottom: 2rem; }
+.syndication-details p { margin-bottom: 1rem; }
+.highlight { color: #D4AF37; font-weight: bold; }
+.progress-bar {
+    background: #333;
+    height: 12px;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 1.5rem 0;
+}
+.progress-fill {
+    height: 100%;
+    background: #D4AF37;
+    transition: width 0.5s ease;
+}
+.syndication-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+}
+.action-btn {
+    padding: 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+.action-btn.view { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; }
+.action-btn.view:hover { background: #D4AF37; color: #0A1A2F; }
+.action-btn.indicate { background: #D4AF37; color: #0A1A2F; border: none; }
+.action-btn.indicate:hover { background: #FFFFFF; }
+
+.no-syndications {
+    text-align: center;
+    padding: 4rem;
+    font-size: 1.4rem;
+    color: #AAAAAA;
+}
+
+footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9rem; color: #AAAAAA; }
+
+@media (max-width: 1024px) {
+    .hamburger { display: block; }
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    main { margin-left: 0; }
+}
+@media (max-width: 768px) {
+    .top-row, .syndications-grid { grid-template-columns: 1fr; }
+    .syndication-actions { grid-template-columns: 1fr; }
+}

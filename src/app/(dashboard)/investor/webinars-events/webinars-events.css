@@ -1,0 +1,97 @@
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+.calendar-controls { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+.filter-group, .export-group {
+    display: flex;
+    gap: 0.8rem;
+    align-items: center;
+}
+.filter-group label, .export-group label { font-weight: 500; }
+.filter-group select, .export-btn {
+    padding: 0.6rem 1rem;
+    background: #0A1A2F;
+    border: 1px solid #D4AF37;
+    border-radius: 8px;
+    color: #E0E0E0;
+    cursor: pointer;
+}
+.export-btn { background: #D4AF37; color: #0A1A2F; font-weight: bold; }
+.export-btn:hover { background: #FFFFFF; }
+
+.calendar-container {
+    background: #112240;
+    border-radius: 16px;
+    padding: 2rem;
+    animation: pulse-glow 5s ease-in-out infinite;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+#calendar { height: 700px; }
+
+/* FullCalendar Custom Styling */
+.fc { color: #E0E0E0; }
+.fc-button { background: #D4AF37; border: none; color: #0A1A2F; }
+.fc-button:hover { background: #FFFFFF; }
+.fc-event { background: #D4AF37; border: none; color: #0A1A2F; font-weight: bold; }
+.fc-event:hover { opacity: 0.8; cursor: pointer; }
+
+/* Enhanced RSVP Modal */
+.modal {
+    display: flex;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background: #112240;
+    border-radius: 16px;
+    padding: 2.5rem;
+    max-width: 600px;
+    width: 90%;
+    animation: pulse-glow 5s ease-in-out infinite;
+    position: relative;
+}
+.close-modal {
+    position: absolute;
+    top: 1rem; right: 1.5rem;
+    font-size: 2rem;
+    color: #AAAAAA;
+    cursor: pointer;
+}
+.modal h3 { font-size: 2rem; color: #D4AF37; margin-bottom: 1rem; }
+.modal p { margin-bottom: 1rem; }
+.modal-actions { margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+.rsvp-btn {
+    background: #D4AF37;
+    color: #0A1A2F;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.rsvp-btn:hover { background: #FFFFFF; }
+
+footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9rem; color: #AAAAAA; }
+
+@media (max-width: 1024px) {
+    .hamburger { display: block; }
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    main { margin-left: 0; }
+}
+@media (max-width: 768px) {
+    .top-row { grid-template-columns: 1fr; }
+    #calendar { height: 600px; }
+    .calendar-header { flex-direction: column; align-items: stretch; }
+}

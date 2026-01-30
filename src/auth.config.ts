@@ -1,11 +1,9 @@
-import type { NextAuthConfig } from "next-auth";
-
 export const authConfig = {
     pages: {
         // Remove default signIn to avoid automatic fallback
     },
     callbacks: {
-        async session({ session, token }) {
+        async session({ session, token }: { session: any; token: any }) {
             if (token && session.user) {
                 session.user.id = token.sub as string;
                 session.user.role = token.role as string;
@@ -69,4 +67,4 @@ export const authConfig = {
         },
     },
     providers: [], // Add providers in auth.ts
-} satisfies NextAuthConfig;
+};
