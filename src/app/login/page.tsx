@@ -23,6 +23,8 @@ export default function LoginPage() {
         setStatus(null);
 
         try {
+            console.log('🔍 Starting login process for:', loginData.email);
+            
             // First, check if 2FA is enabled and send OTP
             const otpRes = await fetch('/api/auth/send-otp', {
                 method: 'POST',
@@ -33,32 +35,21 @@ export default function LoginPage() {
                 }),
             });
 
+            console.log('📡 Send OTP response status:', otpRes.status);
             const otpData = await otpRes.json();
+            console.log('📦 Send OTP response data:', otpData);
 
             if (!otpRes.ok) {
+                console.log('❌ Send OTP failed:', otpData);
                 setStatus({ type: 'error', message: otpData.message || 'Invalid email or password.' });
                 return;
             }
 
-            if (otpData.twoFactorRequired) {
-                // Show OTP form
-                setShowOtpForm(true);
-                setStatus({ type: 'success', message: 'Verification code sent to your email.' });
-            } else {
-                // No 2FA, proceed with normal login
-                const res = await signIn('credentials', {
-                    redirect: false,
-                    email: loginData.email,
-                    password: loginData.password,
-                });
-
-                if (res?.error) {
-                    setStatus({ type: 'error', message: 'Invalid email or password.' });
-                } else {
-                    router.push('/investors/portfoliosummary');
-                }
-            }
+            // Always show OTP form for security
+            setShowOtpForm(true);
+            setStatus({ type: 'success', message: 'Verification code sent to your email.' });
         } catch (error) {
+            console.error('💥 Login process error:', error);
             setStatus({ type: 'error', message: 'An unexpected error occurred.' });
         } finally {
             setLoading(false);
@@ -113,6 +104,9 @@ export default function LoginPage() {
 
         try {
             const otpString = otpCode.join('');
+            console.log('🔍 Starting OTP verification for:', loginData.email);
+            console.log('🔢 OTP entered:', otpString);
+            
             if (otpString.length !== 6) {
                 setStatus({ type: 'error', message: 'Please enter all 6 digits.' });
                 return;
@@ -128,7 +122,9 @@ export default function LoginPage() {
                 }),
             });
 
+            console.log('📡 Verify OTP response status:', verifyRes.status);
             const verifyData = await verifyRes.json();
+            console.log('📦 Verify OTP response data:', verifyData);
 
             if (!verifyRes.ok) {
                 setStatus({ type: 'error', message: verifyData.message || 'Invalid verification code.' });
@@ -143,11 +139,14 @@ export default function LoginPage() {
             });
 
             if (res?.error) {
+                console.log('❌ NextAuth login failed:', res.error);
                 setStatus({ type: 'error', message: 'Login failed. Please try again.' });
             } else {
+                console.log('✅ Login successful, redirecting...');
                 router.push('/investors/portfoliosummary');
             }
         } catch (error) {
+            console.error('💥 OTP verification error:', error);
             setStatus({ type: 'error', message: 'An unexpected error occurred.' });
         } finally {
             setLoading(false);

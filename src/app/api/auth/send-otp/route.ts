@@ -41,14 +41,8 @@ export async function POST(request: Request) {
         });
         CommonService.log(` Credentials valid for user: ${user.id} (${user.role.name})`);
 
-        // Check if 2FA is enabled
-        if (!user.twoFactorEnabled) {
-            CommonService.log(" 2FA not enabled for this user");
-            return NextResponse.json(
-                CommonService.success('Login successful', { twoFactorRequired: false }),
-                { status: 200 }
-            );
-        }
+        // Always require OTP for all users
+        CommonService.log(" Always requiring OTP for security");
 
         // Generate and send OTP
         CommonService.log(" Generating OTP...");
