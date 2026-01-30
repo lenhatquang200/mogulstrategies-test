@@ -41,7 +41,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     id: user.id.toString(),
                     email: user.email,
                     name: user.name,
-                    role: (user.role as any).name, // Type assertion to fix TypeScript
+                    role: user.role?.name || 'INVESTOR',
+                    roleId: user.roleId,
                 };
             },
         }),

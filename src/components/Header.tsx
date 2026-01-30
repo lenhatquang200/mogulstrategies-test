@@ -20,7 +20,7 @@ export default function Header() {
         <header>
             <div className="container">
                 <nav>
-                    <Link href="/" className="logo" onClick={closeMenu}>Mogul Strategies</Link>
+                    <Link href="/" className="text-xl font-bold text-gold-600 hover:text-gold-500 transition-colors" onClick={closeMenu}>Mogul Strategies</Link>
                     <div className={`nav-links ${isMenuOpen ? 'active' : ''}`} id="navLinks">
                         <Link href="/" onClick={closeMenu}>Home</Link>
                         <Link href="/about" onClick={closeMenu}>About</Link>
