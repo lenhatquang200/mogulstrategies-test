@@ -1,0 +1,37 @@
+.page-title { font-size: 3.2rem; color: #D4AF37; text-align: center; margin: 2rem 0 3rem; }
+/* Top Row: Account Info + Secure Messaging */
+.top-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 4rem; }
+.top-card { background: #112240; border-radius: 16px; padding: 2rem; animation: pulse-glow 5s ease-in-out infinite; }
+
+.section-title { font-size: 2.6rem; color: #D4AF37; text-align: center; margin: 3rem 0 2rem; }
+
+/* Compact Key Metrics – One Row */
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.2rem; margin-bottom: 4rem; }
+.metric-card { background: #112240; padding: 1.4rem; border-radius: 16px; text-align: center; animation: pulse-glow 5s ease-in-out infinite; }
+.metric-value { font-size: 2rem; color: #D4AF37; font-weight: 700; margin-bottom: 0.4rem; }
+.metric-label { font-size: 0.95rem; opacity: 0.9; }
+
+.charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem; margin-bottom: 4rem; }
+.chart-card { background: #112240; border-radius: 16px; padding: 2rem; animation: pulse-glow 5s ease-in-out infinite; }
+.chart-card h3 { margin-bottom: 1.5rem; text-align: center; }
+
+.performance-table { width: 100%; border-collapse: collapse; background: #112240; border-radius: 16px; overflow: hidden; animation: pulse-glow 5s ease-in-out infinite; margin-bottom: 4rem; }
+.performance-table th, .performance-table td { padding: 1.1rem; text-align: left; border-bottom: 1px solid rgba(212, 175, 55, 0.2); }
+.performance-table th { background: rgba(212, 175, 55, 0.1); color: #D4AF37; font-size: 0.95rem; }
+.performance-table tr:hover { background: rgba(212, 175, 55, 0.05); }
+
+footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9rem; color: #AAAAAA; }
+
+@media (max-width: 1024px) {
+    .hamburger { display: block; }
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    main { margin-left: 0; }
+}
+@media (max-width: 768px) {
+    .charts-grid, .top-row { grid-template-columns: 1fr; }
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+    .metrics-grid { grid-template-columns: 1fr; }
+}

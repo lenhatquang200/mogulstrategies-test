@@ -58,16 +58,95 @@ export default function Sidebar() {
           </Link>
         </li>
 
-        <li><a href="#">Portfolio Summary</a></li>
-        <li><a href="#">Performance Analytics</a></li>
-        <li><a href="#">Documents & Reports</a></li>
-        <li><a href="#">Distributions & Tax</a></li>
-        <li><a href="#">Capital Calls</a></li>
-        <li><a href="#">Notifications</a></li>
-        <li><a href="#">Secure Messaging</a></li>
-        <li><a href="#">Webinars & Events</a></li>
-        <li><a href="#">Resource Library</a></li>
-        <li><a href="#">Support & FAQ</a></li>
+        <li>
+          <Link
+            href="/investor/portfolio-summary"
+            className={isActive("/investor/portfolio-summary") ? "active" : ""}
+          >
+            Portfolio Summary
+          </Link>
+        </li>
+
+        <li>
+          <Link
+            href="/investor/performance-analytics"
+            className={isActive("/investor/performance-analytics") ? "active" : ""}
+          >
+            Performance Analytics
+          </Link>
+        </li>
+
+        <li>
+          <Link
+            href="/investor/documents-reports"
+            className={isActive("/investor/documents-reports") ? "active" : ""}
+          >
+            Documents & Reports
+          </Link>
+        </li>
+
+        <li>
+          <Link
+            href="/investor/distributions-tax"
+            className={isActive("/investor/distributions-tax") ? "active" : ""}
+          >
+            Distributions & Tax
+          </Link>
+        </li>
+
+        <li>
+          <Link
+            href="/investor/capital-calls"
+            className={isActive("/investor/capital-calls") ? "active" : ""}
+          >
+            Capital Calls
+          </Link>
+        </li>
+
+        <li>
+          <Link
+            href="/investor/notifications"
+            className={isActive("/investor/notifications") ? "active" : ""}
+          >
+            Notifications
+          </Link>
+        </li>
+
+        <li>
+          <Link
+            href="/investor/secure-messaging"
+            className={isActive("/investor/secure-messaging") ? "active" : ""}
+          >
+            Secure Messaging
+          </Link>
+        </li>
+
+        <li>
+          <Link
+            href="/investor/webinars-events"
+            className={isActive("/investor/webinars-events") ? "active" : ""}
+          >
+            Webinars & Events
+          </Link>
+        </li>
+
+        <li>
+          <Link
+            href="/investor/resource-library"
+            className={isActive("/investor/resource-library") ? "active" : ""}
+          >
+            Resource Library
+          </Link>
+        </li>
+
+        <li>
+          <Link
+            href="/investor/support-faq"
+            className={isActive("/investor/support-faq") ? "active" : ""}
+          >
+            Support & FAQ
+          </Link>
+        </li>
       </ul>
     </nav>
   )
