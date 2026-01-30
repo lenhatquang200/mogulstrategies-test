@@ -1,6 +1,7 @@
 import Sidebar from "./components/Sidebar";
 import Footer from "./components/Footer";
 import Star from "@/components/Star";
+import { SessionProvider } from "next-auth/react";
 import "./admin.css";
 
 export default async function AdminLayout({
@@ -10,13 +11,15 @@ export default async function AdminLayout({
 }) {
 
   return (
-    <div >
-        <Star />
-        <Sidebar />
-        <main >
-            {children}
-        </main>
-        <Footer />
-    </div>
+    <SessionProvider>
+      <div >
+          <Star />
+          <Sidebar />
+          <main >
+              {children}
+          </main>
+          <Footer />
+      </div>
+    </SessionProvider>
   );
 }

@@ -1,19 +1,57 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Sidebar() {
   const router = useRouter();
+  const { data: session } = useSession();
 
   async function handleLogout() {
-    await fetch("/api/logout", { method: "POST" });
-    router.push("/login");
-    router.refresh(); 
+    try {
+      // Use NextAuth signOut for proper session cleanup
+      await signOut({ redirect: false });
+      
+      // Also call our custom logout API to clear custom tokens
+      await fetch("/api/logout", { method: "POST" });
+      
+      // Redirect to login
+      router.push("/login");
+      router.refresh(); 
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Fallback to just API call if NextAuth fails
+      await fetch("/api/logout", { method: "POST" });
+      router.push("/login");
+      router.refresh();
+    }
   }
 
   return (
     <aside className="admin-sidebar" id="adminSidebar">
         <a href="admin.html" className="admin-logo">Mogul Admin</a>
+        
+        {/* User Info */}
+        {session?.user && (
+            <div style={{ 
+                padding: "1rem", 
+                borderBottom: "1px solid #333", 
+                marginBottom: "1rem",
+                color: "#fff"
+            }}>
+                <div style={{ fontSize: "0.9rem", opacity: 0.8 }}>Logged in as:</div>
+                <div style={{ fontWeight: "bold" }}>{session.user.name}</div>
+                <div style={{ fontSize: "0.8rem", opacity: 0.7 }}>{session.user.email}</div>
+                <div style={{ 
+                    fontSize: "0.8rem", 
+                    color: "#gold", 
+                    marginTop: "0.25rem" 
+                }}>
+                    Role: {session.user.role}
+                </div>
+            </div>
+        )}
+        
         <ul className="admin-nav">
             <li><a href="admin.html" className="active"><i className="fas fa-tachometer-alt"></i> Dashboard</a></li>
             <li><a href="adminusermanage.html"><i className="fas fa-users"></i> User Management</a></li>
