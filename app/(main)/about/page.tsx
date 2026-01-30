@@ -78,7 +78,7 @@ export default function AboutPage() {
           <div className="leadership">
             <div className="leader-img">
               <img
-                src="/images/daniel.png"
+                src="/images/Daniel.png"
                 alt="Daniel Fainman, General Partner"
               />
             </div>
