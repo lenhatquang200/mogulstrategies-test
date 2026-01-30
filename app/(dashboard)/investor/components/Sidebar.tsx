@@ -2,8 +2,10 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-
-export default function Sidebar() {
+interface SidebarProps {
+  collapsed: boolean;
+}
+export default function Sidebar({ collapsed }: SidebarProps) {
   const pathname = usePathname()
 
   const isActive = (href: string) => {
@@ -14,7 +16,7 @@ export default function Sidebar() {
   }
 
   return (
-    <nav className="sidebar" id="sidebar">
+    <nav  id="sidebar" className={collapsed ? "sidebar collapsed" : "sidebar"}>
       <ul className="nav-menu">
         <li>
           <Link href="/investor" className={isActive("/investor") ? "active" : ""}>

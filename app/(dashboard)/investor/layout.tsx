@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -9,12 +12,20 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+
+  const [collapsed, setCollapsed] = useState(false);
+
+  const toggleSidebar = () => {
+    setCollapsed((prev) => !prev);
+  };
+
+
   return (
     <div>
         <Star />
-        <Header />
-        <Sidebar />
-        <main id="main-content">
+        <Header onToggleSidebar={toggleSidebar} />
+        <Sidebar collapsed={collapsed} />
+        <main id="main-content" className={collapsed ? "expanded" : ""}>
             {children}
         </main>
         <Footer />

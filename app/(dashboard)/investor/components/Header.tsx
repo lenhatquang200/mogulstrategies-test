@@ -3,8 +3,13 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AuthUser } from "@/types/user.type";
+import Link from "next/link";
 
-export default function Header() {
+interface HeaderProps {
+  onToggleSidebar: () => void;
+}
+
+export default function Header({ onToggleSidebar }: HeaderProps) {
   const router = useRouter();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,13 +47,17 @@ export default function Header() {
             <div className="header-left">
                 <button className="hamburger" aria-label="Menu">☰</button>
                 <div className="investor-logo">Mogul Strategies</div>
-                <button className="sidebar-toggle" aria-label="Toggle Sidebar">☰</button>
+                <button className="sidebar-toggle" aria-label="Toggle Sidebar" onClick={onToggleSidebar}>☰</button>
             </div>
             <div className="user-menu">
                 <span>{loading ? "Loading..." : `Welcome, ${user?.name ?? "Guest"}`}</span>
                 <button className="user-menu-btn">▼</button>
                 <div className="dropdown">
-                    <a href="#">Account Settings</a>
+                    <Link
+                      href="/investor/account-setting"
+                    >
+                      Account Settings
+                    </Link>
                     <button className="logout" onClick={handleLogout}>Logout</button>
                 </div>
             </div>
