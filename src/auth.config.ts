@@ -10,14 +10,14 @@ export const authConfig = {
             }
             return session;
         },
-        async jwt({ token, user }) {
+        async jwt({ token, user }: { token: any; user?: any }) {
             if (user) {
                 token.sub = user.id;
                 token.role = (user as any).role?.name || 'INVESTOR'; // Use role.name from database
             }
             return token;
         },
-        authorized({ auth, request: { nextUrl } }) {
+        authorized({ auth, request: { nextUrl } }: { auth: any; request: { nextUrl: URL } }) {
             const isLoggedIn = !!auth?.user;
             const isAdmin = auth?.user?.role === 'ADMIN';
             const isApiAuthRoute = nextUrl.pathname.startsWith("/api/auth");
