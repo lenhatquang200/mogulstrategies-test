@@ -1,5 +1,6 @@
 import { insights } from "@/data/insights";
 import { landingSEO } from "@/lib/seo";
+import Image from "next/image";
 import "./insight.css";
 
 export const metadata = landingSEO.insights;
@@ -63,20 +64,32 @@ export default function InsightsPage() {
         <div className="container">
           <h2 className="section-title">Latest Insights</h2>
           <div className="insights-grid">
-            {insights.map((insight) => (
-              <div className="insight-card" key={insight.id}>
-                <div className="insight-img">
-                  <img src={insight.image} alt={insight.alt} />
-                </div>
+            {insights.map((insight) => {
+              const isExternal = insight.image.startsWith("http");
 
-                <div className="insight-content">
-                  <div className="date">{insight.date}</div>
-                  <h3>{insight.title}</h3>
-                  <p>{insight.excerpt}</p>
-                  <a href={insight.link}>Read More →</a>
+              return (
+                <div className="insight-card" key={insight.id}>
+                  <div className="insight-img">
+                    <Image
+                      src={insight.image}
+                      alt={insight.alt}
+                      width={600}
+                      height={400}
+                      className="fund-image"
+                      unoptimized={isExternal}
+                    />
+                  </div>
+
+                  <div className="insight-content">
+                    <div className="date">{insight.date}</div>
+                    <h3>{insight.title}</h3>
+                    <p>{insight.excerpt}</p>
+                    <a href={insight.link}>Read More →</a>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
+
           </div>
         </div>
       </section>

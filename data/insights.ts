@@ -6,7 +6,7 @@ export const insights = [
     excerpt:
       "Updated analysis on Bitcoin's correlation dynamics and its role in reducing portfolio volatility amid rising geopolitical risks.",
     image:
-      "https://media.istockphoto.com/id/1314145224/photo/businessman-analyzing-data-on-laptop.jpg?s=612x612&w=0&k=20&c=3fZ7pZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9vZ9v=",
+      "/images/btc.jpg",
     alt: "Bitcoin Hedge",
     link: "#",
   },
@@ -127,7 +127,7 @@ export const insights = [
     excerpt:
       "Why blending traditional and alternative assets remains critical in uncertain markets.",
     image:
-      "https://media.istockphoto.com/id/1344743482/photo/golden-bitcoin-and-various-metal-gears.jpg?s=612x612&w=0&k=20&c=gn1v9L6u8Kk9xzkY2x_7K3z2fE2rQJ4l8g5f7p8v9kM=",
+      "https://static.boredpanda.com/blog/wp-content/uploads/2019/07/behind-the-scenes-of-hollywood-movies-1-5d1b13d220dfa__700.jpg",
     alt: "Diversification 2025",
     link: "#",
   },

@@ -43,8 +43,8 @@ export default function Header({ onToggleSidebar }: HeaderProps) {
 
   return (
     <header>
-        <div className="header-container">
-            <div className="header-left">
+        <div className="investor-header-container">
+            <div className="investor-header-left">
                 <button className="hamburger" aria-label="Menu">☰</button>
                 <div className="investor-logo">Mogul Strategies</div>
                 <button className="sidebar-toggle" aria-label="Toggle Sidebar" onClick={onToggleSidebar}>☰</button>
