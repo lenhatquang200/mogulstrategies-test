@@ -4,7 +4,22 @@
     100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
 }
 
-.investor-dashboard section:not([class]) {
+.investor-dashboard section:not([class]),
+.investor-dashboard section.top-row,
+.investor-dashboard section.esign-container,
+.investor-dashboard section.offerings-grid,
+.investor-dashboard section.syndications-grid,
+.investor-dashboard section.investments-grid,
+.investor-dashboard section.lower-grid,
+.investor-dashboard section.documents-grid,
+.investor-dashboard section.distributions-grid,
+.investor-dashboard section.capital-grid,
+.investor-dashboard section.notifications-container,
+.investor-dashboard section.faq-container,
+.investor-dashboard section.settings-container,
+.investor-dashboard section.messaging-container,
+.investor-dashboard section.resources-grid
+{
   padding: 0;
 }
 header { 
