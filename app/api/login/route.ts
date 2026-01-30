@@ -4,6 +4,8 @@ import { eq } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
 
 export async function POST(req: Request) {
   try {

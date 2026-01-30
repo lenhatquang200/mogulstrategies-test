@@ -10,6 +10,38 @@ export default function PortalPage() {
     const [activeTab, setActiveTab] = useState<"login" | "register">("login");
     const router = useRouter();
 
+    async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+
+        const form = e.currentTarget;
+        const name = (form.elements.namedItem("name") as HTMLInputElement).value;
+        const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+        const password = (form.elements.namedItem("password") as HTMLInputElement).value;
+        const confirm = (form.elements.namedItem("confirm") as HTMLInputElement).value;
+        const accredited = (form.elements.namedItem("accredited") as HTMLSelectElement).value;
+
+        if (password !== confirm) {
+            toast.error("Passwords do not match");
+            return;
+        }
+
+        const res = await fetch("/api/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, email, password, accredited }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            toast.error(data.message || "Registration failed");
+            return;
+        }
+
+        toast.success(data.message || "Registration successful!");
+        setActiveTab("login");
+    }
+
     async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
 
@@ -102,7 +134,7 @@ export default function PortalPage() {
                 {/* Register Tab */}
                 {activeTab === "register" && (
                     <div className="tab-content active">
-                    <form method="POST">
+                    <form onSubmit={handleRegister}>
                         <div className="form-group">
                         <label htmlFor="reg-name">Full Name</label>
                         <input
