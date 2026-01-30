@@ -78,7 +78,7 @@ export default function AboutPage() {
           <div className="leadership">
             <div className="leader-img">
               <img
-                src="https://thumbs.dreamstime.com/b/handsome-stylish-modern-african-american-business-man-entrepreneur-executive-sitting-outside-office-cheerful-smile-155856257.jpg"
+                src="/images/daniel.png"
                 alt="Daniel Fainman, General Partner"
               />
             </div>
@@ -93,6 +93,28 @@ export default function AboutPage() {
               </p>
               <p>
                 With a proven track record in fund management, capital raising, and strategic execution, Daniel is committed to delivering exceptional risk-adjusted returns while advancing industry breakthroughs. His multifaceted background in finance, technology, and entertainment ensures Mogul Strategies remains at the forefront of alternative investments.
+              </p>
+            </div>
+          </div>
+
+          <div className="leadership">
+            <div className="leader-img">
+              <img
+                src="/images/SimbarasheNdemera.png"
+                alt="Simbarashe Ndemera, CFO, CFA & CCO"
+              />
+            </div>
+
+            <div className="leader-bio">
+              <h3>Simbarashe Ndemera</h3>
+              <p>
+                <strong>CFO, CFA & CCO</strong>
+              </p>
+              <p>
+                Simbarashe Ndemera brings extensive financial expertise and compliance leadership to Mogul Strategies. As Chief Financial Officer, Chartered Financial Analyst, and Chief Compliance Officer, he oversees financial operations, investment analysis, and regulatory compliance across all fund structures.
+              </p>
+              <p>
+                With deep experience in fund management, risk assessment, and regulatory frameworks, Simbarashe ensures that Mogul Strategies maintains the highest standards of financial integrity and compliance while optimizing investment performance and operational efficiency.
               </p>
             </div>
           </div>
@@ -160,11 +182,7 @@ export default function AboutPage() {
       <section id="stats">
         <div className="container">
           <div className="stats-grid">
-            <div className="stat-item">
-              <h3>$45M</h3>
-              <p>Assets Under Management</p>
-            </div>
-
+            
             <div className="stat-item">
               <h3>45+</h3>
               <p>Years Combined Experience</p>
@@ -179,6 +197,12 @@ export default function AboutPage() {
               <h3>20+</h3>
               <p>New Clients Every Year</p>
             </div>
+
+            <div className="stat-item">
+              <h3>$450M</h3>
+              <p>Actively Raising</p>
+            </div>
+
           </div>
         </div>
       </section>

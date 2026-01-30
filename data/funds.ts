@@ -20,7 +20,7 @@ export const funds = [
     description:
       "Deep investments in blockchain infrastructure, digital assets, and Bitcoin-backed strategies — positioned for asymmetric upside in the evolving digital economy.",
     image:
-      "https://thumbs.dreamstime.com/z/cryptocurrency-revolution-visualization-digital-realm-graphic-art-futuristic-environment-abstract-concept-explore-vibrant-351927303.jpg",
+      "/images/mogul_degital_fund.png",
     alt: "Mogul Digital Fund - Futuristic Blockchain Visualization",
     link: "https://moguldigitalfund.com",
   },
