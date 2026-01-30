@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
@@ -48,6 +47,3 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
 });
-=======
-// File will be created based on staging structure
->>>>>>> develop
