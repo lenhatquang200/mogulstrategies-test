@@ -36,8 +36,15 @@ export default function PortalPage() {
     return (
         <>
             <Star />
+            <div style={{
+                minHeight: "100vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: "100px 2rem 2rem",
+            }} >
             <div className="portal-container">
-                <div className="logo">Mogul Strategies</div>
+                <div className="auth-logo">Mogul Strategies</div>
                 <p className="tagline">Secure Investors Portal</p>
 
                 <div className="tab-buttons">
@@ -176,6 +183,7 @@ export default function PortalPage() {
                     Investments involve risk. Past performance is not indicative of future
                     results.
                 </p>
+            </div>
             </div>
         </>
     );

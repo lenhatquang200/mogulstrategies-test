@@ -25,7 +25,7 @@ export default function AdminLayout({
         <Star />
         <Header onToggleSidebar={toggleSidebar} />
         <Sidebar collapsed={collapsed} />
-        <main id="main-content" className={collapsed ? "expanded" : ""}>
+        <main id="main-content" className={collapsed ? "investor-dashboard expanded" : "investor-dashboard"}>
             {children}
         </main>
         <Footer />

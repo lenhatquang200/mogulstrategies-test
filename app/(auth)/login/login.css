@@ -3,7 +3,7 @@ body {
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
-    display: flex;
+    /* display: flex; */
     align-items: center;
     justify-content: center;
 }
@@ -17,11 +17,11 @@ body {
     backdrop-filter: blur(10px);
     text-align: center;
 }
-.logo {
-    font-size: 2.5rem;
+.auth-logo {
+    font-size: 1.8rem;
     font-weight: bold;
     color: var(--color-gold);
-    margin-bottom: 1rem;
+    font-weight: 700;
 }
 .tagline {
     font-size: 1.2rem;
@@ -55,7 +55,6 @@ body {
 }
 .form-group {
     margin-bottom: 1.5rem;
-    text-align: left;
 }
 .form-group label {
     display: block;
@@ -72,16 +71,15 @@ body {
     font-size: 1rem;
 }
 .submit-btn {
-    width: 100%;
+    color: #0a1a2f;
+    cursor: pointer;
     background: var(--color-gold);
-    color: var(--color-navy);
-    padding: 1.2rem;
     border: none;
     border-radius: 8px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.3s;
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    transition: background .3s;
     margin-top: 1rem;
 }
 .submit-btn:hover {
@@ -98,3 +96,14 @@ body {
     color: var(--color-gold);
     font-weight: 500;
 }
+
+/* Header/Navigation */
+header { position: fixed; top: 0; width: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 1000; }
+nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; }
+.logo { font-size: 1.8rem; font-weight: bold; color: var(--color-gold); text-decoration: none; display: inline-block; }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a { font-weight: 500; }
+.cta-button { background: var(--color-gold); color: var(--color-navy); padding: 0.8rem 1.8rem; border-radius: 4px; font-weight: bold; transition: background 0.3s; }
+.cta-button:hover { background: var(--color-white); color: var(--color-navy); }
+.cta-outline { background: transparent; border: 2px solid #E5E4E2; color: #E5E4E2; }
+.cta-outline:hover { background: #E5E4E2; color: #000000; }
