@@ -15,7 +15,7 @@ export const authConfig = {
         async jwt({ token, user }) {
             if (user) {
                 token.sub = user.id;
-                token.role = (user as any).role?.name || 'INVESTOR'; // Use role.name from database
+                token.role = (user as any).role || 'INVESTOR'; 
             }
             return token;
         },
@@ -34,7 +34,7 @@ export const authConfig = {
             // Handle admin login route
             if (isAdminLoginRoute) {
                 if (isLoggedIn && isAdmin) {
-                    return Response.redirect(new URL("/admin/dashboard", nextUrl));
+                    return Response.redirect(new URL("/admin", nextUrl));
                 }
                 return true; // Allow access to admin login
             }
@@ -43,7 +43,7 @@ export const authConfig = {
             if (isAuthRoute) {
                 if (isLoggedIn) {
                     if (isAdmin) {
-                        return Response.redirect(new URL("/admin/dashboard", nextUrl));
+                        return Response.redirect(new URL("/admin", nextUrl));
                     }
                     return Response.redirect(new URL("/investors/portfoliosummary", nextUrl));
                 }

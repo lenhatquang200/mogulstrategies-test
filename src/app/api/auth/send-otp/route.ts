@@ -33,21 +33,29 @@ export async function POST(request: Request) {
         // Validate credentials with role check
         const sanitizedEmail = CommonService.sanitizeEmail(email);
         CommonService.log(` Validating credentials for: ${sanitizedEmail}${role ? ` (${role})` : ''}`);
-        
-        const user = await AuthService.validateCredentials({ 
-            email: sanitizedEmail, 
+
+        const user = await AuthService.validateCredentials({
+            email: sanitizedEmail,
             password,
             role: role as 'INVESTOR' | 'ADMIN' | undefined
         });
         CommonService.log(` Credentials valid for user: ${user.id} (${user.role.name})`);
 
-        // Always require OTP for all users
-        CommonService.log(" Always requiring OTP for security");
+        // Skip OTP for admins
+        if (user.role.name === 'ADMIN') {
+            CommonService.log(" Skipping OTP for admin user");
+            return NextResponse.json(
+                CommonService.success('Admin login approved', {
+                    twoFactorRequired: false,
+                    email: sanitizedEmail
+                }),
+                { status: 200 }
+            );
+        }
 
-        // Generate and send OTP
-        CommonService.log(" Generating OTP...");
+        // Always require OTP for investors
+        CommonService.log(" Generating OTP for investor...");
         const { otp, expiry } = await AuthService.generateOTP(user.id);
-        CommonService.log(` OTP generated, expires at: ${expiry}`);
 
         // Send OTP email
         CommonService.log(" Sending OTP email...");
@@ -66,7 +74,7 @@ export async function POST(request: Request) {
 
         CommonService.log(" OTP email sent successfully");
         return NextResponse.json(
-            CommonService.success('Verification code sent to your email', { 
+            CommonService.success('Verification code sent to your email', {
                 twoFactorRequired: true,
                 email: sanitizedEmail
             }),
@@ -75,7 +83,7 @@ export async function POST(request: Request) {
 
     } catch (error) {
         CommonService.logError('Send OTP error', error);
-        
+
         // Don't reveal specific errors for security
         return NextResponse.json(
             CommonService.error('Invalid credentials'),

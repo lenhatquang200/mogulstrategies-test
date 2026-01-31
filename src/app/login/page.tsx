@@ -3,6 +3,7 @@ import React, { useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 import Header from '@/components/Header';
 
 export default function LoginPage() {
@@ -21,10 +22,11 @@ export default function LoginPage() {
         e.preventDefault();
         setLoading(true);
         setStatus(null);
+        const loginToast = toast.loading('Checking credentials...');
 
         try {
             console.log('🔍 Starting login process for:', loginData.email);
-            
+
             // First, check if 2FA is enabled and send OTP
             const otpRes = await fetch('/api/auth/send-otp', {
                 method: 'POST',
@@ -42,15 +44,40 @@ export default function LoginPage() {
             if (!otpRes.ok) {
                 console.log('❌ Send OTP failed:', otpData);
                 setStatus({ type: 'error', message: otpData.message || 'Invalid email or password.' });
+                toast.error(otpData.message || 'Invalid email or password', { id: loginToast });
                 return;
             }
 
-            // Always show OTP form for security
+            // If OTP is not required (e.g. for Admin), login directly
+            if (otpData.data?.twoFactorRequired === false) {
+                console.log('✅ OTP not required, logging in directly...');
+                toast.loading('Redirecting...', { id: loginToast });
+                const res = await signIn('credentials', {
+                    redirect: false,
+                    email: loginData.email,
+                    password: loginData.password,
+                });
+
+                if (res?.error) {
+                    console.log('❌ Direct login failed:', res.error);
+                    setStatus({ type: 'error', message: 'Login failed. Please try again.' });
+                    toast.error('Login failed', { id: loginToast });
+                } else {
+                    console.log('✅ Direct login successful, redirecting...');
+                    toast.success('Welcome back!', { id: loginToast });
+                    router.push('/admin'); // Redirect to admin if OTP was skipped
+                }
+                return;
+            }
+
+            // Always show OTP form for security if required
             setShowOtpForm(true);
             setStatus({ type: 'success', message: 'Verification code sent to your email.' });
+            toast.success('Verification code sent!', { id: loginToast });
         } catch (error) {
             console.error('💥 Login process error:', error);
             setStatus({ type: 'error', message: 'An unexpected error occurred.' });
+            toast.error('Connection error. Please try again.', { id: loginToast });
         } finally {
             setLoading(false);
         }
@@ -59,17 +86,17 @@ export default function LoginPage() {
     // Handle OTP input changes
     const handleOtpChange = useCallback((index: number, value: string) => {
         if (value.length > 1) return; // Only allow single digit
-        
+
         const newOtp = [...otpCode];
         newOtp[index] = value;
         setOtpCode(newOtp);
-        
+
         // Auto focus next input
         if (value && index < 5) {
             otpInputs[index + 1]?.focus();
         }
     }, [otpCode]);
-    
+
     // Handle OTP key down
     const handleOtpKeyDown = useCallback((index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Backspace' && !otpCode[index] && index > 0) {
@@ -82,7 +109,7 @@ export default function LoginPage() {
         e.preventDefault();
         const pastedData = e.clipboardData.getData('text').slice(0, 6);
         const digits = pastedData.split('').filter(char => /\d/.test(char));
-        
+
         const newOtp = [...otpCode];
         digits.forEach((digit, index) => {
             if (index < 6) {
@@ -90,7 +117,7 @@ export default function LoginPage() {
             }
         });
         setOtpCode(newOtp);
-        
+
         // Focus last filled input
         const lastFilledIndex = Math.min(digits.length - 1, 5);
         otpInputs[lastFilledIndex]?.focus();
@@ -101,14 +128,16 @@ export default function LoginPage() {
         e.preventDefault();
         setLoading(true);
         setStatus(null);
+        const verifyToast = toast.loading('Verifying code...');
 
         try {
             const otpString = otpCode.join('');
             console.log('🔍 Starting OTP verification for:', loginData.email);
             console.log('🔢 OTP entered:', otpString);
-            
+
             if (otpString.length !== 6) {
                 setStatus({ type: 'error', message: 'Please enter all 6 digits.' });
+                toast.error('Please enter all 6 digits', { id: verifyToast });
                 return;
             }
 
@@ -128,10 +157,12 @@ export default function LoginPage() {
 
             if (!verifyRes.ok) {
                 setStatus({ type: 'error', message: verifyData.message || 'Invalid verification code.' });
+                toast.error(verifyData.message || 'Invalid code', { id: verifyToast });
                 return;
             }
 
             // OTP verified, proceed with login
+            toast.loading('Logging you in...', { id: verifyToast });
             const res = await signIn('credentials', {
                 redirect: false,
                 email: loginData.email,
@@ -141,13 +172,16 @@ export default function LoginPage() {
             if (res?.error) {
                 console.log('❌ NextAuth login failed:', res.error);
                 setStatus({ type: 'error', message: 'Login failed. Please try again.' });
+                toast.error('Login failed', { id: verifyToast });
             } else {
                 console.log('✅ Login successful, redirecting...');
+                toast.success('Verification successful!', { id: verifyToast });
                 router.push('/investors/portfoliosummary');
             }
         } catch (error) {
             console.error('💥 OTP verification error:', error);
             setStatus({ type: 'error', message: 'An unexpected error occurred.' });
+            toast.error('Verification failed', { id: verifyToast });
         } finally {
             setLoading(false);
         }
@@ -164,6 +198,7 @@ export default function LoginPage() {
 
         setLoading(true);
         setStatus(null);
+        const regToast = toast.loading('Creating your account...');
 
         try {
             const res = await fetch('/api/auth/register', {
@@ -184,10 +219,12 @@ export default function LoginPage() {
             }
 
             setStatus({ type: 'success', message: 'Registration successful! Please check your email for confirmation.' });
+            toast.success('Registration successful!', { id: regToast });
             setActiveTab('login');
             setLoginData({ email: registerData.email, password: '' }); // Pre-fill email
         } catch (error: any) {
             setStatus({ type: 'error', message: error.message });
+            toast.error(error.message, { id: regToast });
         } finally {
             setLoading(false);
         }
@@ -212,237 +249,237 @@ export default function LoginPage() {
                 padding: '2rem',
                 paddingTop: '100px'
             }}>
-            <div className="portal-container">
-                <div className="logo">
-                    <Link href="/" style={{ color: '#D4AF37', textDecoration: 'none' }}>Mogul Strategies</Link>
-                </div>
-                <p className="tagline">Secure Investors Portal</p>
-
-                <div className="tab-buttons">
-                    <button
-                        className={`tab-btn ${activeTab === 'login' ? 'active' : ''}`}
-                        onClick={() => { setActiveTab('login'); setStatus(null); }}
-                    >
-                        Login
-                    </button>
-                    <button
-                        className={`tab-btn ${activeTab === 'register' ? 'active' : ''}`}
-                        onClick={() => { setActiveTab('register'); setStatus(null); }}
-                    >
-                        Register
-                    </button>
-                </div>
-
-                {status && (
-                    <div style={{
-                        padding: '1rem',
-                        marginBottom: '1rem',
-                        borderRadius: '4px',
-                        background: status.type === 'error' ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 255, 0, 0.1)',
-                        color: status.type === 'error' ? '#ff6b6b' : '#4ade80',
-                        border: `1px solid ${status.type === 'error' ? '#ff6b6b' : '#4ade80'}`
-                    }}>
-                        {status.message}
+                <div className="portal-container">
+                    <div className="logo">
+                        <Link href="/" style={{ color: '#D4AF37', textDecoration: 'none' }}>Mogul Strategies</Link>
                     </div>
-                )}
+                    <p className="tagline">Secure Investors Portal</p>
 
-                {/* Login Tab */}
-                {activeTab === 'login' && !showOtpForm && (
-                    <div id="login" className="tab-content active">
-                        <form onSubmit={handleLogin}>
-                            <div className="form-group">
-                                <label htmlFor="login-email">Email Address</label>
-                                <input
-                                    type="email"
-                                    id="login-email"
-                                    name="email"
-                                    required
-                                    placeholder="your@email.com"
-                                    value={loginData.email}
-                                    onChange={handleLoginChange}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="login-password">Password</label>
-                                <input
-                                    type="password"
-                                    id="login-password"
-                                    name="password"
-                                    required
-                                    placeholder="••••••••"
-                                    value={loginData.password}
-                                    onChange={handleLoginChange}
-                                />
-                            </div>
-                            <button type="submit" className="submit-btn" disabled={loading}>
-                                {loading ? 'Logging in...' : 'Secure Login'}
-                            </button>
-                        </form>
-                        <a href="#" className="switch-link">Forgot password?</a>
+                    <div className="tab-buttons">
+                        <button
+                            className={`tab-btn ${activeTab === 'login' ? 'active' : ''}`}
+                            onClick={() => { setActiveTab('login'); setStatus(null); }}
+                        >
+                            Login
+                        </button>
+                        <button
+                            className={`tab-btn ${activeTab === 'register' ? 'active' : ''}`}
+                            onClick={() => { setActiveTab('register'); setStatus(null); }}
+                        >
+                            Register
+                        </button>
                     </div>
-                )}
 
-                {/* OTP Verification Form */}
-                {activeTab === 'login' && showOtpForm && (
-                    <div id="otp-verify" className="tab-content active">
-                        <form onSubmit={handleVerifyOtp}>
-                            <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                                <p style={{ color: '#e0e0e0', fontSize: '0.95rem' }}>
-                                    Enter the 6-digit verification code sent to<br />
-                                    <strong style={{ color: '#D4AF37' }}>{loginData.email}</strong>
-                                </p>
-                            </div>
-                            <div className="form-group">
-                                <label>Verification Code</label>
-                                <div style={{ 
-                                    display: 'flex', 
-                                    gap: '0.5rem', 
-                                    justifyContent: 'center', 
-                                    marginBottom: '1rem' 
-                                }}>
-                                    {[0, 1, 2, 3, 4, 5].map((index) => (
-                                        <input
-                                            key={index}
-                                            type="text"
-                                            inputMode="numeric"
-                                            pattern="[0-9]*"
-                                            maxLength={1}
-                                            ref={(el) => { otpInputs[index] = el; }}
-                                            value={otpCode[index]}
-                                            onChange={(e) => handleOtpChange(index, e.target.value)}
-                                            onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                                            onPaste={index === 0 ? handleOtpPaste : undefined}
-                                            style={{
-                                                width: '50px',
-                                                height: '50px',
-                                                textAlign: 'center',
-                                                fontSize: '1.5rem',
-                                                fontWeight: 'bold',
-                                                background: '#0A1A2F',
-                                                border: '2px solid #D4AF37',
-                                                borderRadius: '8px',
-                                                color: '#E0E0E0',
-                                                outline: 'none',
-                                                transition: 'all 0.2s ease'
-                                            }}
-                                            onFocus={(e) => e.target.style.borderColor = '#FFD700'}
-                                            onBlur={(e) => e.target.style.borderColor = '#D4AF37'}
-                                        />
-                                    ))}
+                    {status && (
+                        <div style={{
+                            padding: '1rem',
+                            marginBottom: '1rem',
+                            borderRadius: '4px',
+                            background: status.type === 'error' ? 'rgba(255, 0, 0, 0.1)' : 'rgba(0, 255, 0, 0.1)',
+                            color: status.type === 'error' ? '#ff6b6b' : '#4ade80',
+                            border: `1px solid ${status.type === 'error' ? '#ff6b6b' : '#4ade80'}`
+                        }}>
+                            {status.message}
+                        </div>
+                    )}
+
+                    {/* Login Tab */}
+                    {activeTab === 'login' && !showOtpForm && (
+                        <div id="login" className="tab-content active">
+                            <form onSubmit={handleLogin}>
+                                <div className="form-group">
+                                    <label htmlFor="login-email">Email Address</label>
+                                    <input
+                                        type="email"
+                                        id="login-email"
+                                        name="email"
+                                        required
+                                        placeholder="your@email.com"
+                                        value={loginData.email}
+                                        onChange={handleLoginChange}
+                                    />
                                 </div>
-                            </div>
-                            <button type="submit" className="submit-btn" disabled={loading}>
-                                {loading ? 'Verifying...' : 'Verify & Login'}
-                            </button>
-                        </form>
-                        <button
-                            onClick={() => { 
-                                setShowOtpForm(false); 
-                                setOtpCode(['', '', '', '', '', '']); 
-                                setStatus(null); 
-                            }}
-                            className="switch-link"
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', marginTop: '1rem' }}
-                        >
-                            ← Back to Login
-                        </button>
-                        <button
-                            onClick={handleLogin}
-                            className="switch-link"
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'block', marginTop: '0.5rem' }}
-                            disabled={loading}
-                        >
-                            Resend Code
-                        </button>
-                    </div>
-                )}
+                                <div className="form-group">
+                                    <label htmlFor="login-password">Password</label>
+                                    <input
+                                        type="password"
+                                        id="login-password"
+                                        name="password"
+                                        required
+                                        placeholder="••••••••"
+                                        value={loginData.password}
+                                        onChange={handleLoginChange}
+                                    />
+                                </div>
+                                <button type="submit" className="submit-btn" disabled={loading}>
+                                    {loading ? 'Logging in...' : 'Secure Login'}
+                                </button>
+                            </form>
+                            <a href="#" className="switch-link">Forgot password?</a>
+                        </div>
+                    )}
 
-                {/* Registration Tab */}
-                {activeTab === 'register' && (
-                    <div id="register" className="tab-content active">
-                        <form onSubmit={handleRegister}>
-                            <div className="form-group">
-                                <label htmlFor="reg-name">Full Name</label>
-                                <input
-                                    type="text"
-                                    id="reg-name"
-                                    name="name"
-                                    required
-                                    placeholder="John Doe"
-                                    value={registerData.name}
-                                    onChange={handleRegisterChange}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="reg-email">Email Address</label>
-                                <input
-                                    type="email"
-                                    id="reg-email"
-                                    name="email"
-                                    required
-                                    placeholder="your@email.com"
-                                    value={registerData.email}
-                                    onChange={handleRegisterChange}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="reg-password">Password</label>
-                                <input
-                                    type="password"
-                                    id="reg-password"
-                                    name="password"
-                                    required
-                                    placeholder="Create strong password"
-                                    value={registerData.password}
-                                    onChange={handleRegisterChange}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="reg-confirm">Confirm Password</label>
-                                <input
-                                    type="password"
-                                    id="reg-confirm"
-                                    name="confirmPassword"
-                                    required
-                                    placeholder="Confirm password"
-                                    value={registerData.confirmPassword}
-                                    onChange={handleRegisterChange}
-                                />
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="reg-accredited">Accreditation Status *</label>
-                                <select
-                                    id="reg-accredited"
-                                    name="accreditationStatus"
-                                    required
-                                    style={{ width: '100%' }}
-                                    value={registerData.accreditationStatus}
-                                    onChange={handleRegisterChange}
-                                >
-                                    <option value="">Select your status...</option>
-                                    <option value="individual">Accredited Individual Investor</option>
-                                    <option value="family">Family Office</option>
-                                    <option value="institution">Institutional Investor</option>
-                                    <option value="advisor">Registered Investment Advisor</option>
-                                </select>
-                            </div>
-                            <button type="submit" className="submit-btn" disabled={loading}>
-                                {loading ? 'Registering...' : 'Request Access'}
+                    {/* OTP Verification Form */}
+                    {activeTab === 'login' && showOtpForm && (
+                        <div id="otp-verify" className="tab-content active">
+                            <form onSubmit={handleVerifyOtp}>
+                                <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                                    <p style={{ color: '#e0e0e0', fontSize: '0.95rem' }}>
+                                        Enter the 6-digit verification code sent to<br />
+                                        <strong style={{ color: '#D4AF37' }}>{loginData.email}</strong>
+                                    </p>
+                                </div>
+                                <div className="form-group">
+                                    <label>Verification Code</label>
+                                    <div style={{
+                                        display: 'flex',
+                                        gap: '0.5rem',
+                                        justifyContent: 'center',
+                                        marginBottom: '1rem'
+                                    }}>
+                                        {[0, 1, 2, 3, 4, 5].map((index) => (
+                                            <input
+                                                key={index}
+                                                type="text"
+                                                inputMode="numeric"
+                                                pattern="[0-9]*"
+                                                maxLength={1}
+                                                ref={(el) => { otpInputs[index] = el; }}
+                                                value={otpCode[index]}
+                                                onChange={(e) => handleOtpChange(index, e.target.value)}
+                                                onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                                                onPaste={index === 0 ? handleOtpPaste : undefined}
+                                                style={{
+                                                    width: '50px',
+                                                    height: '50px',
+                                                    textAlign: 'center',
+                                                    fontSize: '1.5rem',
+                                                    fontWeight: 'bold',
+                                                    background: '#0A1A2F',
+                                                    border: '2px solid #D4AF37',
+                                                    borderRadius: '8px',
+                                                    color: '#E0E0E0',
+                                                    outline: 'none',
+                                                    transition: 'all 0.2s ease'
+                                                }}
+                                                onFocus={(e) => e.target.style.borderColor = '#FFD700'}
+                                                onBlur={(e) => e.target.style.borderColor = '#D4AF37'}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                                <button type="submit" className="submit-btn" disabled={loading}>
+                                    {loading ? 'Verifying...' : 'Verify & Login'}
+                                </button>
+                            </form>
+                            <button
+                                onClick={() => {
+                                    setShowOtpForm(false);
+                                    setOtpCode(['', '', '', '', '', '']);
+                                    setStatus(null);
+                                }}
+                                className="switch-link"
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', marginTop: '1rem' }}
+                            >
+                                ← Back to Login
                             </button>
-                        </form>
-                        <p className="disclaimer">
-                            Registration is subject to verification of accredited investor status per SEC guidelines.
-                            You will receive an approval email upon successful verification.
-                        </p>
-                    </div>
-                )}
+                            <button
+                                onClick={handleLogin}
+                                className="switch-link"
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'block', marginTop: '0.5rem' }}
+                                disabled={loading}
+                            >
+                                Resend Code
+                            </button>
+                        </div>
+                    )}
 
-                <p className="disclaimer" style={{ marginTop: '3rem' }}>
-                    For Accredited Investors Only<br />
-                    Investments involve risk. Past performance is not indicative of future results.
-                </p>
+                    {/* Registration Tab */}
+                    {activeTab === 'register' && (
+                        <div id="register" className="tab-content active">
+                            <form onSubmit={handleRegister}>
+                                <div className="form-group">
+                                    <label htmlFor="reg-name">Full Name</label>
+                                    <input
+                                        type="text"
+                                        id="reg-name"
+                                        name="name"
+                                        required
+                                        placeholder="John Doe"
+                                        value={registerData.name}
+                                        onChange={handleRegisterChange}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="reg-email">Email Address</label>
+                                    <input
+                                        type="email"
+                                        id="reg-email"
+                                        name="email"
+                                        required
+                                        placeholder="your@email.com"
+                                        value={registerData.email}
+                                        onChange={handleRegisterChange}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="reg-password">Password</label>
+                                    <input
+                                        type="password"
+                                        id="reg-password"
+                                        name="password"
+                                        required
+                                        placeholder="Create strong password"
+                                        value={registerData.password}
+                                        onChange={handleRegisterChange}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="reg-confirm">Confirm Password</label>
+                                    <input
+                                        type="password"
+                                        id="reg-confirm"
+                                        name="confirmPassword"
+                                        required
+                                        placeholder="Confirm password"
+                                        value={registerData.confirmPassword}
+                                        onChange={handleRegisterChange}
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label htmlFor="reg-accredited">Accreditation Status *</label>
+                                    <select
+                                        id="reg-accredited"
+                                        name="accreditationStatus"
+                                        required
+                                        style={{ width: '100%' }}
+                                        value={registerData.accreditationStatus}
+                                        onChange={handleRegisterChange}
+                                    >
+                                        <option value="">Select your status...</option>
+                                        <option value="individual">Accredited Individual Investor</option>
+                                        <option value="family">Family Office</option>
+                                        <option value="institution">Institutional Investor</option>
+                                        <option value="advisor">Registered Investment Advisor</option>
+                                    </select>
+                                </div>
+                                <button type="submit" className="submit-btn" disabled={loading}>
+                                    {loading ? 'Registering...' : 'Request Access'}
+                                </button>
+                            </form>
+                            <p className="disclaimer">
+                                Registration is subject to verification of accredited investor status per SEC guidelines.
+                                You will receive an approval email upon successful verification.
+                            </p>
+                        </div>
+                    )}
+
+                    <p className="disclaimer" style={{ marginTop: '3rem' }}>
+                        For Accredited Investors Only<br />
+                        Investments involve risk. Past performance is not indicative of future results.
+                    </p>
+                </div>
             </div>
-        </div>
         </>
     );
 }
