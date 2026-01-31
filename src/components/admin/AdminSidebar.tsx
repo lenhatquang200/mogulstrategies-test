@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { signOut } from 'next-auth/react';
+import LogoutConfirmationModal from '@/components/LogoutConfirmationModal';
 import {
     FaTachometerAlt,
     FaUsers,
@@ -49,12 +51,18 @@ const navItems: NavItem[] = [
 export default function AdminSidebar() {
     const pathname = usePathname();
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
     const isActive = (href: string) => {
         if (href === '/admin') {
             return pathname === '/admin';
         }
         return pathname?.startsWith(href);
+    };
+
+    const handleLogoutConfirm = async () => {
+        await signOut({ callbackUrl: '/login' });
+        setIsLogoutModalOpen(false);
     };
 
     return (
@@ -117,14 +125,16 @@ export default function AdminSidebar() {
 
                         {/* Logout */}
                         <li>
-                            <Link
-                                href="/api/auth/signout"
-                                className="flex items-center gap-4 px-8 py-4 text-gray-300 hover:bg-red-500/20 hover:text-red-400 font-medium transition-all duration-300"
-                                onClick={() => setIsMobileOpen(false)}
+                            <button
+                                onClick={() => {
+                                    setIsMobileOpen(false);
+                                    setIsLogoutModalOpen(true);
+                                }}
+                                className="w-full flex items-center gap-4 px-8 py-4 text-gray-300 hover:bg-red-500/20 hover:text-red-400 font-medium transition-all duration-300 text-left"
                             >
                                 <FaSignOutAlt className="w-5 h-5 flex-shrink-0" />
-                                <span>Logout</span>
-                            </Link>
+                                <span className="text-base">Logout</span>
+                            </button>
                         </li>
                     </ul>
                 </nav>
@@ -137,6 +147,12 @@ export default function AdminSidebar() {
                     onClick={() => setIsMobileOpen(false)}
                 />
             )}
+
+            <LogoutConfirmationModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={handleLogoutConfirm}
+            />
         </>
     );
 }

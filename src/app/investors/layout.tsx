@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
+import LogoutConfirmationModal from '@/components/LogoutConfirmationModal';
 
 export default function InvestorsLayout({
     children,
@@ -11,6 +12,7 @@ export default function InvestorsLayout({
 }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
     const pathname = usePathname();
     const { data: session } = useSession();
 
@@ -36,6 +38,11 @@ export default function InvestorsLayout({
         { name: 'Support & FAQ', href: '/investors/supportfaq' },
     ];
 
+    const handleLogoutConfirm = async () => {
+        await signOut({ callbackUrl: '/login' });
+        setIsLogoutModalOpen(false);
+    };
+
     return (
         <div className="portal-layout">
             <header>
@@ -51,7 +58,10 @@ export default function InvestorsLayout({
                             <div className="dropdown" style={{ display: 'block' }}>
                                 <Link href="/investors/usersettings">Account Settings</Link>
                                 <button
-                                    onClick={() => signOut({ callbackUrl: '/login' })}
+                                    onClick={() => {
+                                        setIsUserMenuOpen(false);
+                                        setIsLogoutModalOpen(true);
+                                    }}
                                     className="logout"
                                 >
                                     Logout
@@ -79,6 +89,12 @@ export default function InvestorsLayout({
                 {children}
             </main>
 
+            <LogoutConfirmationModal
+                isOpen={isLogoutModalOpen}
+                onClose={() => setIsLogoutModalOpen(false)}
+                onConfirm={handleLogoutConfirm}
+            />
+
             <style jsx>{`
         .sidebar::-webkit-scrollbar {
           width: 5px;
@@ -94,4 +110,3 @@ export default function InvestorsLayout({
         </div>
     );
 }
-

@@ -29,7 +29,7 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    
+
     return await prisma.user.create({
       data: {
         email: data.email,
@@ -59,7 +59,7 @@ export class AuthService {
     }
 
     const hashedPassword = await bcrypt.hash(data.password, 10);
-    
+
     return await prisma.user.create({
       data: {
         email: data.email,
@@ -107,7 +107,7 @@ export class AuthService {
    */
   static async validateCredentials(credentials: LoginCredentials) {
     const user = await this.findUserByEmail(credentials.email);
-    
+
     if (!user) {
       throw new Error('Invalid credentials');
     }
@@ -118,7 +118,7 @@ export class AuthService {
     }
 
     const isValidPassword = await this.verifyPassword(credentials.password, user.password);
-    
+
     if (!isValidPassword) {
       throw new Error('Invalid credentials');
     }
@@ -149,7 +149,7 @@ export class AuthService {
    */
   static async verifyOTP(email: string, otp: string) {
     const user = await this.findUserByEmail(email);
-    
+
     if (!user) {
       throw new Error('User not found');
     }
@@ -171,7 +171,7 @@ export class AuthService {
 
     // Clear OTP after successful verification
     await this.clearOTP(user.id);
-    
+
     return true;
   }
 
@@ -218,8 +218,63 @@ export class AuthService {
   /**
    * Check if user is investor
    */
+  /**
+   * Check if user is investor
+   */
   static async isInvestor(userId: number) {
     const role = await this.getUserRole(userId);
     return role === 'INVESTOR';
+  }
+
+  /**
+   * Generate and save OTP for registration
+   */
+  static async generateRegistrationOTP(email: string) {
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+    await prisma.registrationOtp.upsert({
+      where: { email },
+      update: {
+        otpCode: otp,
+        otpExpiry: otpExpiry,
+      },
+      create: {
+        email,
+        otpCode: otp,
+        otpExpiry: otpExpiry,
+      },
+    });
+
+    return { otp, expiry: otpExpiry };
+  }
+
+  /**
+   * Verify registration OTP
+   */
+  static async verifyRegistrationOTP(email: string, otp: string) {
+    const record = await prisma.registrationOtp.findUnique({
+      where: { email },
+    });
+
+    if (!record) {
+      throw new Error('No OTP request found for this email');
+    }
+
+    // Check if OTP expired
+    if (new Date() > record.otpExpiry) {
+      await prisma.registrationOtp.delete({ where: { email } });
+      throw new Error('OTP has expired. Please request a new one.');
+    }
+
+    // Verify OTP
+    if (record.otpCode !== otp) {
+      throw new Error('Invalid OTP');
+    }
+
+    // Clean up
+    await prisma.registrationOtp.delete({ where: { email } });
+
+    return true;
   }
 }
