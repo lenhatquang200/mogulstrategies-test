@@ -45,7 +45,7 @@ export const authConfig = {
                     if (isAdmin) {
                         return Response.redirect(new URL("/admin", nextUrl));
                     }
-                    return Response.redirect(new URL("/investors/portfoliosummary", nextUrl));
+                    return Response.redirect(new URL("/investors/kyc1", nextUrl));
                 }
                 return true;
             }

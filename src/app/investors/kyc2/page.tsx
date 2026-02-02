@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
+import "./kyc2.css";
 
 export default function KYCStep2Page() {
     const [selectedDocType, setSelectedDocType] = useState('passport');
@@ -77,7 +78,7 @@ export default function KYCStep2Page() {
             </section>
 
             {/* Identity Verification */}
-            <section className="verification-container" style={{ maxWidth: '1000px', margin: '0 auto' }}>
+            <section className="verification-container pt-0 max-w-[1000px] mx-auto">
                 <div className="verification-card" style={{ background: '#112240', borderRadius: '16px', padding: '3rem', textAlign: 'center' }}>
                     <h2>Verify Your Identity</h2>
                     <p style={{ marginBottom: '2rem', fontSize: '1.2rem' }}>To comply with regulatory requirements, please upload a clear photo of one of the following

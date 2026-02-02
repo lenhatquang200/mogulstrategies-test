@@ -1,6 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import Link from 'next/link';
+import "./kyc3.css";
 
 export default function KYCStep3Page() {
     const [entityType, setEntityType] = useState('individual');
@@ -69,9 +70,9 @@ export default function KYCStep3Page() {
                 <p style={{ fontSize: '1.2rem' }}>Step 3 of 4 – Please select your entity type and complete accreditation details.</p>
             </section>
 
-            <section className="accreditation-container" style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <section className="accreditation-container max-w-[900px] mx-auto pt-0">
                 {/* Entity Type Selector */}
-                <div className="entity-selector" style={{ background: '#112240', borderRadius: '16px', padding: '2.5rem', textAlign: 'center', marginBottom: '3rem' }}>
+                <div className="entity-selector bg-[#112240] rounded-[16px] p-10 text-center mb-12">
                     <h3>Select Investor Entity Type</h3>
                     <p style={{ marginBottom: '1.5rem' }}>Please choose the type of entity you are representing. This determines the accreditation criteria.</p>
                     <div className="entity-options" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem' }}>

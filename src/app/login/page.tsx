@@ -67,7 +67,7 @@ export default function LoginPage() {
                 } else {
                     console.log('✅ Direct login successful, redirecting...');
                     toast.success('Welcome back!', { id: currentToast });
-                    router.push('/investors/portfoliosummary');
+                    router.push('/investors/kyc1');
                 }
                 return;
             }
@@ -131,7 +131,7 @@ export default function LoginPage() {
                     toast.error('Login failed', { id: verifyToast });
                 } else {
                     toast.success('Login successful!', { id: verifyToast });
-                    router.push('/investors/portfoliosummary');
+                    router.push('/investors/kyc1');
                 }
 
             } else {
@@ -174,7 +174,7 @@ export default function LoginPage() {
                     setShowOtpForm(false);
                     setOtpAction('login');
                 } else {
-                    router.push('/investors/portfoliosummary');
+                    router.push('/investors/kyc1');
                 }
             }
         } catch (error) {
@@ -285,17 +285,18 @@ export default function LoginPage() {
 
                     <div className="tab-buttons">
                         <button
-                            className={`tab-btn ${activeTab === 'login' ? 'active' : ''}`}
-                            onClick={() => { setActiveTab('login'); setShowOtpForm(false); setStatus(null); }}
-                        >
-                            Login
-                        </button>
-                        <button
                             className={`tab-btn ${activeTab === 'register' ? 'active' : ''}`}
                             onClick={() => { setActiveTab('register'); setShowOtpForm(false); setStatus(null); }}
                         >
                             Register
                         </button>
+                        <button
+                            className={`tab-btn ${activeTab === 'login' ? 'active' : ''}`}
+                            onClick={() => { setActiveTab('login'); setShowOtpForm(false); setStatus(null); }}
+                        >
+                            Login
+                        </button>
+                        
                     </div>
 
                     {status && (

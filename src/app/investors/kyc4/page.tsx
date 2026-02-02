@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import "./kyc4.css";
 
 type KYCStatus = 'pending' | 'approved' | 'declined';
 
@@ -78,7 +79,7 @@ export default function KYCStep4Page() {
             </section>
 
             {/* KYC & Accreditation Content based on Status */}
-            <section className="kyc-content">
+            <section className="kyc-content pt-0">
                 {/* 1. PENDING STATE */}
                 {status === 'pending' && (
                     <>

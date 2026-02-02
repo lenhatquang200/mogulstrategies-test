@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 export default function Header() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const { status } = useSession();
-    const portalLink = status === 'authenticated' ? '/investors/portfoliosummary' : '/login';
+    const portalLink = status === 'authenticated' ? '/investors/kyc1' : '/login';
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
