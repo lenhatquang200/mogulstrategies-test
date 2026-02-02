@@ -3,8 +3,14 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
-import LogoutConfirmationModal from '@/components/LogoutConfirmationModal';
 import "./investor.css";
+import Footer from './components/Footer';
+import dynamic from 'next/dynamic';
+
+const LogoutConfirmationModal = dynamic(
+  () => import('@/components/LogoutConfirmationModal'),
+  { ssr: false, loading: () => null }
+);
 
 export default function InvestorsLayout({
     children,
@@ -89,13 +95,13 @@ export default function InvestorsLayout({
             <main id="main-content" className={isSidebarOpen ? '' : 'expanded'}>
                 {children}
             </main>
-
+            <Footer />
             <LogoutConfirmationModal
                 isOpen={isLogoutModalOpen}
                 onClose={() => setIsLogoutModalOpen(false)}
                 onConfirm={handleLogoutConfirm}
             />
-
+            
             <style jsx>{`
         .sidebar::-webkit-scrollbar {
           width: 5px;

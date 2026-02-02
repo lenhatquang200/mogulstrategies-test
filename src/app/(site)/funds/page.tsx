@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
+import { landingSEO } from "@/lib/seo";
 
+export const metadata = landingSEO.funds;
 export default function FundsPage() {
     return (
         <main>

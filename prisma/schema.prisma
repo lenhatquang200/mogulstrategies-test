@@ -32,6 +32,9 @@ model User {
   otpExpiry           DateTime?
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+
+  lastLoginAt DateTime?
+  kyc         Kyc?
 }
 
 model RegistrationOtp {
@@ -41,4 +44,69 @@ model RegistrationOtp {
   otpExpiry DateTime
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Kyc {
+  id     Int  @id @default(autoincrement())
+  userId Int  @unique
+  user   User @relation(fields: [userId], references: [id])
+
+  // ===== Progress =====
+  currentStep Int    @default(1)
+  status      String @default("draft")
+  // draft | in_review | approved | rejected
+
+  // ===== STEP 1: Personal Info =====
+  firstName   String?
+  lastName    String?
+  middleName  String?
+  dateOfBirth DateTime?
+
+  nationality String?
+  country     String?
+  address     String?
+  city        String?
+  state       String?
+  postalCode  String?
+  phone       String?
+
+  // ===== STEP 2: Identity =====
+  documentType String?
+  // passport | drivers | national
+
+  // ===== STEP 3: Accreditation =====
+  entityType String?
+  // individual | family | institution | advisor
+
+  // Individual
+  individualCriteria String?
+  // income | networth | professional
+
+  // Entity
+  entityName      String?
+  entityLegalType String?
+  formationDate   DateTime?
+  jurisdiction    String?
+  totalAssets     String?
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  KycDocument KycDocument[]
+}
+
+model KycDocument {
+  id    Int @id @default(autoincrement())
+  kycId Int
+  kyc   Kyc @relation(fields: [kycId], references: [id])
+
+  step Int
+  // 2 = ID document
+  // 3 = Accreditation document
+
+  fileName String
+  fileUrl  String
+  fileType String // image | pdf
+  fileSize Int
+
+  createdAt DateTime @default(now())
 }

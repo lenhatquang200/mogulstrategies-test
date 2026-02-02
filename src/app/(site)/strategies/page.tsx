@@ -1,4 +1,7 @@
 import React from 'react';
+import { landingSEO } from "@/lib/seo";
+
+export const metadata = landingSEO.strategies;
 
 export default function StrategiesPage() {
     return (

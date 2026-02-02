@@ -1,6 +1,8 @@
-'use client';
 import Link from 'next/link';
 import VideoSlider from '@/components/VideoSlider';
+import { landingSEO } from "@/lib/seo";
+
+export const metadata = landingSEO.home;
 
 export default function Home() {
   return (
