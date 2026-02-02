@@ -28,7 +28,7 @@ export default function InvestorsLayout({
     };
 
     const navItems = [
-        { name: 'KYC & Accreditation', href: '/investors/kyc1' },
+        { name: 'KYC & Accreditation', href: '/investors/kyc1', match: (pathname: string) => pathname.startsWith('/investors/kyc'),},
         { name: 'Active Offerings', href: '/investors/activeofferings' },
         { name: 'Syndications', href: '/investors/syndications' },
         { name: 'Subscription Center', href: '/investors/subscriptioncenter' },
@@ -56,7 +56,7 @@ export default function InvestorsLayout({
                 <div className="header-container">
                     <div className="header-left">
                         <button className="hamburger" aria-label="Menu" onClick={toggleSidebar}>☰</button>
-                        <Link href="/investors/portfoliosummary" className="logo">Mogul Strategies</Link>
+                        <Link href="/" className="logo">Mogul Strategies</Link>
                     </div>
                     <div className="user-menu">
                         <span>Welcome, {session?.user?.name || 'Investor'}</span>
@@ -82,13 +82,16 @@ export default function InvestorsLayout({
             {/* Sidebar Navigation */}
             <nav className={`sidebar ${isSidebarOpen ? '' : 'collapsed'}`} id="sidebar">
                 <ul className="nav-menu">
-                    {navItems.map((item) => (
-                        <li key={item.href}>
-                            <Link href={item.href} className={pathname === item.href ? 'active' : ''}>
-                                {item.name}
-                            </Link>
-                        </li>
-                    ))}
+                    {navItems.map(item => {
+                        const isActive = item.match ? item.match(pathname) : pathname === item.href;
+                        return (
+                            <li key={item.href}>
+                                <Link href={item.href} className={isActive ? 'active' : ''}>
+                                    {item.name}
+                                </Link>
+                            </li>
+                        );
+                    })}
                 </ul>
             </nav>
 
