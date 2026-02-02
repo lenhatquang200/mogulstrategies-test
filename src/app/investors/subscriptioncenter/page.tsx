@@ -1,5 +1,6 @@
 'use client';
 import React, { useState } from 'react';
+import "./subscription.css";
 
 export default function SubscriptionCenterPage() {
     const [hasSigned, setHasSigned] = useState(false);

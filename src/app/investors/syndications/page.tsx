@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import "./syndication.css";
 
 export default function SyndicationsPage() {
     const syndications = [
