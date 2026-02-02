@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { landingSEO } from "@/lib/seo";
+import AccessPortalLink from '@/components/AccessPortalLink';
 
 export const metadata = landingSEO.insights;
 
@@ -144,8 +145,8 @@ export default function InsightsPage() {
                     <h2>Access Exclusive Content & Analytics</h2>
                     <p>Registered accredited investors gain full access to detailed fund performance, gated insights, webinars,
                         and subscription documents through our secure portal.</p>
-                    <Link href="/login" className="cta-button" style={{ fontSize: '1.2rem', padding: '1rem 3rem' }}>Enter Investors
-                        Portal</Link>
+                    <AccessPortalLink className="cta-button" style={{ fontSize: '1.2rem', padding: '1rem 3rem' }}>Enter Investors
+                                            Portal</AccessPortalLink>
                 </div>
             </section>
         </main>

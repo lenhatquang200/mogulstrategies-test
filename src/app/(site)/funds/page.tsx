@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { landingSEO } from "@/lib/seo";
+import AccessPortalLink from '@/components/AccessPortalLink';
 
 export const metadata = landingSEO.funds;
 export default function FundsPage() {
@@ -13,7 +14,9 @@ export default function FundsPage() {
                     <h1>Our Portfolio of Funds</h1>
                     <p>A carefully curated collection of specialized investment vehicles designed to capture growth across
                         traditional and emerging verticals — exclusively for accredited and institutional investors.</p>
-                    <Link href="/login" className="cta-button" style={{ fontSize: '1.2rem', padding: '1rem 2.5rem' }}>Access Investors Portal</Link>
+                    <AccessPortalLink className="cta-button" style={{ fontSize: '1.2rem', padding: '1rem 2.5rem' }}>
+                        Access Investors Portal
+                    </AccessPortalLink>
                 </div>
             </section>
 

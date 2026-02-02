@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import VideoSlider from '@/components/VideoSlider';
 import { landingSEO } from "@/lib/seo";
+import AccessPortalLink from '@/components/AccessPortalLink';
 
 export const metadata = landingSEO.home;
 
@@ -15,7 +16,9 @@ export default function Home() {
             for enhanced risk mitigation. Exclusive opportunities for accredited and institutional investors.</p>
           <div className="hero-buttons">
             <Link href="/funds" className="cta-button">Explore Our Funds</Link>
-            <Link href="/login" className="cta-button cta-outline">Access Portal</Link>
+            <AccessPortalLink className="cta-button cta-outline">
+              Access Portal
+            </AccessPortalLink>
           </div>
         </div>
       </section>
