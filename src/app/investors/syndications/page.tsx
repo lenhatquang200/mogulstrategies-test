@@ -69,7 +69,7 @@ export default function SyndicationsPage() {
                     <a href="#" style={{ display: 'block', margin: '1rem 0', fontWeight: 'bold' }}>Open Inbox (2 unread)</a>
                     <textarea placeholder="Type your message..."
                         style={{ width: '100%', height: '100px', padding: '1rem', background: '#0A1A2F', border: '1px solid #D4AF37', borderRadius: '8px', color: '#E0E0E0' }}></textarea>
-                    <button
+                    <button onClick={() => alert('Message sent!')}
                         style={{ marginTop: '1rem', background: '#D4AF37', color: '#0A1A2F', padding: '0.8rem 1.5rem', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Send
                         Message</button>
                 </div>
@@ -96,7 +96,7 @@ export default function SyndicationsPage() {
                             <p><strong>Expected Return:</strong> <span className="highlight">{item.expectedReturn}</span></p>
                             <p><strong>Raised to Date:</strong> {Math.floor(parseFloat(item.targetSize.replace('$', '').replace('M', '')) * item.raised / 100).toFixed(1)}M ({item.raised}%)</p>
                             <div className="progress-bar" style={{ background: '#333', height: '12px', borderRadius: '6px', overflow: 'hidden', margin: '1.5rem 0' }}>
-                                <div className="progress-fill" style={{ width: `${item.raised}%`, height: '100%', background: '#D4AF37', transition: 'width 0.5s ease' }}></div>
+                                <div className="progress-fill" style={{ width: `${item.raised}%`, height: '100%', background: '#D4AF37', transition: 'width 0.5s ease', top: 0 }}></div>
                             </div>
                         </div>
                         <div className="syndication-actions">

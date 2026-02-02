@@ -102,21 +102,21 @@ export default function KYCStep3Page() {
                         <form onSubmit={(e) => e.preventDefault()}>
                             <div className="form-grid">
                                 <div className="form-group full-width">
-                                    <label style={{ display: 'flex', gap: '1rem', cursor: 'pointer' }}>
+                                    <label style={{ gap: '1rem', cursor: 'pointer' }}>
                                         <input type="radio" name="individualCriteria" value="income" defaultChecked />
                                         <span>Annual income exceeding $200,000 (or $300,000 joint with spouse) in each of the two most
                                             recent years, with expectation of same in current year</span>
                                     </label>
                                 </div>
                                 <div className="form-group full-width">
-                                    <label style={{ display: 'flex', gap: '1rem', cursor: 'pointer' }}>
+                                    <label style={{ gap: '1rem', cursor: 'pointer' }}>
                                         <input type="radio" name="individualCriteria" value="networth" />
                                         <span>Net worth exceeding $1,000,000 (excluding primary residence), individually or jointly
                                             with spouse</span>
                                     </label>
                                 </div>
                                 <div className="form-group full-width">
-                                    <label style={{ display: 'flex', gap: '1rem', cursor: 'pointer' }}>
+                                    <label style={{ gap: '1rem', cursor: 'pointer' }}>
                                         <input type="radio" name="individualCriteria" value="professional" />
                                         <span>Holder of Series 7, 65, or 82 license in good standing</span>
                                     </label>

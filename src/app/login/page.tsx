@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import Header from '@/components/Header';
+import SocialAuth from './SocialAuth';
 
 export default function LoginPage() {
     const router = useRouter();
@@ -265,6 +266,10 @@ export default function LoginPage() {
         otpInputs[lastFilledIndex]?.focus();
     }, [otpCode]);
 
+    const handleSocialAuth = (provider: any) => {
+        alert(`Social login (${provider}) is developing...`);
+    };
+
     // --- Render ---
     return (
         <>
@@ -397,6 +402,7 @@ export default function LoginPage() {
                                 </button>
                             </form>
                             <a href="#" className="switch-link">Forgot password?</a>
+                            <SocialAuth onAuth={handleSocialAuth} />
                         </div>
                     )}
 
@@ -454,6 +460,9 @@ export default function LoginPage() {
                                     {loading ? 'Processing...' : 'Request Access'}
                                 </button>
                             </form>
+                            
+                            <SocialAuth onAuth={handleSocialAuth} />
+
                             <p className="disclaimer">
                                 Registration is subject to verification of accredited investor status per SEC guidelines.
                                 You will receive a verification code to complete your registration.

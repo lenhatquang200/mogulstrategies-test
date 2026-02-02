@@ -65,7 +65,7 @@ export default function ResourceLibraryPage() {
                     <a href="#" style={{ display: 'block', margin: '1rem 0', fontWeight: 'bold' }}>Open Inbox (2 unread)</a>
                     <textarea placeholder="Type your message..."
                         style={{ width: '100%', height: '100px', padding: '1rem', background: '#0A1A2F', border: '1px solid #D4AF37', borderRadius: '8px', color: '#E0E0E0' }}></textarea>
-                    <button
+                    <button onClick={() => alert('Message sent!')}
                         style={{ marginTop: '1rem', background: '#D4AF37', color: '#0A1A2F', padding: '0.8rem 1.5rem', border: 'none', borderRadius: '8px', cursor: 'pointer' }}>Send
                         Message</button>
                 </div>
