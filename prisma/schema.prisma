@@ -33,7 +33,6 @@ model User {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
-  lastLoginAt DateTime?
   kyc         Kyc?
 }
 
