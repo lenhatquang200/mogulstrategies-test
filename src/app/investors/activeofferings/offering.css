@@ -1,0 +1,49 @@
+.offerings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem; }
+.offering-card { 
+    background: #112240; 
+    border-radius: 16px; 
+    padding: 2.5rem; 
+    animation: pulse-glow 5s ease-in-out infinite;
+    transition: transform 0.3s;
+}
+.offering-card:hover { transform: translateY(-10px); }
+.offering-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.offering-title { font-size: 2rem; color: #D4AF37; }
+.offering-status { padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
+.status-open { background: rgba(0, 255, 0, 0.2); color: #0f0; }
+.status-closed { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+.offering-details { margin-bottom: 2rem; }
+.offering-details p { margin-bottom: 1rem; }
+.highlight { color: #D4AF37; font-weight: bold; }
+.offering-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+.action-btn {
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-align: center;
+}
+.action-btn.view { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; }
+.action-btn.view:hover { background: #D4AF37; color: #0A1A2F; }
+.action-btn.subscribe { background: #D4AF37; color: #0A1A2F; border: none; }
+.action-btn.subscribe:hover { background: #FFFFFF; }
+.action-btn.wire { background: rgba(0, 255, 0, 0.2); color: #0f0; border: none; }
+.action-btn.wire:hover { background: rgba(0, 255, 0, 0.4); }
+.action-btn.archive { background: rgba(212, 175, 55, 0.2); color: #D4AF37; border: none; }
+.action-btn.archive:hover { background: #D4AF37; color: #0A1A2F; }
+.action-btn.stats { background: rgba(0, 204, 255, 0.2); color: #00ccff; border: none; }
+.action-btn.stats:hover { background: #00ccff; color: #0A1A2F; }
+
+footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9rem; color: #AAAAAA; }
+
+@media (max-width: 1024px) {
+    .hamburger { display: block; }
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    main { margin-left: 0; }
+}
+@media (max-width: 768px) {
+    .top-row, .offerings-grid { grid-template-columns: 1fr; }
+    .offering-actions { grid-template-columns: 1fr; }
+}

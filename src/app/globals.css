@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --background: #000000;
+  --foreground: #e0e0e0;
+  --mogul-gold: #D4AF37;
+  --mogul-navy: #0A1A2F;
+  --mogul-white: #FFFFFF;
+}
+
 /* Reset and Base Styles */
 * {
   margin: 0;
@@ -1381,6 +1389,7 @@ footer a {
   overflow-y: auto;
   z-index: 900;
   transition: transform 0.3s ease;
+  display: block;
 }
 
 #main-content {

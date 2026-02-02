@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import "./distributions-tax.css";
 
 export default function DistributionsTaxPage() {
     const distributionHistory = [

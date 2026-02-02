@@ -1,0 +1,28 @@
+.section-title { font-size: 2.6rem; color: #D4AF37; text-align: center; margin: 3rem 0 2rem; }
+.capital-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2rem; }
+.capital-card { background: #112240; border-radius: 16px; padding: 2rem; animation: pulse-glow 5s ease-in-out infinite; }
+.capital-card h3 { font-size: 1.8rem; color: #D4AF37; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 0.8rem; }
+.call-list { list-style: none; }
+.call-list li { padding: 1.2rem 0; border-bottom: 1px solid rgba(212, 175, 55, 0.2); display: flex; justify-content: space-between; align-items: center; }
+.call-list li:last-child { border-bottom: none; }
+.call-amount { font-weight: bold; color: #D4AF37; font-size: 1.2rem; }
+.call-status { padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.9rem; }
+.status-open { background: rgba(0, 255, 0, 0.2); color: #0f0; }
+.status-paid { background: rgba(212, 175, 55, 0.2); color: #D4AF37; }
+.status-overdue { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; }
+.call-date { font-size: 0.9rem; color: #AAAAAA; }
+
+.summary-card { background: #112240; border-radius: 16px; padding: 2rem; animation: pulse-glow 5s ease-in-out infinite; text-align: center; }
+.summary-value { font-size: 2.4rem; color: #D4AF37; margin: 1rem 0; }
+
+footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9rem; color: #AAAAAA; }
+
+@media (max-width: 1024px) {
+    .hamburger { display: block; }
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    main { margin-left: 0; }
+}
+@media (max-width: 768px) {
+    .top-row, .capital-grid { grid-template-columns: 1fr; }
+}

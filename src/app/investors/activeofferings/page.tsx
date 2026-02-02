@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import "./offering.css";
 
 export default function ActiveOfferingsPage() {
     const offerings = [

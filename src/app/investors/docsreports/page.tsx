@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import "./documents-reports.css";
 
 export default function DocsReportsPage() {
     interface Document {

@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import "./resource-library.css";
 
 export default function ResourceLibraryPage() {
     const categories = [

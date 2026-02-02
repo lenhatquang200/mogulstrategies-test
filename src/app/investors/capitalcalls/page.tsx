@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import "./capital-calls.css";
 
 export default function CapitalCallsPage() {
     const openCalls = [

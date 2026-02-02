@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import LogoutConfirmationModal from '@/components/LogoutConfirmationModal';
+import "./investor.css";
 
 export default function InvestorsLayout({
     children,
