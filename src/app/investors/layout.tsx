@@ -11,6 +11,7 @@ import AccountInfoPopup from "./components/AccountInfoPopup";
 import SecureMessagingPopup from "./components/SecureMessagingPopup";
 import NotificationsPopup from './components/NotificationsPopup';
 import { Sidebar } from "./components/Sidebar";
+import type { ProfileData } from "@/types/user";
 
 const LogoutConfirmationModal = dynamic(
   () => import('@/components/LogoutConfirmationModal'),
@@ -52,7 +53,29 @@ export default function InvestorsLayout({
         { label: "Files & Media", href: "/investors/resourcelibrary" },
         { label: "Account Settings", href: "/investors/usersettings" },
     ];
+    const [profile, setProfile] = useState<ProfileData | null>(null);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        const fetchProfile = async () => {
+        try {
+            const res = await fetch("/api/profile", {
+            credentials: "include",
+            });
+
+            if (!res.ok) return;
+
+            const data = await res.json();
+            setProfile(data);
+        } catch (err) {
+            console.error("Fetch profile error:", err);
+        } finally {
+            setLoading(false);
+        }
+        };
+
+        fetchProfile();
+    }, []);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -181,9 +204,13 @@ export default function InvestorsLayout({
 
                                 {/* Account popup */}
                                 {activeCard === "account" && (
-                                    <section className="absolute right-0 top-full pt-4 w-max z-50">
+                                    <section className="absolute right-0 top-full pt-4 w-max z-50 min-w-[520px]">
                                         <div className="transition-all duration-300 ease-out opacity-100 translate-y-0">
-                                            <AccountInfoPopup />
+                                            <AccountInfoPopup
+                                                data={profile}
+                                                loading={loading}
+                                                onClose={() => setActiveCard(null)}
+                                            />
                                         </div>
                                     </section>
                                 )}

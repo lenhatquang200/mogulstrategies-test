@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth"; 
 import { AuthService } from "@/services/auth.service";
+import { UserService } from "@/services/user.service";
 import { mapAccreditation, formatDate } from "@/lib/utils";
 
 export async function GET() {
@@ -14,7 +15,7 @@ export async function GET() {
       );
     }
 
-    const user = await AuthService.findUserByEmail(session.user.email);
+    const user = await UserService.getByEmail(session.user.email);
 
     if (!user) {
       return NextResponse.json(
@@ -26,6 +27,9 @@ export async function GET() {
     return NextResponse.json({
       name: user.name,
       email: user.email,
+      phone: user.phone,
+      timezone: user.timezone,
+      userCode: user.userCode,
       role: user.role.name,
       investorType: mapAccreditation(user.accreditationStatus),
       joined: formatDate(user.createdAt),
@@ -40,4 +44,21 @@ export async function GET() {
       { status: 500 }
     );
   }
+}
+
+export async function PATCH(req: Request) {
+  const session = await auth();
+
+  if (!session?.user?.email) {
+    return NextResponse.json(
+      { message: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+  const body = await req.json();
+
+  await UserService.updateByEmail(session.user.email, body);
+
+  return NextResponse.json({ success: true });
 }
