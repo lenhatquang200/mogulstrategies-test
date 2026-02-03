@@ -114,10 +114,10 @@ export default function PerformanceAnalyticsPage() {
 
     return (
         <>
-            <h1 className="page-title">Performance Analytics</h1>
+            <h1 className="page-title">Key Performance Metric</h1>
 
             <section id="key-metrics">
-                <h2 className="section-title">Key Performance Metrics</h2>
+                {/* <h2 className="section-title">Key Performance Metrics</h2> */}
                 <div className="metrics-grid">
                     {[
                         { v: '+27.9%', l: 'Total Return (Net)' },

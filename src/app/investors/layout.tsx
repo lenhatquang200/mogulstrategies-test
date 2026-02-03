@@ -9,6 +9,7 @@ import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import AccountInfoPopup from "./components/AccountInfoPopup";
 import SecureMessagingPopup from "./components/SecureMessagingPopup";
+import NotificationsPopup from './components/NotificationsPopup';
 import { Sidebar } from "./components/Sidebar";
 
 const LogoutConfirmationModal = dynamic(
@@ -31,34 +32,27 @@ export default function InvestorsLayout({
         setIsSidebarOpen(!isSidebarOpen);
     };
 
-    const navItems = [
-        { name: 'KYC & Accreditation', href: '/investors/kyc1', match: (pathname: string) => pathname.startsWith('/investors/kyc'),},
-        { name: 'Active Offerings', href: '/investors/activeofferings' },
-        { name: 'Syndications', href: '/investors/syndications' },
-        { name: 'Subscription Center', href: '/investors/subscriptioncenter' },
-        { name: 'My Investments', href: '/investors/myinvestments' },
-        { name: 'Portfolio Summary', href: '/investors/portfoliosummary' },
-        { name: 'Performance Analytics', href: '/investors/performanceanalytics' },
-        { name: 'Documents & Reports', href: '/investors/docsreports' },
-        { name: 'Distributions & Tax', href: '/investors/distributionstax' },
-        { name: 'Capital Calls', href: '/investors/capitalcalls' },
-        { name: 'Notifications', href: '/investors/notifications' },
-        { name: 'Secure Messaging', href: '/investors/securemessaging' },
-        { name: 'Webinars & Events', href: '/investors/events' },
-        { name: 'Resource Library', href: '/investors/resourcelibrary' },
-        { name: 'Support & FAQ', href: '/investors/supportfaq' },
-    ];
-
     const handleLogoutConfirm = async () => {
         await signOut({ callbackUrl: '/login' });
         setIsLogoutModalOpen(false);
     };
 
-    type ActiveCard = "account" | "message" | null;
+    type ActiveCard = "account" | "message" | "notification" | null;
 
     const [activeCard, setActiveCard] = useState<ActiveCard>(null);
     const popupRef = useRef<HTMLDivElement | null>(null);
     const userMenuRef = useRef<HTMLDivElement | null>(null);
+    const userMenuItems = [
+        { label: "Portfolio Overview", href: "/investors/portfoliosummary" },
+        { label: "My Calendar", href: "/investors/events" },
+        { label: "My Investments", href: "/investors/myinvestments" },
+        { label: "Capital Calls", href: "/investors/capitalcalls" },
+        { label: "Statements & Reports", href: "/investors/docsreports" },
+        { label: "Distributions & Tax", href: "/investors/distributionstax" },
+        { label: "Files & Media", href: "/investors/resourcelibrary" },
+        { label: "Account Settings", href: "/investors/usersettings" },
+    ];
+
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -89,39 +83,64 @@ export default function InvestorsLayout({
                     </div>
                     <div className="user-menu" ref={userMenuRef}>
                         <span>Welcome, {session?.user?.name || 'Investor'}</span>
-                        <button className="user-menu-btn" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>▼</button>
-                        {isUserMenuOpen && (
-                            <div className="dropdown" style={{ display: 'block' }}>
-                                <Link href="/investors/usersettings">Account Settings</Link>
-                                <button
-                                    onClick={() => {
-                                        setIsUserMenuOpen(false);
-                                        setIsLogoutModalOpen(true);
-                                    }}
-                                    className="logout"
-                                >
-                                    Logout
-                                </button>
-                            </div>
-                        )}
+
+                        <div className='relative'>
+                            <button className="user-menu-btn" onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}>▼</button>
+                            {isUserMenuOpen && (
+                                <div className="dropdown absolute right-0 !top-full !mt-4">
+                                    {userMenuItems.map((item) => (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            className="block px-4 py-2 transition-colors hover:!text-[#d4af37]"
+                                            onClick={() => setIsUserMenuOpen(false)}
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    ))}
+
+                                    <button
+                                        onClick={() => {
+                                            setIsUserMenuOpen(false);
+                                            setIsLogoutModalOpen(true);
+                                        }}
+                                        className="logout"
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
 
                         <div className="header-icons flex items-bottom gap-x-4" ref={popupRef}>
                             {/* Notification */}
-                            <button
-                                title="Support"
+                            <div className="relative">
+                                <button
+                                title="Notifications"
+                                onClick={() => {
+                                    setActiveCard('notification');
+                                    setIsUserMenuOpen(false);
+                                }}
                                 className="w-8 h-8 rounded-full overflow-hidden hover:ring-2 hover:ring-gray-300"
-                            >
+                                >
                                 <Image
-                                src="/imgs/notification_icon.png"
-                                alt="Notification"
-                                width={32}
-                                height={32}
-                                className="object-cover"
+                                    src="/imgs/notification_icon.png"
+                                    alt="Notification"
+                                    width={32}
+                                    height={32}
+                                    className="object-cover"
                                 />
-                            </button>
+                                </button>
+
+                                {activeCard === 'notification' && (
+                                    <section className="absolute right-0 top-full pt-4 z-50">
+                                        <NotificationsPopup />
+                                    </section>
+                                )}
+                            </div>
 
                             <div className="relative">
-                                <button onClick={() => setActiveCard("message")}
+                                <button onClick={() => {setActiveCard("message"); setIsUserMenuOpen(false);}}
                                     title="Support"
                                     className="w-8 h-8 rounded-full overflow-hidden hover:ring-2 hover:ring-gray-300"
                                 >
@@ -148,7 +167,7 @@ export default function InvestorsLayout({
                             <div className="relative">
                                 <button
                                     title="User menu"
-                                    onClick={() => setActiveCard("account")}
+                                    onClick={() => {setActiveCard("account"); setIsUserMenuOpen(false);}}
                                     className="w-8 h-8 rounded-full overflow-hidden hover:ring-2 hover:ring-gray-300"
                                 >
                                     <Image
