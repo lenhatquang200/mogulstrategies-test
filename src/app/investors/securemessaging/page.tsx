@@ -30,28 +30,6 @@ export default function SecureMessagingPage() {
         <>
             <h1 className="page-title">Secure Messaging</h1>
 
-            <section className="top-row">
-                <div className="top-card account-info-card">
-                    <h3>Account Information</h3>
-                    <ul>
-                        <li><strong>Name:</strong> John Doe</li>
-                        <li><strong>Email:</strong> john.doe@example.com</li>
-                        <li><strong>Investor Type:</strong> Accredited Individual</li>
-                        <li><strong>Account ID:</strong> MS-INV-4872</li>
-                        <li><strong>Joined:</strong> March 15, 2023</li>
-                        <li><strong>Last Login:</strong> December 24, 2025</li>
-                    </ul>
-                </div>
-
-                <div className="top-card">
-                    <h3>Quick Message</h3>
-                    <p>Send a quick message to your relationship manager.</p>
-                    <textarea placeholder="Type your message..."
-                        style={{ width: '100%', height: '100px', padding: '1rem', background: '#0A1A2F', border: '1px solid #D4AF37', borderRadius: '8px', color: '#E0E0E0', marginBottom: '1rem', marginTop: '1rem' }}></textarea>
-                    <button className="send-btn" onClick={() => alert('Message sent!')} style={{ background: '#D4AF37', color: '#0A1A2F', padding: '0.8rem 2rem', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>Send Message</button>
-                </div>
-            </section>
-
             <section className="messaging-container" style={{ maxWidth: '1000px', margin: '0 auto' }}>
                 <div className="threads-list" style={{ background: '#112240', borderRadius: '16px', padding: '2rem', marginBottom: '3rem' }}>
                     <h3 style={{ fontSize: '1.8rem', color: '#D4AF37', marginBottom: '1.5rem' }}>Your Message Threads</h3>

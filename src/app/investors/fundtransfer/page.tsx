@@ -7,31 +7,6 @@ export default function FundTransferPage() {
         <>
             <h1 className="page-title">Fund Transfer</h1>
 
-            <section className="top-row">
-                <div className="top-card account-info-card">
-                    <h3>Account Information</h3>
-                    <ul>
-                        <li><strong>Name:</strong> John Doe</li>
-                        <li><strong>Email:</strong> john.doe@example.com</li>
-                        <li><strong>Investor Type:</strong> Accredited Individual</li>
-                        <li><strong>Account ID:</strong> MS-INV-4872</li>
-                        <li><strong>Joined:</strong> March 15, 2023</li>
-                        <li><strong>Last Login:</strong> December 24, 2025</li>
-                    </ul>
-                </div>
-
-                <div className="top-card messaging-card">
-                    <h3>Secure Messaging</h3>
-                    <p>Communicate directly with your relationship manager.</p>
-                    <a href="#" style={{ display: 'block', margin: '1rem 0', fontWeight: 'bold' }}>Open Inbox (2 unread)</a>
-                    <textarea placeholder="Type your message..."
-                        style={{ width: '100%', height: '100px', padding: '1rem', background: '#0A1A2F', border: '1px solid #D4AF37', borderRadius: '8px', color: '#E0E0E0' }}></textarea>
-                    <button
-                        style={{ marginTop: '1rem', background: '#D4AF37', color: '#0A1A2F', padding: '0.8rem 1.5rem', border: 'none', borderRadius: '8px', cursor: 'pointer' }}
-                        onClick={() => alert('Message sent!')}>Send Message</button>
-                </div>
-            </section>
-
             <div className="progress-bar" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3rem' }}>
                 {[
                     { step: 1, label: 'Review Documents', status: 'completed' },

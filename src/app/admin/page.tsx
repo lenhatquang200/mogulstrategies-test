@@ -26,7 +26,7 @@ export default function AdminDashboardPage() {
             <PageTitle>Admin Portal Dashboard</PageTitle>
 
             {/* Platform Overview Stats */}
-            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 py-2">
                 <StatCard value="1,248" label="Total Investors" />
                 <StatCard value="842" label="Verified Users" />
                 <StatCard value="$1.84B" label="Assets Under Management" />
@@ -34,7 +34,7 @@ export default function AdminDashboardPage() {
             </section>
 
             {/* Main Action Grid */}
-            <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
+            <section className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12 py-2">
                 {/* Pending Actions */}
                 <div className="bg-mogul-darker rounded-2xl p-8 animate-pulse-glow">
                     <h3 className="text-2xl font-display font-bold text-mogul-gold mb-6 pb-3 border-b border-mogul-gold/30">
