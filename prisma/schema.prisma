@@ -22,7 +22,9 @@ model Role {
 model User {
   id                  Int       @id @default(autoincrement())
   name                String?
-  email               String    @unique
+  email               String    @unique @db.VarChar(191)
+  phone               String?
+  timezone            String?
   password            String
   roleId              Int
   role                Role      @relation(fields: [roleId], references: [id])
@@ -33,7 +35,13 @@ model User {
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
 
-  kyc         Kyc?
+  lastLoginAt        DateTime?
+  userCode           String?   @unique @db.VarChar(20)
+  status             Int?      @default(1) // active inactive
+  verificationStatus Int?      @default(0) // 
+  settings           Json? // noti
+
+  kyc          Kyc?
 }
 
 model RegistrationOtp {
