@@ -35,8 +35,6 @@
 .action-btn.stats { background: rgba(0, 204, 255, 0.2); color: #00ccff; border: none; }
 .action-btn.stats:hover { background: #00ccff; color: #0A1A2F; }
 
-footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9rem; color: #AAAAAA; }
-
 @media (max-width: 1024px) {
     .hamburger { display: block; }
     .sidebar { transform: translateX(-100%); }
@@ -46,4 +44,143 @@ footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9re
 @media (max-width: 768px) {
     .top-row, .offerings-grid { grid-template-columns: 1fr; }
     .offering-actions { grid-template-columns: 1fr; }
+}
+
+
+
+
+/* new css */
+.offerings-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(540px,1fr));
+    gap:2.2rem;
+}
+
+.offering-card {
+    background:rgba(17,34,64,0.92);
+    border-radius:16px;
+    border:1px solid rgba(212,175,55,0.15);
+    padding:2.3rem;
+    transition:all .32s ease;
+    backdrop-filter:blur(8px);
+    min-height:620px;
+    display:flex;
+    flex-direction:column;
+}
+.offering-card:hover {
+    transform:translateY(-7px);
+    border-color:#d4af37;
+    box-shadow:0 18px 36px rgba(212,175,55,0.1);
+}
+
+.card-inner { flex:1; display:flex; flex-direction:column; }
+
+/* Progress */
+.offering-card .progress-section { margin-bottom:1.7rem; }
+.offering-card .progress-labels { display:flex; justify-content:space-between; font-size:0.9rem; color:#aaa; margin-bottom:0.5rem; }
+.offering-card .progress-bar-container { background:#0a1a2f; height:14px; border-radius:999px; overflow:hidden; }
+.offering-card .progress-bar { height:100%; background:linear-gradient(90deg,#d4af37,#f5e8c7); transition:width 1.1s ease; margin: 0}
+.markers { position:relative; height:22px; margin-top:5px; }
+.marker { position:absolute; top:0; font-size:0.82rem; color:#d4af37; transform:translateX(-50%); }
+.marker::after { content:''; position:absolute; left:50%; bottom:-10px; width:2px; height:12px; background:#d4af37; transform:translateX(-50%); }
+
+.header-row { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:1.5rem; }
+.title-group h2 { font-size:2.05rem; color:#d4af37; margin-bottom:0.35rem; }
+.title-group .subtitle { font-size:1.08rem; color:#ccc; opacity:0.92; }
+
+.status-pill {
+    padding:0.5rem 1.25rem;
+    border-radius:999px;
+    font-weight:600;
+    font-size:0.9rem;
+}
+.status-open  { background:rgba(0,220,100,0.17); color:#0f0; }
+.status-closed { background:rgba(255,80,80,0.17);  color:#ff5f5f; }
+
+.details-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:1.1rem 2rem;
+    margin-bottom:1.8rem;
+}
+.detail-item strong {
+    color:#d4af37;
+    display:block;
+    margin-bottom:0.25rem;
+    font-size:0.93rem;
+}
+.countdown { 
+    color:#ff6b6b; 
+    font-weight:700; 
+    margin-left:0.5rem; 
+    font-size:0.95rem;
+}
+.countdown.closed {
+    color:#888;
+}
+
+.analytics-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:1rem;
+    margin:2rem 0;
+}
+.analytics-card {
+    background:rgba(0,0,0,0.4);
+    border:1px solid rgba(212,175,55,0.2);
+    border-radius:12px;
+    padding:1.2rem;
+    text-align:center;
+}
+.analytics-card h4 {
+    color:#d4af37;
+    margin-bottom:0.5rem;
+    font-size:1rem;
+}
+.analytics-card .value {
+    font-size:1.45rem;
+    font-weight:700;
+}
+
+.actions-grid {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+    gap:1.1rem;
+    margin-top:auto;
+}
+
+.btn {
+    padding:1rem 1.35rem;
+    border-radius:10px;
+    font-weight:600;
+    cursor:pointer;
+    transition:all .3s;
+    border:none;
+    font-size:0.97rem;
+}
+.btn-view       { background:transparent; border:1px solid #d4af37; color:#d4af37; }
+.btn-view:hover { background:#d4af37; color:#0f1a2f; }
+.btn-subscribe  { background:#d4af37; color:#0f1a2f; }
+.btn-subscribe:hover { background:white; }
+.btn-wire       { background:rgba(0,220,100,0.15); color:#0f0; }
+.btn-wire:hover { background:rgba(0,220,100,0.3); }
+.btn-deposit    { background:rgba(0,180,255,0.15); color:#0cf; }
+.btn-deposit:hover { background:rgba(0,180,255,0.3); }
+
+.back-to-summary {
+    display:inline-block;
+    margin-bottom:1.5rem;
+    color:#d4af37;
+    font-weight:600;
+    cursor:pointer;
+    font-size:1.05rem;
+}
+.back-to-summary:hover { color:white; }
+
+.pdf-viewer {
+    width:100%;
+    height:520px;
+    border:none;
+    border-radius:10px;
+    background:#000;
 }
