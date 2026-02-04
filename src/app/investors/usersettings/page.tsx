@@ -1,8 +1,9 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import ActivityLog from './components/ActivityLog';
-import {ProfileUpdateData} from '@/types/user';
 import AccountDetails from './components/AccountDetails';
+import ChangePasswordModal from './components/ChangePasswordModal';
+import toast from 'react-hot-toast';
 
 export default function UserSettingsPage() {
     const [toggles, setToggles] = useState({
@@ -70,25 +71,37 @@ export default function UserSettingsPage() {
         setNotificationSettings(prev => ({ ...prev, [key]: !prev[key] }));
     };
 
-    // profile
-    const [profile, setProfile] = useState<ProfileUpdateData | null>(null);
-    const [loadingProfile, setLoadingProfile] = useState(true);
-
-    useEffect(() => {
-    const loadProfile = async () => {
+    const [openChangePassword, setOpenChangePassword] = useState(false);
+    const handleChangePassword = async (data: {
+        currentPassword: string;
+        newPassword: string;
+        confirmPassword: string;
+        }) => {
         try {
-        const res = await fetch("/api/profile");
-        if (res.ok) {
-            const data = await res.json();
-            setProfile(data);
-        }
-        } finally {
-        setLoadingProfile(false);
+            const res = await fetch("/api/change-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                currentPassword: data.currentPassword,
+                newPassword: data.newPassword,
+            }),
+            });
+
+            const result = await res.json();
+
+            if (!res.ok) {
+                toast.error(result.message || "Failed to change password");
+                return;
+            }
+
+            toast.success("Password updated successfully");
+            setOpenChangePassword(false);
+        } catch (error) {
+            console.error("Change password error:", error);
+            toast.error("Something went wrong");
         }
     };
 
-    loadProfile();
-    }, []);
 
     return (
         <>
@@ -96,10 +109,7 @@ export default function UserSettingsPage() {
 
             <section className="settings-container" style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
-                <AccountDetails
-                    initialData={profile ?? undefined}
-                    loading={loadingProfile}
-                />
+                <AccountDetails />
 
                 <div className="settings-card scroll-anchor" style={{ background: '#112240', borderRadius: '16px', padding: '2.5rem', marginBottom: '3rem' }} id="user-preferences">
                     <h3 style={{ fontSize: '2rem', color: '#D4AF37', marginBottom: '1.5rem', borderBottom: '1px solid rgba(212, 175, 55, 0.3)', paddingBottom: '0.8rem' }}>Security & Two-Factor Authentication</h3>
@@ -128,10 +138,11 @@ export default function UserSettingsPage() {
                         <div className="form-group">
                             <label>Password</label>
                             <button
-                                className="save-btn"
-                                style={{ background: 'rgba(212, 175, 55, 0.1)', color: '#D4AF37', border: '1px solid #D4AF37', padding: '0.8rem 1.5rem', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', display: 'block', marginTop: '0.5rem' }}
-                                onClick={() => alert('Password change modal would open')}
-                            >Change Password</button>
+                                onClick={() => setOpenChangePassword(true)}
+                                className="mt-2 rounded-lg border border-[#D4AF37] bg-[#D4AF371A] px-6 py-3 font-bold text-[#D4AF37] hover:bg-[#D4AF37] hover:text-[#0A1A2F] transition"
+                            >
+                                Change Password
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -190,6 +201,12 @@ export default function UserSettingsPage() {
                 </div>
 
                 <ActivityLog />
+
+                <ChangePasswordModal
+                    isOpen={openChangePassword}
+                    onClose={() => setOpenChangePassword(false)}
+                    onSubmit={handleChangePassword}
+                />
 
             </section>
         </>

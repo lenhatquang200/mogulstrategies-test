@@ -3,6 +3,22 @@ import { auth } from "@/auth";
 import { UserService } from "@/services/user.service";
 import { mapAccreditation, formatDate } from "@/lib/utils";
 
+function mapUserToProfile(user: any) {
+  return {
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    timezone: user.timezone,
+    userCode: user.userCode,
+    role: user.role?.name,
+    investorType: mapAccreditation(user.accreditationStatus),
+    joined: formatDate(user.createdAt),
+    lastLogin: user.updatedAt
+      ? formatDate(user.updatedAt)
+      : null,
+  };
+}
+
 export async function GET() {
   try {
     const session = await auth();
@@ -23,19 +39,7 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      timezone: user.timezone,
-      userCode: user.userCode,
-      role: user.role.name,
-      investorType: mapAccreditation(user.accreditationStatus),
-      joined: formatDate(user.createdAt),
-      lastLogin: user.updatedAt
-        ? formatDate(user.updatedAt)
-        : null,
-    });
+    return NextResponse.json(mapUserToProfile(user));
   } catch (error) {
     console.error("GET /api/profile error:", error);
     return NextResponse.json(
@@ -46,18 +50,29 @@ export async function GET() {
 }
 
 export async function PATCH(req: Request) {
-  const session = await auth();
+  try {
+    const session = await auth();
 
-  if (!session?.user?.email) {
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const body = await req.json();
+
+    const updatedUser = await UserService.updateByEmail(
+      session.user.email,
+      body
+    );
+
+    return NextResponse.json(mapUserToProfile(updatedUser));
+  } catch (error) {
+    console.error("PATCH /api/profile error:", error);
     return NextResponse.json(
-      { message: "Unauthorized" },
-      { status: 401 }
+      { message: "Internal server error" },
+      { status: 500 }
     );
   }
-
-  const body = await req.json();
-
-  await UserService.updateByEmail(session.user.email, body);
-
-  return NextResponse.json({ success: true });
 }

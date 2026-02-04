@@ -109,4 +109,11 @@ export const UserService = {
     });
   },
 
+  async updatePasswordByEmail(email: string, hashedPassword: string) {
+    return prisma.user.update({
+      where: { email },
+      data: { password: hashedPassword },
+    });
+  }
+
 };

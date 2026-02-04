@@ -1,19 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { ProfileUpdateData } from "@/types/user";
+import type { ProfileUpdateData, ProfileData } from "@/types/user";
 import toast from 'react-hot-toast';
+import { useProfile } from "@/contexts/ProfileContext";
 
-interface AccountDetailsProps {
-  initialData?: ProfileUpdateData;
-  loading?: boolean;
-}
-
-
-export default function AccountDetailsCard({
-  initialData,
-  loading: loadingProfile,
-}: AccountDetailsProps) {
+export default function AccountDetails() {
+  const { profile, loading, setProfile } = useProfile();
   const [form, setForm] = useState<ProfileUpdateData>({
     name: "",
     email: "",
@@ -25,15 +18,15 @@ export default function AccountDetailsCard({
 
 
   useEffect(() => {
-    if (initialData) {
+    if (profile) {
       setForm({
-        name: initialData.name ?? "",
-        email: initialData.email ?? "",
-        phone: initialData.phone ?? "",
-        timezone: initialData.timezone ?? "",
+        name: profile.name ?? "",
+        email: profile.email ?? "",
+        phone: profile.phone ?? "",
+        timezone: profile.timezone ?? "",
       });
     }
-  }, [initialData]);
+  }, [profile]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -54,6 +47,10 @@ export default function AccountDetailsCard({
 
       if (!res.ok) throw new Error();
 
+      const updatedProfile: ProfileData = await res.json();
+      // update global context
+      setProfile(updatedProfile);
+
       toast.success("Profile updated successfully");
     } catch {
       toast.error("Update failed");
@@ -62,37 +59,104 @@ export default function AccountDetailsCard({
     }
   };
 
-  const disabled = loadingProfile || saving;
-
   return (
-    <div className="settings-card scroll-anchor" style={{ background: '#112240', borderRadius: '16px', padding: '2.5rem', marginBottom: '3rem' }} id="account-details">
-        <h3 style={{ fontSize: '2rem', color: '#D4AF37', marginBottom: '1.5rem', borderBottom: '1px solid rgba(212, 175, 55, 0.3)', paddingBottom: '0.8rem' }}>Profile Settings</h3>
-        <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-            <div className="form-group">
-                <label className="block mb-2.5 font-medium">Full Name</label>
-                <input type="text" name="name" value={form.name} onChange={handleChange} style={{ width: '100%', padding: '1rem', background: '#0A1A2F', border: '1px solid #D4AF37', borderRadius: '8px', color: '#E0E0E0' }} />
-            </div>
-            <div className="form-group">
-                <label className="block mb-2.5 font-medium">Email Address</label>
-                <input type="email" name="email" value={form.email} onChange={handleChange} style={{ width: '100%', padding: '1rem', background: '#0A1A2F', border: '1px solid #D4AF37', borderRadius: '8px', color: '#E0E0E0' }} readOnly/>
-            </div>
-            <div className="form-group">
-                <label className="block mb-2.5 font-medium">Phone Number</label>
-                <input type="tel" name="phone" value={form.phone} onChange={handleChange} style={{ width: '100%', padding: '1rem', background: '#0A1A2F', border: '1px solid #D4AF37', borderRadius: '8px', color: '#E0E0E0' }} />
-            </div>
-            <div className="form-group">
-                <label className="block mb-2.5 font-medium">Timezone</label>
-                <select name="timezone" style={{ width: '100%', padding: '1rem', background: '#0A1A2F', border: '1px solid #D4AF37', borderRadius: '8px', color: '#E0E0E0' }}>
-                    <option>EST (Eastern Standard Time)</option>
-                    <option>PST (Pacific Standard Time)</option>
-                    <option>GMT (Greenwich Mean Time)</option>
-                </select>
-            </div>
+    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} >
+      <div
+        id="account-details"
+        className="settings-card scroll-anchor settings-card scroll-anchor mb-12 rounded-2xl bg-[#112240] p-10"
+
+      >
+        <h3 className="mb-6 border-b border-[#D4AF37]/30 pb-3 text-[2rem] text-[#D4AF37]">
+          Profile Settings
+        </h3>
+
+
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-8">
+
+          {/* Full name */}
+          <div className="form-group">
+            <label className="block mb-2.5 font-medium">Full Name</label>
+            <input type="text" name="name" required value={form.name} onChange={handleChange}
+              className="w-full rounded-lg border border-[#D4AF37] bg-[#0A1A2F] px-4 py-4 text-[#E0E0E0] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/60"
+            />
+          </div>
+
+          {/* Email */}
+          <div className="form-group">
+            <label className="block mb-2.5 font-medium">Email Address</label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              readOnly
+              style={{
+                width: "100%",
+                padding: "1rem",
+                background: "#0A1A2F",
+                border: "1px solid #D4AF37",
+                borderRadius: "8px",
+                color: "#E0E0E0",
+                opacity: 0.7,
+                cursor: "not-allowed",
+              }}
+            />
+          </div>
+
+          {/* Phone */}
+          <div className="form-group">
+            <label className="block mb-2.5 font-medium">Phone Number</label>
+            <input
+              type="tel"
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              style={{
+                width: "100%",
+                padding: "1rem",
+                background: "#0A1A2F",
+                border: "1px solid #D4AF37",
+                borderRadius: "8px",
+                color: "#E0E0E0",
+              }}
+            />
+          </div>
+
+          {/* Timezone */}
+          <div className="form-group">
+            <label className="block mb-2.5 font-medium">Timezone</label>
+            <select
+              name="timezone"
+              required
+              value={form.timezone}
+              onChange={handleChange}
+              style={{
+                width: "100%",
+                padding: "1rem",
+                background: "#0A1A2F",
+                border: "1px solid #D4AF37",
+                borderRadius: "8px",
+                color: "#E0E0E0",
+              }}
+            >
+              <option value="">Select timezone</option>
+              <option value="EST">EST (Eastern Standard Time)</option>
+              <option value="PST">PST (Pacific Standard Time)</option>
+              <option value="GMT">GMT (Greenwich Mean Time)</option>
+            </select>
+          </div>
         </div>
-        <button onClick={handleSubmit} disabled={disabled} 
-            className="save-btn mt-4 bg-[#D4AF37] text-[#0A1A2F] px-10 py-4 rounded-lg font-bold hover:opacity-90 disabled:opacity-50">
-            Save Profile Changes
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="save-btn mt-4 bg-[#D4AF37] text-[#0A1A2F] px-10 py-4 rounded-lg font-bold hover:opacity-90 disabled:opacity-50"
+        >
+          Save Profile Changes
         </button>
-    </div>
+      </div>
+    </form>
+
   );
+
+  
 }

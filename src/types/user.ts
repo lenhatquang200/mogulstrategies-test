@@ -6,12 +6,11 @@ export interface ProfileData {
   userCode?: string,
   joined: string;
   lastLogin: string | null;
+  phone?: string;
+  timezone?: string;
 }
 
 export type ProfileUpdateData = Pick<
   ProfileData,
-  "name" | "email"
-> & {
-  phone?: string;
-  timezone?: string;
-};
+  "name" | "email" | "phone" | "timezone"
+>;
