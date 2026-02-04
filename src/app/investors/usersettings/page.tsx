@@ -36,14 +36,7 @@ export default function UserSettingsPage() {
         marketCommentary: false,
         eventReminders: true
     });
-
-    const activityLog = [
-        { date: 'Dec 24, 2025 – 14:32 EST', activity: 'Login', ip: '192.168.1.100', location: 'New York, NY, USA', device: 'Chrome on MacOS' },
-        { date: 'Dec 23, 2025 – 09:15 EST', activity: 'Viewed Portfolio', ip: '203.0.113.45', location: 'Miami, FL, USA', device: 'Safari on iPhone' },
-        { date: 'Dec 20, 2025 – 18:40 EST', activity: 'Login', ip: '198.51.100.23', location: 'London, UK', device: 'Firefox on Windows' },
-        { date: 'Dec 18, 2025 – 11:22 EST', activity: 'Downloaded Report', ip: '192.168.1.100', location: 'New York, NY, USA', device: 'Chrome on MacOS' },
-    ];
-
+    
     const handleToggle = async (key: keyof typeof toggles) => {
         if (key === 'twoFactor') {
             setLoading2FA(true);
@@ -196,10 +189,7 @@ export default function UserSettingsPage() {
                     <button className="save-btn" style={{ background: '#D4AF37', color: '#0A1A2F', padding: '1rem 2.5rem', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginTop: '2rem' }} onClick={() => alert('Preferences saved!')}>Save Preferences</button>
                 </div>
 
-                 <ActivityLog
-                    logs={activityLog}
-                    onViewAll={() => alert('Viewing full log...')}
-                />
+                <ActivityLog />
 
             </section>
         </>

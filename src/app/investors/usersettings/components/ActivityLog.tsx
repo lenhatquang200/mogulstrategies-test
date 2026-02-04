@@ -1,11 +1,42 @@
 import type { ActivityLogItem } from '@/types/activity';
+import { useEffect, useState } from "react";
 
 interface ActivityLogProps {
   logs: ActivityLogItem[];
   onViewAll?: () => void;
 }
 
-const ActivityLog = ({ logs, onViewAll }: ActivityLogProps) => {
+const ActivityLog = () => {
+  const [logs, setLogs] = useState<ActivityLogItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchLogs = async () => {
+      try {
+        const res = await fetch("/api/activity-log?limit=5");
+        if (!res.ok) return;
+
+        const json = await res.json();
+
+        const mapped: ActivityLogItem[] = json.data.map((item: any) => ({
+          date: new Date(item.createdAt).toLocaleString(),
+          activity: item.action,
+          ip: item.ipAddress || "-",
+          location: item.location || "Unknown",
+          device: item.details || "-",
+        }));
+
+        setLogs(mapped);
+      } catch (e) {
+        console.error("Failed to load activity logs", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchLogs();
+  }, []);
+
   return (
     <div
       className="settings-card"
@@ -66,7 +97,9 @@ const ActivityLog = ({ logs, onViewAll }: ActivityLogProps) => {
                 <td style={{ padding: '1.2rem' }}>{log.activity}</td>
                 <td style={{ padding: '1.2rem' }}>{log.ip}</td>
                 <td style={{ padding: '1.2rem' }}>{log.location}</td>
-                <td style={{ padding: '1.2rem' }}>{log.device}</td>
+                <td className="p-5 max-w-[220px] truncate" title={log.device}>
+                  {log.device || "Unknown"}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -83,7 +116,7 @@ const ActivityLog = ({ logs, onViewAll }: ActivityLogProps) => {
           fontWeight: 'bold',
           cursor: 'pointer',
         }}
-        onClick={onViewAll}
+        onClick={()=>alert('View all')}
       >
         View Full Activity Log →
       </button>

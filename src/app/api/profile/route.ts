@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth"; 
-import { AuthService } from "@/services/auth.service";
 import { UserService } from "@/services/user.service";
 import { mapAccreditation, formatDate } from "@/lib/utils";
 

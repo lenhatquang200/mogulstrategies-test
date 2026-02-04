@@ -87,6 +87,26 @@ export default function LoginPage() {
         }
     };
 
+    const getDeviceInfo = () => {
+        if (typeof window === 'undefined') return 'Unknown';
+        return navigator.userAgent;
+    };
+
+    const logLoginActivity = async () => {
+        try {
+            await fetch("/api/activity-log", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    action: "LOGIN",
+                    details: getDeviceInfo(),
+                }),
+            });
+        } catch (err) {
+            console.warn('Failed to log activity', err);
+        }
+    };
+
     // Helper: Verify OTP (Step 2 for both Login and Register)
     const handleVerifyOtp = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -132,6 +152,7 @@ export default function LoginPage() {
                     toast.error('Login failed', { id: verifyToast });
                 } else {
                     toast.success('Login successful!', { id: verifyToast });
+                    await logLoginActivity();
                     router.push('/investors/kyc1');
                 }
 
@@ -175,6 +196,7 @@ export default function LoginPage() {
                     setShowOtpForm(false);
                     setOtpAction('login');
                 } else {
+                    await logLoginActivity();
                     router.push('/investors/kyc1');
                 }
             }

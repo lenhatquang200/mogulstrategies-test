@@ -4,4 +4,5 @@ export interface ActivityLogItem {
   ip: string;
   location: string;
   device: string;
+  detail: string;
 }
