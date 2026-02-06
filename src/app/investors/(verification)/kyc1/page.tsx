@@ -3,6 +3,7 @@ import Link from 'next/link';
 import KYCProgressBar from '../components/KYCProgressBar';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function KYCStep1Page() {
     const router = useRouter();
@@ -40,7 +41,11 @@ export default function KYCStep1Page() {
         if (res.ok) {
             router.push('/investors/kyc2');
         } else {
-            alert('Save failed');
+            const data = await res.json();
+            toast.error(data.message);
+            if (data.field) {
+                document.getElementById(data.field)?.focus();
+            }
         }
     };
 

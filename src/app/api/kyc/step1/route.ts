@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { validateKycStep1 } from "@/lib/validators/kyc/step1";
 
 export async function POST(req: Request) {
   try {
@@ -11,6 +12,18 @@ export async function POST(req: Request) {
 
     const userId = Number(session.user.id);
     const body = await req.json();
+
+    const validation = validateKycStep1(body);
+    if (!validation.valid) {
+      return NextResponse.json(
+        {
+          error: "VALIDATION_ERROR",
+          field: validation.field,
+          message: validation.message,
+        },
+        { status: 400 }
+      );
+    }
 
     const {
       firstName,

@@ -46,46 +46,6 @@ export default function KYCPage() {
         }
     };
 
-
-    // const submissions = [
-    //     {
-    //         id: 'MS-INV-4901',
-    //         name: 'Acme Investments LLC',
-    //         type: 'Entity (LLC)',
-    //         kycStatus: 'Pending',
-    //         accreditationStatus: 'Pending',
-    //         submitted: 'Dec 22, 2025',
-    //         lastUpdated: 'Dec 23, 2025'
-    //     },
-    //     {
-    //         id: 'MS-INV-4898',
-    //         name: 'Sarah Chen',
-    //         type: 'Individual',
-    //         kycStatus: 'Verified',
-    //         accreditationStatus: 'In Review',
-    //         submitted: 'Dec 20, 2025',
-    //         lastUpdated: 'Dec 22, 2025'
-    //     },
-    //     {
-    //         id: 'MS-INV-4895',
-    //         name: 'Global Growth Trust',
-    //         type: 'Trust',
-    //         kycStatus: 'Verified',
-    //         accreditationStatus: 'Rejected',
-    //         submitted: 'Dec 15, 2025',
-    //         lastUpdated: 'Dec 21, 2025'
-    //     },
-    //     {
-    //         id: 'MS-INV-4880',
-    //         name: 'Michael Roberts',
-    //         type: 'Individual',
-    //         kycStatus: 'Verified',
-    //         accreditationStatus: 'Approved',
-    //         submitted: 'Dec 10, 2025',
-    //         lastUpdated: 'Dec 18, 2025'
-    //     }
-    // ];
-
     const getStatusStyle = (status: string) => {
         switch (status) {
             case 'Verified':
@@ -169,121 +129,82 @@ export default function KYCPage() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-mogul-gold/5">
-                        {/* {submissions.map((item, idx) => (
-                            <tr key={idx} className="hover:bg-mogul-gold/5 transition-colors">
-                                <td className="p-4 font-mono text-xs text-gray-400">{item.id}</td>
-                                <td className="p-4 font-bold text-white">{item.name}</td>
-                                <td className="p-4 text-gray-300">{item.type}</td>
-                                <td className="p-4">
-                                    <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide ${getStatusStyle(item.kycStatus)}`}>
-                                        {item.kycStatus}
-                                    </span>
-                                </td>
-                                <td className="p-4">
-                                    <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide ${getStatusStyle(item.accreditationStatus)}`}>
-                                        {item.accreditationStatus}
-                                    </span>
-                                </td>
-                                <td className="p-4 font-mono text-xs text-gray-400">{item.submitted}</td>
-                                <td className="p-4 font-mono text-xs text-gray-400">{item.lastUpdated}</td>
-                                <td className="p-4 flex gap-2">
-                                    {item.accreditationStatus === 'Rejected' ? (
-                                        <>
-                                            <button className="p-2 text-mogul-gold hover:bg-mogul-gold/10 rounded transition-all" title="View Notes"><FaEye /></button>
-                                            <button className="p-2 text-gray-400 hover:bg-gray-400/10 rounded transition-all" title="Message"><FaComment /></button>
-                                        </>
-                                    ) : item.accreditationStatus === 'Approved' ? (
-                                        <>
-                                            <button className="p-2 text-mogul-gold hover:bg-mogul-gold/10 rounded transition-all" title="View"><FaEye /></button>
-                                            <button className="p-2 text-gray-400 hover:bg-gray-400/10 rounded transition-all" title="History"><FaHistory /></button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <button className="p-2 text-mogul-gold hover:bg-mogul-gold/10 rounded transition-all" title="Review"><FaEye /></button>
-                                            <button className="p-2 text-green-400 hover:bg-green-400/10 rounded transition-all" title="Approve"><FaCheck /></button>
-                                            <button className="p-2 text-red-400 hover:bg-red-400/10 rounded transition-all" title="Reject"><FaTimes /></button>
-                                        </>
-                                    )}
-                                </td>
+
+                        {submissions.map((item) => {
+                        const displayName =
+                            item.entityName ||
+                            [item.firstName, item.lastName].filter(Boolean).join(" ") ||
+                            "—";
+
+                        return (
+                            <tr key={item.id} className="hover:bg-mogul-gold/5 transition-colors">
+
+                            {/* Investor ID */}
+                            <td className="p-4 font-mono text-xs text-gray-400">
+                                {item.user?.userCode ?? `${item.id}`}
+                            </td>
+
+                            {/* Name / Entity */}
+                            <td className="p-4 font-bold text-white">
+                                {displayName}
+                            </td>
+
+                            {/* Type */}
+                            <td className="p-4 text-gray-300 capitalize">
+                                {item.entityType ?? "individual"}
+                            </td>
+
+                            {/* KYC Status */}
+                            <td className="p-4">
+                                <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide
+                                ${getStatusStyle(item.identityStatus)}`}>
+                                {item.identityStatus}
+                                </span>
+                            </td>
+
+                            {/* Accreditation Status */}
+                            <td className="p-4">
+                                <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide
+                                ${getStatusStyle(item.accreditationStatus)}`}>
+                                {item.accreditationStatus}
+                                </span>
+                            </td>
+
+                            {/* Submitted */}
+                            <td className="p-4 font-mono text-xs text-gray-400">
+                                {item.submittedAt
+                                ? new Date(item.submittedAt).toLocaleDateString()
+                                : "—"}
+                            </td>
+
+                            {/* Last Updated */}
+                            <td className="p-4 font-mono text-xs text-gray-400">
+                                {new Date(item.updatedAt).toLocaleDateString()}
+                            </td>
+
+                            {/* Actions */}
+                            <td className="p-4 flex gap-2">
+                                {item.accreditationStatus === "rejected" ? (
+                                <>
+                                    <button className="p-2 text-mogul-gold hover:bg-mogul-gold/10 rounded"><FaEye /></button>
+                                    <button className="p-2 text-gray-400 hover:bg-gray-400/10 rounded"><FaComment /></button>
+                                </>
+                                ) : item.accreditationStatus === "approved" ? (
+                                <>
+                                    <button className="p-2 text-mogul-gold hover:bg-mogul-gold/10 rounded"><FaEye /></button>
+                                    <button className="p-2 text-gray-400 hover:bg-gray-400/10 rounded"><FaHistory /></button>
+                                </>
+                                ) : (
+                                <>
+                                    <button className="p-2 text-mogul-gold hover:bg-mogul-gold/10 rounded"><FaEye /></button>
+                                    <button className="p-2 text-green-400 hover:bg-green-400/10 rounded"><FaCheck /></button>
+                                    <button className="p-2 text-red-400 hover:bg-red-400/10 rounded"><FaTimes /></button>
+                                </>
+                                )}
+                            </td>
                             </tr>
-                        ))} */}
-
-{submissions.map((item) => {
-  const displayName =
-    item.entityName ||
-    [item.firstName, item.lastName].filter(Boolean).join(" ") ||
-    "—";
-
-  return (
-    <tr key={item.id} className="hover:bg-mogul-gold/5 transition-colors">
-
-      {/* Investor ID */}
-      <td className="p-4 font-mono text-xs text-gray-400">
-        {item.user?.userCode ?? `${item.id}`}
-      </td>
-
-      {/* Name / Entity */}
-      <td className="p-4 font-bold text-white">
-        {displayName}
-      </td>
-
-      {/* Type */}
-      <td className="p-4 text-gray-300 capitalize">
-        {item.entityType ?? "individual"}
-      </td>
-
-      {/* KYC Status */}
-      <td className="p-4">
-        <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide
-          ${getStatusStyle(item.identityStatus)}`}>
-          {item.identityStatus}
-        </span>
-      </td>
-
-      {/* Accreditation Status */}
-      <td className="p-4">
-        <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide
-          ${getStatusStyle(item.accreditationStatus)}`}>
-          {item.accreditationStatus}
-        </span>
-      </td>
-
-      {/* Submitted */}
-      <td className="p-4 font-mono text-xs text-gray-400">
-        {item.submittedAt
-          ? new Date(item.submittedAt).toLocaleDateString()
-          : "—"}
-      </td>
-
-      {/* Last Updated */}
-      <td className="p-4 font-mono text-xs text-gray-400">
-        {new Date(item.updatedAt).toLocaleDateString()}
-      </td>
-
-      {/* Actions */}
-      <td className="p-4 flex gap-2">
-        {item.accreditationStatus === "rejected" ? (
-          <>
-            <button className="p-2 text-mogul-gold hover:bg-mogul-gold/10 rounded"><FaEye /></button>
-            <button className="p-2 text-gray-400 hover:bg-gray-400/10 rounded"><FaComment /></button>
-          </>
-        ) : item.accreditationStatus === "approved" ? (
-          <>
-            <button className="p-2 text-mogul-gold hover:bg-mogul-gold/10 rounded"><FaEye /></button>
-            <button className="p-2 text-gray-400 hover:bg-gray-400/10 rounded"><FaHistory /></button>
-          </>
-        ) : (
-          <>
-            <button className="p-2 text-mogul-gold hover:bg-mogul-gold/10 rounded"><FaEye /></button>
-            <button className="p-2 text-green-400 hover:bg-green-400/10 rounded"><FaCheck /></button>
-            <button className="p-2 text-red-400 hover:bg-red-400/10 rounded"><FaTimes /></button>
-          </>
-        )}
-      </td>
-    </tr>
-  );
-})}
-
+                        );
+                        })}
 
                     </tbody>
                 </table>
