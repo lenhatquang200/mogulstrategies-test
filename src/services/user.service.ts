@@ -31,14 +31,15 @@ export const UserService = {
   async listUsers({ page = 1, limit = 10, search }: ListUsersParams) {
     const skip = (page - 1) * limit;
 
-    const where = search
-      ? {
-          OR: [
-            { email: { contains: search, mode: "insensitive" } },
-            { name: { contains: search, mode: "insensitive" } },
-          ],
-        }
-      : {};
+    const where = {
+      roleId: 1,
+      ...(search && {
+        OR: [
+          { email: { contains: search, mode: "insensitive" } },
+          { name: { contains: search, mode: "insensitive" } },
+        ],
+      }),
+    };
 
     const [items, total] = await Promise.all([
       prisma.user.findMany({
@@ -50,8 +51,12 @@ export const UserService = {
           id: true,
           name: true,
           email: true,
-          role: true,
+          userCode: true,
+          status: true,
+          verificationStatus: true,
+          accreditationStatus: true,
           createdAt: true,
+          lastLoginAt: true,
         },
       }),
       prisma.user.count({ where }),
@@ -59,7 +64,7 @@ export const UserService = {
 
     return {
       items,
-      meta: {
+      pagination: {
         page,
         limit,
         total,
