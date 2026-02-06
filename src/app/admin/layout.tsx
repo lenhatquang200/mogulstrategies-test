@@ -3,6 +3,7 @@
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import StarryBackground from '@/components/admin/StarryBackground';
 import { usePathname } from 'next/navigation';
+import "./admin.css";
 
 export default function AdminLayout({
     children,

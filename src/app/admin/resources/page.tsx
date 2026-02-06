@@ -80,9 +80,9 @@ export default function ResourcesPage() {
                     { val: '8,421', label: 'Total Downloads' },
                     { val: '4', label: 'In Draft' },
                 ].map((stat, i) => (
-                    <div key={i} className="bg-mogul-darker p-4 rounded-xl border border-mogul-gold/10 text-center animate-pulse-glow">
-                        <div className="text-2xl font-display font-bold text-mogul-gold">{stat.val}</div>
-                        <div className="text-xs text-gray-400 mt-1">{stat.label}</div>
+                    <div key={i} className="bg-mogul-darker p-4 rounded-xl border border-mogul-gold/10 text-center animate-pulse-glow p-8">
+                        <div className="text-4xl md:text-5xl font-bold text-mogul-gold mb-2">{stat.val}</div>
+                        <div className="text-base md:text-lg text-gray-300">{stat.label}</div>
                     </div>
                 ))}
             </div>

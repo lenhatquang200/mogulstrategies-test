@@ -105,7 +105,7 @@ export default function DistributionsPage() {
             </div>
 
             {/* Stats Overview */}
-            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 p-0">
                 <StatCard value="$66.4M" label="Total Distributions YTD" />
                 <StatCard value="$125M" label="Active Capital Calls" />
                 <StatCard value="94%" label="Capital Call Response Rate" />

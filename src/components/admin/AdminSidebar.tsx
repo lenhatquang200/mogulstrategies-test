@@ -78,14 +78,14 @@ export default function AdminSidebar() {
 
             {/* Sidebar */}
             <aside
-                className={`
-          fixed left-0 top-0 bottom-0 w-[280px] 
-          bg-mogul-blue/90 backdrop-blur-md
-          z-[1000] overflow-y-auto
-          transition-transform duration-300 ease-in-out
-          animate-pulse-glow
-          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        `}
+                className={`ui-scroll
+                    fixed left-0 top-0 bottom-0 w-[280px] 
+                    bg-mogul-blue/90 backdrop-blur-md
+                    z-[1000] overflow-y-auto
+                    transition-transform duration-300 ease-in-out
+                    animate-pulse-glow
+                    ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+                `}
             >
                 {/* Logo */}
                 <Link
