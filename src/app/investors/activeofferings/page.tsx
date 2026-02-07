@@ -194,21 +194,22 @@ export default function ActiveOfferingsPage() {
 
             {view === 'stats' && (
                 <>
-                <h2>Fund Stats</h2>
-                <div className="analytics-grid">
-                    <div className="analytics-card">
-                    <h4>Current NAV</h4>
-                    <div className="value">$1.42</div>
+                    <h2>Fund Stats</h2>
+                    <div className="analytics-grid">
+                        <div className="analytics-card">
+                        <h4>Current NAV</h4>
+                        <div className="value">$1.42</div>
+                        </div>
+                        <div className="analytics-card">
+                        <h4>IRR to Date</h4>
+                        <div className="value">14.8%</div>
+                        </div>
+                        <div className="analytics-card">
+                        <h4>Total Distributions</h4>
+                        <div className="value">$18.4M</div>
+                        </div>
                     </div>
-                    <div className="analytics-card">
-                    <h4>IRR to Date</h4>
-                    <div className="value">14.8%</div>
-                    </div>
-                    <div className="analytics-card">
-                    <h4>Total Distributions</h4>
-                    <div className="value">$18.4M</div>
-                    </div>
-                </div>
+                    <p>Performance metrics, distributions, NAV updates available here.</p>
                 </>
             )}
             </div>
