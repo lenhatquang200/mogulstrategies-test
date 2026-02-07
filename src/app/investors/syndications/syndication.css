@@ -1,69 +1,187 @@
-.syndications-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 2.5rem; }
-.syndication-card {
-    background: #112240;
-    border-radius: 16px;
-    padding: 2.5rem;
-    animation: pulse-glow 5s ease-in-out infinite;
-    transition: transform 0.3s;
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+    gap: 2.2rem;
 }
-.syndication-card:hover { transform: translateY(-10px); }
-.syndication-header {
+
+.syndication-card {
+    background: linear-gradient(145deg, #111827 0%, #0f172a 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(212,175,55,0.22);
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.syndication-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 30px 60px rgba(212,175,55,0.15);
+}
+
+.card-header {
+    padding: 1.8rem 2rem;
+    background: rgba(212,175,55,0.07);
+    border-bottom: 1px solid rgba(212,175,55,0.18);
+    position: relative;
+}
+
+.card-header h2 {
+    font-family: 'Playfair Display', serif;
+    color: #d4af37;
+    font-size: 1.9rem;
+    margin-bottom: 0.35rem;
+}
+
+.card-header .subtitle {
+    color: #bbb;
+    font-size: 1.02rem;
+    opacity: 0.92;
+}
+
+.header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 0.6rem;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.status-pill {
+    padding: 0.4rem 1rem;
+    background: rgba(0,220,100,0.17);
+    color: #0f0;
+    border-radius: 999px;
+    font-size: 0.86rem;
+    font-weight: 600;
+}
+
+.type-badge {
+    padding: 0.4rem 1rem;
+    background: rgba(212,175,55,0.18);
+    color: #d4af37;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 0 12px rgba(212,175,55,0.25);
+}
+
+.progress-section {
+    padding: 1.6rem 2rem;
+    background: rgba(0,0,0,0.28);
+}
+
+.raise-targets {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.9rem;
+    font-size: 0.94rem;
+    color: #d4af37;
+    font-weight: 500;
 }
-.syndication-title { font-size: 2rem; color: #D4AF37; }
-.syndication-status { padding: 0.5rem 1.2rem; border-radius: 20px; font-size: 0.9rem; font-weight: bold; background: rgba(0, 255, 0, 0.2); color: #0f0; }
-.syndication-details { margin-bottom: 2rem; }
-.syndication-details p { margin-bottom: 1rem; }
-.highlight { color: #D4AF37; font-weight: bold; }
-.syndications-grid.progress-bar {
-    background: #333;
-    height: 12px;
-    border-radius: 6px;
+
+.progress-bar-container {
+    background: #0f172a;
+    height: 16px;
+    border-radius: 999px;
     overflow: hidden;
-    margin: 1.5rem 0;
+    margin-bottom: 0.8rem;
+    border: 1px solid rgba(212,175,55,0.14);
 }
-.syndications-grid.progress-fill {
+
+.syndication-progress-bar {
     height: 100%;
-    background: #D4AF37;
-    transition: width 0.5s ease;
+    background: linear-gradient(90deg, #d4af37, #f5e8c7);
+    transition: width 1.2s ease;
 }
-.syndication-actions {
+
+.progress-status {
+    text-align: center;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #e0e0e0;
+}
+
+.key-terms {
+    padding: 1.8rem 2rem 1.2rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.3rem 2rem;
+}
+
+.term-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.term-label {
+    color: #d4af37;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+}
+
+.term-value {
+    font-size: 1.12rem;
+    font-weight: 600;
+}
+
+.highlight {
+    color: #f5e8c7;
+}
+
+.cta-section {
+    padding: 1.8rem 2rem;
+    background: rgba(212,175,55,0.05);
+    border-top: 1px solid rgba(212,175,55,0.16);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 1rem;
+
+    margin-top: auto; /* KEY */
 }
-.action-btn {
-    padding: 1rem;
-    border-radius: 8px;
-    font-weight: bold;
-    text-align: center;
-    transition: all 0.3s;
+
+.cta-btn {
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.97rem;
     cursor: pointer;
-}
-.action-btn.view { background: transparent; border: 1px solid #D4AF37; color: #D4AF37; }
-.action-btn.view:hover { background: #D4AF37; color: #0A1A2F; }
-.action-btn.indicate { background: #D4AF37; color: #0A1A2F; border: none; }
-.action-btn.indicate:hover { background: #FFFFFF; }
-
-.no-syndications {
+    transition: all 0.3s ease;
     text-align: center;
-    padding: 4rem;
-    font-size: 1.4rem;
-    color: #AAAAAA;
+    border: none;
 }
 
-footer { text-align: center; padding: 3rem 0; margin-top: 6rem; font-size: 0.9rem; color: #AAAAAA; }
+.btn-deck     { background: transparent; border: 1px solid #d4af37; color: #d4af37; }
+.btn-deck:hover { background: #d4af37; color: #0f172a; }
 
-@media (max-width: 1024px) {
-    .hamburger { display: block; }
-    .sidebar { transform: translateX(-100%); }
-    .sidebar.open { transform: translateX(0); }
-    main { margin-left: 0; }
-}
-@media (max-width: 768px) {
-    .top-row, .syndications-grid { grid-template-columns: 1fr; }
-    .syndication-actions { grid-template-columns: 1fr; }
-}
+.btn-ppm      { background: #d4af37; color: #0f172a; }
+.btn-ppm:hover { background: #f5e8c7; transform: translateY(-2px); }
+
+.btn-subscribe,
+.btn-mint,
+.btn-bid      { background: #d4af37; color: #0f172a; font-weight: 700; }
+.btn-subscribe:hover,
+.btn-mint:hover,
+.btn-bid:hover { background: #f5e8c7; transform: translateY(-2px); }
+
+.btn-wire     { background: rgba(0,220,100,0.18); color: #0f0; }
+.btn-wire:hover { background: rgba(0,220,100,0.35); }
+
+.btn-deposit  { background: rgba(0,180,255,0.18); color: #0cf; }
+.btn-deposit:hover { background: rgba(0,180,255,0.35); }
+
+.btn-activity { background: rgba(249,115,22,0.18); color: #fb923c; }
+.btn-activity:hover { background: rgba(249,115,22,0.35); }
+
+.btn-harvest  { background: rgba(34,197,94,0.18); color: #4ade80; }
+.btn-harvest:hover { background: rgba(34,197,94,0.35); }
+
+.btn-bids     { background: rgba(234,179,8,0.18); color: #fde047; }
+.btn-bids:hover { background: rgba(234,179,8,0.35); }
