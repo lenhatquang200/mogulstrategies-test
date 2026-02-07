@@ -47,8 +47,6 @@
 }
 
 
-
-
 /* new css */
 .offerings-grid {
     display:grid;
@@ -183,4 +181,61 @@
     border:none;
     border-radius:10px;
     background:#000;
+}
+
+/* detail view */
+.offering-card {
+  position: relative;
+}
+
+.card-inner {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Overlay */
+.detail-view {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+
+  background: #12213d;
+  padding: 2rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+
+  animation: fadeIn 0.25s ease;
+  border-radius:20px;
+}
+
+.back-to-summary {
+  cursor: pointer;
+  color: #d4af37;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.pdf-viewer {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
+  border: none;
+}
+
+.btn-deposit {
+    background: rgba(0, 180, 255, 0.15);
+    color: #0cf;
+}
+/* Optional polish */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

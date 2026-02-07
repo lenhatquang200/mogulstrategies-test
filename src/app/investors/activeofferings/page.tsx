@@ -1,8 +1,24 @@
 'use client';
 import "./offering.css";
+import { useState } from 'react';
 import Countdown from './components/Countdown';
 
 export default function ActiveOfferingsPage() {
+    const [activeView, setActiveView] = useState<{
+        cardIndex: number;
+        view: string;
+    } | null>(null);
+
+    const mapActionToView = (action: string) => {
+        if (action.includes('Deck')) return 'deck';
+        if (action.includes('Memorandum')) return 'memo';
+        if (action.includes('Subscribe')) return 'subscribe';
+        if (action.includes('Wire')) return 'wire';
+        if (action.includes('Deposit')) return 'deposit';
+        if (action.includes('Stats')) return 'stats';
+        return null;
+    };
+
     const offerings = [
         {
             title: 'Mogul Real Estate Fund – Tranche 3',
@@ -67,15 +83,136 @@ export default function ActiveOfferingsPage() {
         }
     ];
 
-    const handleAction = (offering: any, action: any) => {
-        console.log(offering.title, action);
-        alert('developing...');
+    const handleAction = (idx: number, action: string) => {
+        const view = mapActionToView(action);
+        if (!view) return;
+
+        setActiveView({
+            cardIndex: idx,
+            view,
+        });
     };
 
     const extractPercent = (raised?: string) => {
         if (!raised) return '0%';
         const match = raised.match(/(\d+)%/);
         return match ? `${match[1]}%` : '0%';
+    };
+
+    const renderDetailView = (offering: any, idx: number) => {
+        if (!activeView || activeView.cardIndex !== idx) return null;
+
+        const { view } = activeView;
+
+        return (
+            <div className="detail-view">
+                <a
+                    className="back-to-summary"
+                    onClick={() => setActiveView(null)}
+                >
+                    ← Back to Summary
+                </a>
+
+            {view === 'deck' && (
+                <>
+                <h2>Investment Deck</h2>
+                <iframe
+                    className="pdf-viewer"
+                    src={`https://docs.google.com/gview?url=https://example.com/deck-${idx}.pdf&embedded=true`}
+                />
+                </>
+            )}
+
+            {view === 'memo' && (
+                <>
+                <h2>Private Placement Memorandum</h2>
+                <p><small>Tip: Ctrl+P / Cmd+P to print</small></p>
+                <iframe
+                    className="pdf-viewer"
+                    src={`https://docs.google.com/gview?url=https://example.com/ppm-${idx}.pdf&embedded=true`}
+                />
+                </>
+            )}
+
+            {view === 'subscribe' && (
+                <>
+                <h2>Subscribe Now</h2>
+                <p>Subscription agreement will be prepared in the Subscription Center for secure electronic signature.</p>
+                <p>Steps: KYC verification → Commitment amount → Review terms → Sign</p>
+                <button className="btn btn-subscribe">
+                    Begin Subscription Process
+                </button>
+                </>
+            )}
+
+            {view === 'wire' && (
+                <>
+                <h2>Wire Transfer Instructions</h2>
+                <ul className="wire-list">
+                    <li><strong>Bank:</strong> Signature Bank (or successor)</li>
+                    <li><strong>Account Name:</strong> Mogul Strategies Escrow</li>
+                    <li><strong>Routing #:</strong> 026013576</li>
+                    <li><strong>Account #:</strong> Visible after intent</li>
+                    <li><strong>Reference:</strong> Investor ID + Fund</li>
+                </ul>
+                <p>Minimum wire: fund minimum. Funds must arrive by closing date.</p>
+                </>
+            )}
+
+            {view === 'deposit' && (
+                <>
+                <h2>Quick Deposit Options</h2>
+                <div className="deposit-grid">
+                    
+                    <div className="flex flex-wrap gap-4 mt-6">
+                        <button className="btn dark bg-[#2a2a2a] text-white min-w-[140px]">
+                            Credit / Debit Card
+                        </button>
+
+                        <button className="btn dark bg-[#2a2a2a] text-white min-w-[140px]">
+                            Apple Pay
+                        </button>
+
+                        <button className="btn dark bg-[#2a2a2a] text-white min-w-[140px]">
+                            Google Pay
+                        </button>
+
+                        <button className="btn dark bg-[#2a2a2a] text-white min-w-[140px]">
+                            PayPal
+                        </button>
+
+                        {/* force new line */}
+                        <div className="w-full" />
+                            <button className="btn btn-deposit min-w-[220px]">
+                                Crypto (BTC / ETH / USDC)
+                            </button>
+                        </div>
+                        <p className="mt-4 text-[#aaa] text-lg">* Secure processing via Stripe / Coinbase Commerce (placeholder)</p>
+                    </div>
+                </>
+            )}
+
+            {view === 'stats' && (
+                <>
+                <h2>Fund Stats</h2>
+                <div className="analytics-grid">
+                    <div className="analytics-card">
+                    <h4>Current NAV</h4>
+                    <div className="value">$1.42</div>
+                    </div>
+                    <div className="analytics-card">
+                    <h4>IRR to Date</h4>
+                    <div className="value">14.8%</div>
+                    </div>
+                    <div className="analytics-card">
+                    <h4>Total Distributions</h4>
+                    <div className="value">$18.4M</div>
+                    </div>
+                </div>
+                </>
+            )}
+            </div>
+        );
     };
 
     return (
@@ -167,42 +304,52 @@ export default function ActiveOfferingsPage() {
                             )}
                             
                         </div>
-
-                        {/* Analytics */}
-                        {offering.analytics && (
-                            <div className="analytics-grid">
-                            {offering.analytics.map((a) => (
-                                <div key={a.label} className="analytics-card">
-                                <h4>{a.label}</h4>
-                                <div className="value">{a.value}</div>
+                        
+                        
+                        {/* analytics + actions */}
+                        {activeView?.cardIndex !== idx && (
+                            <>
+                                {offering.analytics && (
+                                <div className="analytics-grid">
+                                    {offering.analytics.map((a) => (
+                                    <div key={a.label} className="analytics-card">
+                                        <h4>{a.label}</h4>
+                                        <div className="value">{a.value}</div>
+                                    </div>
+                                    ))}
                                 </div>
-                            ))}
-                            </div>
+                                )}
+
+                                <div className="actions-grid">
+                                {offering.actions.map((action) => (
+                                    <button
+                                    key={action}
+                                    className={`btn ${
+                                        action.includes('Subscribe')
+                                        ? 'btn-subscribe'
+                                        : action.includes('Wire')
+                                        ? 'btn-wire'
+                                        : action.includes('Deposit')
+                                        ? 'btn-deposit'
+                                        : 'btn-view'
+                                    }`}
+                                    onClick={() => handleAction(idx, action)}
+                                    >
+                                    {action}
+                                    </button>
+                                ))}
+                                </div>
+                            </>
                         )}
 
-                        {/* Actions */}
-                        <div className="actions-grid">
-                            {offering.actions.map((action) => (
-                            <button
-                                key={action}
-                                className={`btn ${
-                                action.includes('Subscribe')
-                                    ? 'btn-subscribe'
-                                    : action.includes('Wire')
-                                    ? 'btn-wire'
-                                    : action.includes('Deposit')
-                                    ? 'btn-deposit'
-                                    : 'btn-view'
-                                }`}
-                                onClick={() => handleAction(offering, action)}
-                            >
-                                {action}
-                            </button>
-                            ))}
-                        </div>
-
-                        </div>
-                    </div>
+                        </div> {/* card-inner */}
+                        {/* OVERLAY */}
+                        {activeView?.cardIndex === idx && (
+                            <div className="detail-view">
+                            {renderDetailView(offering, idx)}
+                            </div>
+                        )}
+                    </div> 
                 ))}
             </section>
         </>
