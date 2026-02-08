@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useKyc } from "@/contexts/KycContext";
 
 type NavItem = {
   name: string;
@@ -32,22 +33,47 @@ const navItems: NavItem[] = [
   { name: "Support & FAQ", href: "/investors/supportfaq" },
 ];
 
- const userMenuItems = [
-        { label: "Portfolio Overview", href: "/investors/portfoliosummary" },
-        { label: "My Calendar", href: "/investors/events" },
-        { label: "My Investments", href: "/investors/myinvestments" },
-        { label: "Capital Calls", href: "/investors/capitalcalls" },
-        { label: "Statements & Reports", href: "/investors/docsreports" },
-        { label: "Distributions & Tax", href: "/investors/distributionstax" },
-        { label: "Files & Media", href: "/investors/resourcelibrary" },
-        { label: "Account Settings", href: "/investors/usersettings" },
-    ];
-
 type Props = {
   isSidebarOpen: boolean;
 };
 
 export function Sidebar({ isSidebarOpen }: Props) {
+  const pathname = usePathname();
+  const { kycCompleted, loading } = useKyc();
+
+  const filteredNav = navItems.filter((item) => {
+    if (item.name === "User Verification") return true;
+    if (item.name === "Support & FAQ") return true;
+
+    return kycCompleted === true;
+  });
+
+  if (loading) return null;
+
+  return (
+    <nav className={`sidebar ${isSidebarOpen ? "" : "collapsed"}`} id="sidebar">
+      <ul className="nav-menu">
+        {filteredNav.map((item) => {
+          const isActive = item.match
+            ? item.match(pathname)
+            : pathname === item.href;
+
+          return (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                className={isActive ? "active" : ""}
+              >
+                {item.name}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </nav>
+  );
+}
+export function Sidebar1({ isSidebarOpen }: Props) {
   const pathname = usePathname();
 
   return (

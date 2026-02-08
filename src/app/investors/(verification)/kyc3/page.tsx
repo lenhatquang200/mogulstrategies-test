@@ -5,8 +5,10 @@ import Link from 'next/link';
 import "./kyc3.css";
 import toast from 'react-hot-toast';
 import KYCProgressBar from '../components/KYCProgressBar';
+import { useKyc } from "@/contexts/KycContext";
 
 export default function KYCStep3Page() {
+    const { refreshKyc } = useKyc();
     const [entityType, setEntityType] = useState('individual');
 
     const entityOptions = [
@@ -57,7 +59,7 @@ export default function KYCStep3Page() {
                 toast.error(data?.message || 'Submission failed');
                 return;
             }
-
+            await refreshKyc();
             router.push('/investors/kyc4');
         } catch (err) {
             toast.error('Network error, please try again');
@@ -66,14 +68,71 @@ export default function KYCStep3Page() {
         }
     };
 
-    useEffect(() => {
-        setFile(null);
-        setEntityName('');
-        setFormationDate('');
-        setJurisdiction('');
-        setTotalAssets('');
-    }, [entityType]);
 
+
+
+    const [existingFile, setExistingFile] = useState<{
+        fileName: string;
+        fileUrl: string;
+    } | null>(null);
+
+    const hasLoadedRef = useRef(false);
+
+    useEffect(() => {
+        const fetchStep3 = async () => {
+            try {
+                const res = await fetch('/api/kyc/step3', { method: 'GET' });
+                if (!res.ok) return;
+
+                const data = await res.json();
+                if (!data) return;
+
+                // bind entity type
+                if (data.entityType) {
+                    setEntityType(data.entityType);
+                }
+
+                // individual
+                if (data.entityType === 'individual') {
+                    setCriteria(data.individualCriteria || 'income');
+                }
+
+                // entity
+                if (data.entityType !== 'individual') {
+                    setEntityName(data.entityName || '');
+                    setFormationDate(data.formationDate || '');
+                    setJurisdiction(data.jurisdiction || '');
+                    setTotalAssets(data.totalAssets || '');
+                }
+
+                // existing file
+                if (data.fileName && data.fileUrl) {
+                    setExistingFile({
+                        fileName: data.fileName,
+                        fileUrl: data.fileUrl,
+                    });
+                }
+            } catch (err) {
+                console.error('Failed to load KYC step 3', err);
+            }
+        };
+
+        fetchStep3();
+    }, []);
+
+    // useEffect(() => {
+    //     if (!hasLoadedRef.current) {
+    //         hasLoadedRef.current = true;
+    //         return;
+    //     }
+
+    //     setFile(null);
+    //     setExistingFile(null);
+    //     setEntityName('');
+    //     setFormationDate('');
+    //     setJurisdiction('');
+    //     setTotalAssets('');
+    // }, [entityType]);
 
     return (
         <>
@@ -137,7 +196,46 @@ export default function KYCStep3Page() {
                             <div className="form-group full-width">
                                 <label>Upload Supporting Documentation</label>
 
-                                <div className="upload-area border-2 border-dashed border-[#D4AF37] rounded-xl p-8 text-center cursor-pointer"
+                                <div
+                                    className={`
+                                        upload-area border-2 border-dashed border-[#D4AF37]
+                                        rounded-xl p-8 text-center transition
+                                        ${existingFile ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:bg-[#D4AF3710]'}
+                                    `}
+                                    onClick={() => {
+                                        if (!existingFile) {
+                                            fileInputRef.current?.click();
+                                        }
+                                    }}
+                                >
+                                    {file ? (
+                                        <>
+                                            <p style={{ color: '#D4AF37' }}>{file.name}</p>
+                                            <small>{(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                                        </>
+                                    ) : existingFile ? (
+                                        <>
+                                            <p style={{ color: '#D4AF37' }}>
+                                                Uploaded: {existingFile.fileName}
+                                            </p>
+                                            {/* <a
+                                                href={existingFile.fileUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ fontSize: '0.85rem', textDecoration: 'underline' }}
+                                            >
+                                                View document
+                                            </a> */}
+                                            <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#FFD54F' }}>
+                                                Document is under review and cannot be replaced at this time.
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <p>Drag & drop or click to upload (tax returns, financial statements, license, etc.)</p>
+                                    )}
+                                </div>
+
+                                {/* <div className="upload-area border-2 border-dashed border-[#D4AF37] rounded-xl p-8 text-center cursor-pointer"
                                     onClick={() => fileInputRef.current?.click()}
                                 >
                                     {file ? (
@@ -148,7 +246,7 @@ export default function KYCStep3Page() {
                                     ) : (
                                         <p>Drag & drop or click to upload (tax returns, financial statements, license, etc.)</p>
                                     )}
-                                </div>
+                                </div> */}
 
                                 <input
                                     ref={fileInputRef}
@@ -158,8 +256,14 @@ export default function KYCStep3Page() {
                                     onChange={(e) => setFile(e.target.files?.[0] || null)}
                                 />
                             </div>
-
-                            <Link href="/investors/kyc4" className="submit-btn" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>Submit for Review</Link>
+                            <button
+                                onClick={submit}
+                                className="submit-btn"
+                                disabled={loading}
+                            >
+                                {loading ? 'Submitting...' : 'Submit for Review'}
+                            </button>
+                            {/* <Link href="/investors/kyc4" className="submit-btn" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>Submit for Review</Link> */}
                         </form>
                     </div>
                 ) : (
@@ -200,17 +304,46 @@ export default function KYCStep3Page() {
                             <div className="form-group full-width">
                                 <label>Upload Entity Documentation</label>
 
-                                <div className="upload-area border-2 border-dashed border-[#D4AF37] rounded-xl p-8 text-center cursor-pointer"
-                                    onClick={() => fileInputRef.current?.click()}
+                                <div
+                                    className={`
+                                        border-2 border-dashed border-[#D4AF37]
+                                        rounded-xl p-8 text-center
+                                        transition
+                                        ${existingFile ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:bg-[#D4AF3710]'}
+                                    `}
+                                    onClick={() => {
+                                        if (!existingFile) {
+                                        fileInputRef.current?.click();
+                                        }
+                                    }}
                                 >
+
                                     {file ? (
                                         <>
                                             <p style={{ color: '#D4AF37' }}>{file.name}</p>
                                             <small>{(file.size / 1024 / 1024).toFixed(2)} MB</small>
                                         </>
-                                    ) : (
+                                        ) : existingFile ? (
+                                        <>
+                                            <p style={{ color: '#D4AF37' }}>
+                                            Uploaded: {existingFile.fileName}
+                                            </p>
+                                            {/* <a
+                                                href={existingFile.fileUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                style={{ fontSize: '0.85rem', textDecoration: 'underline' }}
+                                            >
+                                            View document
+                                            </a> */}
+                                            <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#FFD54F' }}>
+                                            Document is under review and cannot be replaced at this time.
+                                            </p>
+                                        </>
+                                        ) : (
                                         <p>Upload Formation Documents, Financial Statements, or Operating Agreements</p>
                                     )}
+
                                 </div>
 
                                 <input

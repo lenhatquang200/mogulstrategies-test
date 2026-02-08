@@ -8,7 +8,7 @@ type KYCStatus = 'pending' | 'approved' | 'declined';
 export default function KYCStep4Page() {
     // For demonstration, we'll use local state to switch between views.
     // In a real app, this would be fetched from an API.
-    const [status, setStatus] = useState<KYCStatus>('pending');
+    const [status, setStatus] = useState<KYCStatus>('approved');
 
     return (
         <>

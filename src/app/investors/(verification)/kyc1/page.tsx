@@ -20,6 +20,7 @@ export default function KYCStep1Page() {
         state: '',
         postalCode: '',
         phone: '',
+        currentStep: ''
     });
 
     const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -74,6 +75,7 @@ export default function KYCStep1Page() {
                 state: data.state ?? '',
                 postalCode: data.postalCode ?? '',
                 phone: data.phone ?? '',
+                currentStep: data.currentStep ?? ''
             });
 
             setStatus(data.status);
@@ -146,15 +148,25 @@ export default function KYCStep1Page() {
                             <input type="tel" id="phone" placeholder="+1 (555) 123-4567" required onChange={onChange} value={form.phone}/>
                         </div>
                     </div>
-                    <button className={`next-btn
-                        ${
-                        loading || isReadonly
-                            ? 'bg-gray-500 cursor-not-allowed opacity-60'
-                            : 'bg-[#D4AF37] hover:bg-[#bfa134] text-black'
-                        }
-                    `} disabled={loading || isReadonly} >
-                        {loading ? 'Saving...' : 'Save & Continue to Step 2'}
-                    </button>
+                    {form.currentStep ? (
+                        <Link
+                            href="/investors/kyc3"
+                            className={`next-btn next-btn inline-block text-center transition'}
+                            `}
+                        >
+                            Continue to Step 2
+                        </Link>
+                    ) : (
+                        <button className={`next-btn
+                            ${
+                            loading || isReadonly
+                                ? 'bg-gray-500 cursor-not-allowed opacity-60'
+                                : 'bg-[#D4AF37] hover:bg-[#bfa134] text-black'
+                            }
+                        `} disabled={loading || isReadonly} >
+                            {loading ? 'Saving...' : 'Save & Continue to Step 2'}
+                        </button>
+                    )}
                 </form>
 
                 <p style={{ marginTop: '2rem', fontSize: '0.9rem', textAlign: 'center', color: '#AAAAAA' }}>

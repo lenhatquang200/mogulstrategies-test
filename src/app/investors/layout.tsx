@@ -13,6 +13,7 @@ import NotificationsPopup from './components/NotificationsPopup';
 import { Sidebar } from "./components/Sidebar";
 import type { ProfileData } from "@/types/user";
 import { ProfileProvider } from "@/contexts/ProfileContext";
+import { KycProvider } from "@/contexts/KycContext";
 import Header from "./components/Header";
 
 const LogoutConfirmationModal = dynamic(
@@ -78,23 +79,25 @@ export default function InvestorsLayout({
     return (
         <div className="portal-layout">
             <ProfileProvider>
+                <KycProvider>
             
-            <Header
-                onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-            />
+                    <Header
+                        onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                    />
 
-            {/* Sidebar Navigation */}
-            <Sidebar isSidebarOpen={isSidebarOpen} />
-            
-            <main id="main-content" className={isSidebarOpen ? '' : 'expanded'}>
-                {children}
-            </main>
-            <Footer />
-            <LogoutConfirmationModal
-                isOpen={isLogoutModalOpen}
-                onClose={() => setIsLogoutModalOpen(false)}
-                onConfirm={handleLogoutConfirm}
-            />
+                    {/* Sidebar Navigation */}
+                    <Sidebar isSidebarOpen={isSidebarOpen} />
+                    
+                    <main id="main-content" className={isSidebarOpen ? '' : 'expanded'}>
+                        {children}
+                    </main>
+                    <Footer />
+                    <LogoutConfirmationModal
+                        isOpen={isLogoutModalOpen}
+                        onClose={() => setIsLogoutModalOpen(false)}
+                        onConfirm={handleLogoutConfirm}
+                    />
+                </KycProvider>
             </ProfileProvider>
         </div>
     );

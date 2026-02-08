@@ -1,9 +1,10 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import "./kyc2.css";
 import KYCProgressBar from '../components/KYCProgressBar';
+import toast from 'react-hot-toast';
 
 export default function KYCStep2Page() {
     const [selectedDocType, setSelectedDocType] = useState('passport');
@@ -46,9 +47,44 @@ export default function KYCStep2Page() {
         if (res.ok) {
             router.push('/investors/kyc3');
         } else {
-            alert('Upload failed');
+            const data = await res.json();
+            toast.error(data.message);
         }
     };
+
+    const [uploadedData, setUploadedData] = useState<{
+        documentType: string;
+        fileName: string;
+        fileUrl?: string;
+        fileType?: string;
+        identityStatus?: string;
+    } | null>(null);
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            const res = await fetch('/api/kyc/step2');
+            if (res.ok) {
+                const data = await res.json();
+                if (data?.hasUploaded) {
+                    setUploadedData(data);
+                    setSelectedDocType(data.documentType);
+                }
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const isApproved = uploadedData?.identityStatus === 'approved';
+    const previewImage =
+    previewUrl ||
+    (uploadedData?.fileType === 'image'
+        ? encodeURI(uploadedData.fileUrl!)
+        : null);
+
+    const previewFileName =
+    file?.name || uploadedData?.fileName;
+
 
     return (
         <>
@@ -83,56 +119,94 @@ export default function KYCStep2Page() {
                     </div>
 
                     <div className="upload-section" style={{ marginTop: '2rem' }}>
-                        <label htmlFor="file-upload" className="upload-area" style={{
-                            border: '3px dashed #D4AF37', borderRadius: '16px', padding: '3rem',
-                            textAlign: 'center', cursor: 'pointer', display: 'block', transition: 'background 0.3s'
-                        }}>
-                            <div className="upload-icon">📤</div>
-                            <p>Click to browse or upload your ID</p>
-                            <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>Accepted: JPG, PNG, PDF (max 10MB)</p>
-                            <input
-                                id="file-upload"
-                                type="file"
-                                accept="image/*,application/pdf"
-                                style={{ display: 'none' }}
-                                onChange={handleFileChange}
-                            />
-                        </label>
+                        
+                        {/* Upload area */}
+                        {!uploadedData && (
+                            <label
+                                htmlFor="file-upload"
+                                className="upload-area"
+                                style={{
+                                border: '3px dashed #D4AF37',
+                                borderRadius: '16px',
+                                padding: '3rem',
+                                textAlign: 'center',
+                                cursor: 'pointer',
+                                display: 'block',
+                                }}
+                            >
+                                <div className="upload-icon">📤</div>
+                                    <p>Click to browse or upload your ID</p>
+                                    <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                                    Accepted: JPG, PNG, PDF (max 10MB)
+                                    </p>
+                                <input
+                                    id="file-upload"
+                                    type="file"
+                                    accept="image/*,application/pdf"
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                />
+                            </label>
+                        )}
 
-                        {(file || previewUrl) && (
-                            <div className="file-preview" style={{
-                                marginTop: '1.5rem', padding: '1rem', background: 'rgba(212, 175, 55, 0.1)',
-                                borderRadius: '8px', display: 'block'
-                            }}>
-                                {previewUrl ? (
-                                    <img src={previewUrl} alt="ID Preview" style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }} />
-                                ) : (
-                                    <p>{file?.name} (PDF uploaded)</p>
-                                )}
-                                <p style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>{file?.name}</p>
+                        {previewFileName && (
+                            <div
+                                className="file-preview"
+                                style={{
+                                    marginTop: '1.5rem',
+                                    padding: '1rem',
+                                    background: 'rgba(212, 175, 55, 0.1)',
+                                    borderRadius: '8px',
+                                    display: 'block',
+                                    textAlign: 'center',
+                                }}
+                            >
+                            {previewImage ? (
+                                <>
+                                    <img
+                                        src={previewImage}
+                                        alt="ID Preview"
+                                        style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }}
+                                    />
+                                    <p style={{ marginTop: '0.5rem', fontWeight: 'bold' }}>
+                                    {previewFileName}
+                                    </p>
+                                </>
+                            ) : (
+                                <p style={{ fontWeight: 'bold' }}>
+                                    📄 {previewFileName} (PDF)
+                                </p>
+                            )}
+
+                            {uploadedData && !file && (
+                                <p style={{ fontSize: '0.85rem', color: '#FFD54F' }}>
+                                Status: {uploadedData.identityStatus}
+                                </p>
+                            )}
                             </div>
                         )}
                     </div>
 
                     <div style={{ marginTop: '2rem' }}>
-                        {/* <Link
-                            href="/investors/kyc3"
-                            className="next-btn"
-                            style={{
-                                display: 'inline-block', textDecoration: 'none',
-                                opacity: file ? 1 : 0.5, pointerEvents: file ? 'auto' : 'none'
-                            }}
-                        >
-                            Continue to Step 3
-                        </Link> */}
-                        <button
-                            onClick={submit}
-                            className="next-btn"
-                            disabled={!file || loading}
-                            style={{ opacity: !file ? 0.5 : 1 }}
-                        >
-                            {loading ? 'Uploading...' : 'Continue to Step 3'}
-                        </button>
+                        {uploadedData ? (
+                            <Link
+                                href="/investors/kyc3"
+                                className={`next-btn inline-block text-center transition
+                                    ${uploadedData ? 'opacity-100 pointer-events-auto' : 'opacity-50 pointer-events-none'}
+                                `}
+                            >
+                                Continue to Step 3
+                            </Link>
+                        ) : (
+                            <button
+                                onClick={submit}
+                                className="next-btn"
+                                disabled={!file || loading}
+                                style={{ opacity: !file ? 0.5 : 1 }}
+                            >
+                                {loading ? 'Uploading...' : 'Continue to Step 3'}
+                            </button>
+                        )}
                     </div>
 
                     <p style={{ marginTop: '2rem', fontSize: '0.9rem', color: '#AAAAAA' }}>

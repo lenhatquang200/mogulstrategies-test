@@ -25,6 +25,10 @@ const isTooLong = (v: string, max: number) => v.length > max;
 const hasHTML = (v: string) => /[<>]/.test(v);
 const isNameValid = (v: string) => /^[a-zA-Z\s'-]+$/.test(v);
 const isPhoneValid = (v: string) => /^[0-9+\-\s()]{7,20}$/.test(v);
+
+const MIN_AGE = 16;
+const MAX_AGE = 100;
+
 export function validateKycStep1(
   body: Partial<KycStep1Payload>
 ): ValidationResult {
@@ -90,8 +94,44 @@ export function validateKycStep1(
     return { valid: false, field: "middleName", message: "Middle name is too long" };
 
   // ===== DATE =====
-  if (isNaN(Date.parse(dateOfBirth)))
+  const dob = new Date(dateOfBirth);
+
+  if (isNaN(dob.getTime())) {
     return { valid: false, field: "dateOfBirth", message: "Invalid date of birth" };
+  }
+
+  const today = new Date();
+  if (dob > today) {
+    return {
+      valid: false,
+      field: "dateOfBirth",
+      message: "Date of birth cannot be in the future",
+    };
+  }
+
+  // Calculate age
+  let age = today.getFullYear() - dob.getFullYear();
+  const m = today.getMonth() - dob.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+    age--;
+  }
+
+  if (age < MIN_AGE) {
+    return {
+      valid: false,
+      field: "dateOfBirth",
+      message: `You must be at least ${MIN_AGE} years old`,
+    };
+  }
+
+  if (age > MAX_AGE) {
+    return {
+      valid: false,
+      field: "dateOfBirth",
+      message: "Invalid date of birth",
+    };
+  }
+
 
   // ===== ADDRESS =====
   if (isTooLong(address, 255) || hasHTML(address))
