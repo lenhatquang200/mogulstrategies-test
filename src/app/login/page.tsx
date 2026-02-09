@@ -288,9 +288,15 @@ export default function LoginPage() {
         otpInputs[lastFilledIndex]?.focus();
     }, [otpCode]);
 
-    const handleSocialAuth = (provider: any) => {
-        alert(`Social login (${provider}) is developing...`);
-    };
+    const handleSocialAuth = (provider: string) => {
+        if(provider == 'google') {
+            signIn(provider, {
+                callbackUrl: `/login/social-success?provider=${provider}`, //callbackUrl: "/investors/kyc1",
+            })
+        } else {
+            alert(`Social login (${provider}) is developing...`);
+        }
+    }
 
     // --- Render ---
     return (

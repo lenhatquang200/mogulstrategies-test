@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { action, entityType } = body;
+    const { action, entityType, provider } = body;
 
     if (!action) {
       return NextResponse.json(
@@ -64,13 +64,15 @@ export async function POST(req: Request) {
         : country || "";
 
     const userAgent = req.headers.get("user-agent") || "";
+    const device = parseDevice(userAgent)
+    const details = provider ? `${device} - Login via ${provider}`: device
 
     await prisma.activityLog.create({
       data: {
         userId,
         action,
         entityType,
-        details: parseDevice(userAgent),
+        details,
         location,
         ipAddress,
       },
