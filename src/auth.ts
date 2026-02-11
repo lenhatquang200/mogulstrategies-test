@@ -29,7 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     }
                 });
 
-                if (!user) {
+                if (!user || !user.password) {
                     return null;
                 }
 
@@ -62,7 +62,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ],
     callbacks: {
         async signIn({ user, account }) {
-            const provider = account?.provider ?? "credentials"
             const providerId = account?.providerAccountId
             let dbUser
 
@@ -73,17 +72,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 })
 
                 if (!existingUser) {
-                    const randomPassword = Math.random().toString(36).slice(-10)
-                    const hashedPassword = await bcrypt.hash(randomPassword, 10)
-
                     dbUser = await prisma.user.create({
                         data: {
                             email: user.email!,
                             name: user.name,
-                            roleId: 2, // INVESTOR
-                            password: hashedPassword,
-                            provider: "google",
-                            providerId,          // google id
+                            roleId: 1, // INVESTOR
+                            googleId: providerId,  
                             lastLoginAt: new Date(),
                         },
                     })
@@ -96,8 +90,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         where: { id: existingUser.id },
                         data: {
                             lastLoginAt: new Date(),
-                            provider: "google",
-                            providerId,
+                            googleId: providerId,
                         },
                     })
 

@@ -5,6 +5,7 @@ import SearchBar from '@/components/admin/SearchBar';
 import { useEffect, useState } from 'react';
 import { FaUserPlus, FaEye, FaEdit, FaBan, FaCheck, FaTrash, FaEnvelope } from 'react-icons/fa';
 import type { User } from '@/types/user';
+import LoadingOverlay from "@/components/LoadingOverlay";
 
 export type UserListItem = Pick<
   User,
@@ -31,6 +32,8 @@ type UserListResponse = {
 
 
 export default function UserManagementPage() {
+    const [searchInput, setSearchInput] = useState('');
+    const [filter, setFilter] = useState('all');
     const [searchQuery, setSearchQuery] = useState('');
     const [users, setUsers] = useState<UserListItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -61,7 +64,7 @@ export default function UserManagementPage() {
     };
 
     fetchUsers();
-    }, [page, searchQuery]);
+    }, [page, searchQuery, filter]);
 
     const getStatusStyle = (status: string) => {
         switch (status) {
@@ -106,35 +109,54 @@ export default function UserManagementPage() {
         }
     };
 
-
     return (
         <div className="pb-20">
             <PageTitle>User Management</PageTitle>
 
             {/* Controls Bar */}
-            <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8">
+            <form
+                className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 mb-8"
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    setSearchQuery(searchInput);
+                    setPage(1);
+                }}
+                >
                 <SearchBar
                     placeholder="Search users by name, email, or ID..."
-                    value={searchQuery}
-                    onChange={setSearchQuery}
+                    value={searchInput}
+                    onChange={setSearchInput}
                     className="w-full lg:max-w-md"
                 />
+
                 <div className="flex flex-wrap items-center gap-4 w-full lg:w-auto">
-                    <select className="bg-black/40 border border-mogul-gold/20 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-mogul-gold transition-all">
-                        <option>All Users</option>
-                        <option>Verified</option>
-                        <option>Pending KYC</option>
-                        <option>Active Investors</option>
-                        <option>Inactive</option>
+                    <select
+                        value={filter}
+                        onChange={(e) => {
+                            setFilter(e.target.value);
+                            setPage(1);
+                        }}
+                        className="bg-black/40 border border-mogul-gold/20 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-mogul-gold transition-all"
+                    >
+                        <option value="all">All Users</option>
+                        <option value="verified">Verified</option>
+                        <option value="pending">Pending KYC</option>
+                        <option value="active">Active Investors</option>
+                        <option value="inactive">Inactive</option>
                     </select>
-                    <button className="flex items-center gap-2 bg-mogul-gold text-mogul-dark px-6 py-3 rounded-xl font-bold hover:bg-white transition-all shadow-gold whitespace-nowrap">
-                        <FaUserPlus size={14} /> Add New User
+
+                    <button
+                    type="button"
+                    className="flex items-center gap-2 bg-mogul-gold text-mogul-dark px-6 py-3 rounded-xl font-bold hover:bg-white transition-all shadow-gold whitespace-nowrap"
+                    >
+                    <FaUserPlus size={14} /> Add New User
                     </button>
                 </div>
-            </div>
+            </form>
 
             {/* Users Table */}
-            <div className="bg-mogul-darker rounded-2xl p-8 animate-pulse-glow overflow-x-auto border border-mogul-gold/10">
+            <div className="bg-mogul-darker rounded-2xl p-8 animate-pulse-glow overflow-x-auto border border-mogul-gold/10 relative">
+                <LoadingOverlay show={loading} />
                 <table className="w-full min-w-[1000px] text-sm">
                     <thead>
                         <tr className="bg-mogul-gold/10 text-mogul-gold text-xs uppercase tracking-widest text-left">
@@ -150,6 +172,16 @@ export default function UserManagementPage() {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-mogul-gold/5">
+                        
+
+                        {!loading && users.length === 0 && (
+                        <tr>
+                            <td colSpan={9} className="p-8 text-center text-gray-400">
+                            No users found
+                            </td>
+                        </tr>
+                        )}
+
                         {
                         users.map((user, idx) => {
                             const userStatus = getUserStatusLabel(user.status);
@@ -255,6 +287,31 @@ export default function UserManagementPage() {
                     </tbody>
                 </table>
             </div>
+            {/* Pagination */}
+            {/* <div className="flex justify-between items-center mt-6 text-sm">
+                <span className="text-gray-400">
+                    Page <span className="text-white">{page}</span> / {totalPages}
+                </span>
+
+                <div className="flex gap-2">
+                    <button
+                    disabled={page === 1}
+                    onClick={() => setPage((p) => p - 1)}
+                    className="px-4 py-2 rounded bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition"
+                    >
+                    Prev
+                    </button>
+
+                    <button
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    className="px-4 py-2 rounded bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed transition"
+                    >
+                    Next
+                    </button>
+                </div>
+            </div> */}
+
         </div>
     );
 }

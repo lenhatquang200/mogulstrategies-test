@@ -25,7 +25,7 @@ model User {
   email               String    @unique @db.VarChar(191)
   phone               String?
   timezone            String?
-  password            String
+  password            String?
   roleId              Int
   role                Role      @relation(fields: [roleId], references: [id])
   accreditationStatus String    @default("individual")
@@ -41,8 +41,9 @@ model User {
   verificationStatus  Int?      @default(0) // 
   settings            Json? // noti
 
-  provider            String?  
-  providerId          String?  
+  googleId            String? @db.VarChar(191)
+  appleId             String? @db.VarChar(191)
+  linkedinId          String? @db.VarChar(191)
 
   kyc                 Kyc?
   activityLogs       ActivityLog[]

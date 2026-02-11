@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 interface ChangePasswordModalProps {
     isOpen: boolean;
     onClose: () => void;
+    hasPassword: boolean;
     onSubmit: (data: {
         currentPassword: string;
         newPassword: string;
@@ -15,6 +16,7 @@ interface ChangePasswordModalProps {
 
 export default function ChangePasswordModal({
     isOpen,
+    hasPassword,
     onClose,
     onSubmit,
 }: ChangePasswordModalProps) {
@@ -35,8 +37,15 @@ export default function ChangePasswordModal({
             toast.error('New password does not match');
             return;
         }
+
+        if (hasPassword && !form.currentPassword) {
+            toast.error('Current password is required');
+            return;
+        }
+
         onSubmit(form);
     };
+
 
     return (
         <div
@@ -57,23 +66,25 @@ export default function ChangePasswordModal({
 
                 {/* Title */}
                 <h3 className="mb-8 text-2xl font-bold text-[#D4AF37]">
-                    Change Password
+                    {hasPassword ? 'Change Password' : 'Set Password'}
                 </h3>
 
                 <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }} className="space-y-6" >
-                    <div>
-                        <label className="mb-2 block font-medium text-gray-300">
-                            Current Password
-                        </label>
-                        <input
-                            type="password"
-                            name="currentPassword"
-                            required
-                            value={form.currentPassword}
-                            onChange={handleChange}
-                            className="w-full rounded-lg border border-[#D4AF37] bg-[#0A1A2F] px-4 py-4 text-gray-200"
-                        />
-                    </div>
+                    {hasPassword && (
+                        <div>
+                            <label className="mb-2 block font-medium text-gray-300">
+                                Current Password
+                            </label>
+                            <input
+                                type="password"
+                                name="currentPassword"
+                                required
+                                value={form.currentPassword}
+                                onChange={handleChange}
+                                className="w-full rounded-lg border border-[#D4AF37] bg-[#0A1A2F] px-4 py-4 text-gray-200"
+                            />
+                        </div>
+                    )}
 
                     <div>
                         <label className="mb-2 block font-medium text-gray-300">
@@ -108,7 +119,7 @@ export default function ChangePasswordModal({
                             type="submit"
                             className="rounded-lg bg-[#D4AF37] px-8 py-4 font-bold text-[#0A1A2F] hover:opacity-90 transition"
                         >
-                            Update Password
+                            {hasPassword ? 'Update Password' : 'Set Password'}
                         </button>
                     </div>
                     </form>

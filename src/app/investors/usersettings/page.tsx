@@ -4,8 +4,11 @@ import ActivityLog from './components/ActivityLog';
 import AccountDetails from './components/AccountDetails';
 import ChangePasswordModal from './components/ChangePasswordModal';
 import toast from 'react-hot-toast';
+import { useProfile } from "@/contexts/ProfileContext";
+import NotificationSettings from './components/NotificationSettings';
 
 export default function UserSettingsPage() {
+    const { profile, loading, setProfile } = useProfile();
     const [toggles, setToggles] = useState({
         twoFactor: false,
         emailNotifications: true,
@@ -76,32 +79,47 @@ export default function UserSettingsPage() {
         currentPassword: string;
         newPassword: string;
         confirmPassword: string;
-        }) => {
+     }) => {
         try {
-            const res = await fetch("/api/change-password", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                currentPassword: data.currentPassword,
-                newPassword: data.newPassword,
-            }),
-            });
+            const isSetPassword = !profile?.hasPassword;
+
+            const res = await fetch(
+            isSetPassword ? "/api/set-password" : "/api/change-password",
+            {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(
+                isSetPassword
+                    ? {
+                        newPassword: data.newPassword,
+                    }
+                    : {
+                        currentPassword: data.currentPassword,
+                        newPassword: data.newPassword,
+                    }
+                ),
+            }
+            );
 
             const result = await res.json();
 
             if (!res.ok) {
-                toast.error(result.message || "Failed to change password");
-                return;
+            toast.error(result.message || "Failed to update password");
+            return;
             }
 
-            toast.success("Password updated successfully");
+            toast.success(
+            isSetPassword
+                ? "Password set successfully"
+                : "Password updated successfully"
+            );
+
             setOpenChangePassword(false);
         } catch (error) {
-            console.error("Change password error:", error);
+            console.error("Password error:", error);
             toast.error("Something went wrong");
         }
     };
-
 
     return (
         <>
@@ -147,58 +165,7 @@ export default function UserSettingsPage() {
                     </div>
                 </div>
 
-                <div className="settings-card" style={{ background: '#112240', borderRadius: '16px', padding: '2.5rem', marginBottom: '3rem' }}>
-                    <h3 style={{ fontSize: '2rem', color: '#D4AF37', marginBottom: '1.5rem', borderBottom: '1px solid rgba(212, 175, 55, 0.3)', paddingBottom: '0.8rem' }}>Notification Preferences</h3>
-                    <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
-                        <div className="form-group">
-                            <label>Email Notifications</label>
-                            <button
-                                onClick={() => handleToggle('emailNotifications')}
-                                style={{
-                                    position: 'relative', width: '60px', height: '34px', background: toggles.emailNotifications ? '#D4AF37' : '#333',
-                                    borderRadius: '17px', border: 'none', cursor: 'pointer', transition: '0.4s', marginTop: '0.5rem'
-                                }}
-                            >
-                                <div style={{
-                                    position: 'absolute', width: '26px', height: '26px', left: toggles.emailNotifications ? '30px' : '4px', bottom: '4px',
-                                    background: '#E0E0E0', borderRadius: '50%', transition: '0.4s'
-                                }} />
-                            </button>
-                        </div>
-                        <div className="form-group">
-                            <label>SMS Alerts (Critical Only)</label>
-                            <button
-                                onClick={() => handleToggle('smsAlerts')}
-                                style={{
-                                    position: 'relative', width: '60px', height: '34px', background: toggles.smsAlerts ? '#D4AF37' : '#333',
-                                    borderRadius: '17px', border: 'none', cursor: 'pointer', transition: '0.4s', marginTop: '0.5rem'
-                                }}
-                            >
-                                <div style={{
-                                    position: 'absolute', width: '26px', height: '26px', left: toggles.smsAlerts ? '30px' : '4px', bottom: '4px',
-                                    background: '#E0E0E0', borderRadius: '50%', transition: '0.4s'
-                                }} />
-                            </button>
-                        </div>
-                    </div>
-                    <div style={{ marginTop: '2rem' }}>
-                        <p style={{ fontWeight: 500, marginBottom: '1rem' }}>Choose which events trigger notifications:</p>
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
-                            {Object.entries(notificationSettings).map(([key, value]) => (
-                                <label key={key} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={value}
-                                        onChange={() => handleNotifToggle(key as keyof typeof notificationSettings)}
-                                        style={{ width: '20px', height: '20px', accentColor: '#D4AF37' }}
-                                    />
-                                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
-                                </label>
-                            ))}
-                        </div>
-                    </div>
-                    <button className="save-btn" style={{ background: '#D4AF37', color: '#0A1A2F', padding: '1rem 2.5rem', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer', marginTop: '2rem' }} onClick={() => alert('Preferences saved!')}>Save Preferences</button>
-                </div>
+                <NotificationSettings  />
 
                 <ActivityLog />
 
@@ -206,6 +173,7 @@ export default function UserSettingsPage() {
                     isOpen={openChangePassword}
                     onClose={() => setOpenChangePassword(false)}
                     onSubmit={handleChangePassword}
+                    hasPassword={!!profile?.hasPassword}
                 />
 
             </section>

@@ -8,6 +8,7 @@ export interface ProfileData {
   lastLogin: string | null;
   phone?: string;
   timezone?: string;
+  hasPassword?: boolean;
 }
 
 export type ProfileUpdateData = Pick<

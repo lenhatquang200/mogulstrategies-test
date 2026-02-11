@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth"; 
 import { UserService } from "@/services/user.service";
 import { mapAccreditation, formatDate } from "@/lib/utils";
+import { validateProfileUpdate } from "@/lib/validators/profile/update";
 
 function mapUserToProfile(user: any) {
   return {
@@ -11,6 +12,7 @@ function mapUserToProfile(user: any) {
     timezone: user.timezone,
     userCode: user.userCode,
     role: user.role?.name,
+    hasPassword: !!user.password,
     investorType: mapAccreditation(user.accreditationStatus),
     joined: formatDate(user.createdAt),
     lastLogin: user.updatedAt
@@ -61,6 +63,14 @@ export async function PATCH(req: Request) {
     }
 
     const body = await req.json();
+    try {
+          const result = validateProfileUpdate(body);
+        } catch (err: any) {
+          return NextResponse.json(
+            { message: err.message },
+            { status: 400 }
+          );
+        }
 
     const updatedUser = await UserService.updateByEmail(
       session.user.email,

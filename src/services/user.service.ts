@@ -35,8 +35,8 @@ export const UserService = {
       roleId: 1,
       ...(search && {
         OR: [
-          { email: { contains: search, mode: "insensitive" } },
-          { name: { contains: search, mode: "insensitive" } },
+          { email: { contains: search } },
+          { name: { contains: search } },
         ],
       }),
     };

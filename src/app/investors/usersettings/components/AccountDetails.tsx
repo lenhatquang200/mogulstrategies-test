@@ -36,24 +36,29 @@ export default function AccountDetails() {
   };
 
   const handleSubmit = async () => {
-    try {
-      setSaving(true);
+    setSaving(true);
 
+    try {
       const res = await fetch("/api/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
 
-      if (!res.ok) throw new Error();
+      const data = await res.json(); // ⚠️ parse TRƯỚC
 
-      const updatedProfile: ProfileData = await res.json();
-      // update global context
-      setProfile(updatedProfile);
+      if (!res.ok) {
+        throw data; // ✅ throw JSON từ API
+      }
 
+      setProfile(data);
       toast.success("Profile updated successfully");
-    } catch {
-      toast.error("Update failed");
+    } catch (error: any) {
+      toast.error(error?.message || "Update failed");
+
+      if (error?.field) {
+        document.getElementById(error.field)?.focus();
+      }
     } finally {
       setSaving(false);
     }
